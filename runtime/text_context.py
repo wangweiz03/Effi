@@ -739,6 +739,19 @@ def find_latest_eda_summary_path(task_dir: Path) -> Path | None:
     return max(existing, key=lambda path: path.stat().st_mtime)
 
 
+def find_latest_eda_findings_path(task_dir: Path) -> Path | None:
+    """Return the freshest human-readable EDA findings across early/deep rounds."""
+    candidates: list[Path] = []
+    for root_name in ("deep_eda", "early_eda"):
+        root = task_dir / root_name
+        if root.is_dir():
+            candidates.extend(sorted(root.glob("round_*/eda_findings.md")))
+    existing = [path for path in candidates if path.is_file()]
+    if not existing:
+        return None
+    return max(existing, key=lambda path: path.stat().st_mtime)
+
+
 def _operator_name(operator_payload: dict[str, Any] | None) -> str:
     if not isinstance(operator_payload, dict):
         return ""
@@ -1128,7 +1141,13 @@ def build_v35_context_source_map(pinned_info: dict[str, Any]) -> tuple[str, dict
     elif not independent_seed_draft:
         add(optional, "parent_or_best_solution", pinned_info.get("parent_abs_path") or pinned_info.get("best_abs_path"))
         add(optional, "parent_validation_feedback", pinned_info.get("parent_validation_feedback_path"))
-    add(must, "latest_eda_summary", pinned_info.get("latest_eda_summary_path"), include_missing=True)
+    latest_eda_findings = pinned_info.get("latest_eda_findings_path")
+    if latest_eda_findings:
+        add(must, "latest_eda_findings", latest_eda_findings, include_missing=True)
+    elif pinned_info.get("latest_eda_summary_path"):
+        add(must, "legacy_eda_summary_fallback", pinned_info.get("latest_eda_summary_path"), include_missing=True)
+    else:
+        add(must, "latest_eda_findings", "<missing>", include_missing=True)
     if phase_name != "static_gate_repair":
         high_level_path = task_dir / "memory_bank" / HIGH_LEVEL_MEMORY_FILENAME
         if high_level_path.exists() and "high_level_memory" in must_classes:
@@ -1161,11 +1180,10 @@ def build_v35_context_source_map(pinned_info: dict[str, Any]) -> tuple[str, dict
         add(optional, "rounds_ledger", task_dir / "memory_bank" / "rounds.jsonl")
         add(optional, "failure_ledger", task_dir / "memory_bank" / "failure_ledger.jsonl")
 
-    latest_eda = str(pinned_info.get("latest_eda_summary_path") or "")
+    latest_eda = str(latest_eda_findings or pinned_info.get("latest_eda_summary_path") or "")
     if latest_eda:
         eda_dir = Path(latest_eda).parent
         add(optional, "full_eda_findings_json", eda_dir / "eda_findings.json", include_missing=True)
-        add(optional, "full_eda_findings_md", eda_dir / "eda_findings.md", include_missing=True)
 
     for path in pinned_info.get("retrieval_paths") or []:
         path_str = str(path)
@@ -1202,9 +1220,9 @@ def build_v35_context_source_map(pinned_info: dict[str, Any]) -> tuple[str, dict
         "task_skill_source": "task-specific high-quality modeling prior and core modeling basis, especially for draft/improve; extract recipe, feature views, validation hints, and traps",
         "failure_prevention_skill_source": "general MLE contract checklist for schema, alignment, runtime, dependency, and output safety",
         "routed_skill_source": "routed skill source; inspect header/original source to determine task-skill or failure-prevention role",
-        "latest_eda_summary": "initial/latest EDA findings summary",
-        "full_eda_findings_json": "structured EDA facts when the summary is insufficient",
-        "full_eda_findings_md": "full EDA findings when the summary is insufficient",
+        "latest_eda_findings": "latest complete human-readable EDA findings and coding handoff",
+        "legacy_eda_summary_fallback": "legacy EDA handoff used only when no findings markdown exists",
+        "full_eda_findings_json": "structured complement for exact EDA fields when needed",
         "eda_insights_store": "cumulative initial/deep EDA findings; read for recent contract updates",
         "high_level_memory": "task-level positive, negative, and debug-recovery lessons derived from method diffs",
         "memory_card_index": "card inventory; read index first, then specific cards only as needed",
@@ -1275,7 +1293,7 @@ def build_v35_context_first_protocol(pinned_info: dict[str, Any]) -> str:
         "",
         "Treat `[ROUND DIRECTIVE]` as the single authority for this coding round.",
         "Use `top_diverse_*` optional paths when the directive involves improve, replacement, blend, plateau diagnosis, or when prior implementation details would change the plan.",
-        "Use other optional expansion paths when the pinned contract, parent code, feedback, EDA summary/source-map facts, or memory leave an ambiguity.",
+        "Use other optional expansion paths when the pinned contract, parent code, feedback, EDA findings/source-map facts, or memory leave an ambiguity.",
         "When scanning DATA_DIR, name discovered input-file mappings `input_paths`, `data_files`, or `source_files`; do not use names that imply reusable side outputs, cached products, or cross-round files.",
         "",
         "Then write `context_readiness.md` as the final pre-code plan and audit with these bullets. Keep this file pre-code only; do not append post-code memory fields here:",
@@ -1748,10 +1766,14 @@ def build_pinned_runtime_context(
             "repair_parent_method_family": branch_decision.get("repair_parent_method_family"),
             "latest_eda_summary_path": "",
             "latest_eda_summary_exists": False,
+            "latest_eda_findings_path": "",
+            "latest_eda_findings_exists": False,
+            "latest_eda_source_kind": "missing",
             "incumbent_prefill": {},
             "source_presence": {
                 "memory": False,
                 "latest_eda_summary": False,
+                "latest_eda_findings": False,
                 "round_directive": False,
                 "integrated_context_first_planning": False,
             },
@@ -1821,6 +1843,7 @@ def build_pinned_runtime_context(
         parent_validation_feedback_path = str((task_dir / "commits" / str(parent_commit) / "validation_feedback.txt").resolve())
     elif parent_validation_feedback_path:
         parent_validation_feedback_path = resolve_prompt_path(parent_validation_feedback_path)
+    latest_eda_findings_path = find_latest_eda_findings_path(task_dir)
     latest_eda_summary_path = find_latest_eda_summary_path(task_dir)
     best_code_exists = bool(best_abs_path and Path(best_abs_path).exists())
     parent_code_exists = bool(parent_abs_path and Path(parent_abs_path).exists())
@@ -1838,6 +1861,14 @@ def build_pinned_runtime_context(
     debug_parent_card_path = resolve_prompt_path(debug_parent.get("memory_card_path") or debug_parent.get("card_path")) if debug_parent else ""
     debug_parent_diff_path = resolve_prompt_path(debug_parent.get("diff_path") or debug_parent.get("memory_diff_path")) if debug_parent else ""
     latest_eda_summary_exists = bool(latest_eda_summary_path and latest_eda_summary_path.exists())
+    latest_eda_findings_exists = bool(latest_eda_findings_path and latest_eda_findings_path.exists())
+    latest_eda_source_kind = (
+        "findings"
+        if latest_eda_findings_exists
+        else "summary_fallback"
+        if latest_eda_summary_exists
+        else "missing"
+    )
     incumbent_prefill = metadata.get("incumbent_prefill") if isinstance(metadata.get("incumbent_prefill"), dict) else {}
     parent_card_path = debug_parent_card_path if branch_name == "debug" else anchor_parent_card_path
     all_rounds = _load_jsonl(memory_bank_path(task_dir, "rounds.jsonl"))
@@ -1854,6 +1885,7 @@ def build_pinned_runtime_context(
     source_presence = {
         "memory": bool((task_dir / "memory_bank").exists()),
         "latest_eda_summary": latest_eda_summary_exists,
+        "latest_eda_findings": latest_eda_findings_exists,
         "round_directive": True,
         "integrated_context_first_planning": False,
     }
@@ -1904,6 +1936,9 @@ def build_pinned_runtime_context(
         "repair_parent_method_family": branch_decision.get("repair_parent_method_family"),
         "latest_eda_summary_path": str(latest_eda_summary_path) if latest_eda_summary_path else "",
         "latest_eda_summary_exists": latest_eda_summary_exists,
+        "latest_eda_findings_path": str(latest_eda_findings_path) if latest_eda_findings_path else "",
+        "latest_eda_findings_exists": latest_eda_findings_exists,
+        "latest_eda_source_kind": latest_eda_source_kind,
         "incumbent_prefill": incumbent_prefill,
         "source_presence": source_presence,
         "inline_presence": inline_presence,

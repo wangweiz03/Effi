@@ -203,7 +203,7 @@ if __name__ == "__main__":
 
 
 def build_deterministic_eda_summary(eda_context: str, *, eda_mode: str = "early") -> str:
-    """Build a compact EDA handoff without spending another LLM call."""
+    """Build a compact EDA compatibility view without another LLM call."""
     raw_context = eda_context or ""
     context = shrink_text_middle(raw_context, 9000)
     context_note = (
@@ -778,7 +778,7 @@ async def generate_eda_summary(
     temperature: float,
     eda_mode: str = "early",
 ) -> tuple[str, str, dict[str, Any]]:
-    """Generate eda_summary.md as the compact EDA-derived planning handoff."""
+    """Generate eda_summary.md for archive and validation compatibility."""
     summary_file = work_dir / "eda_summary.md"
     usage: dict[str, Any] = {"input_tokens": 0, "output_tokens": 0}
     raw_text = ""
@@ -794,8 +794,8 @@ async def generate_eda_summary(
             refinement_context,
             (
                 "[LOCAL EDA OUTPUTS]\n"
-                "Summarize these outputs into eda_summary.md. Later integrated coding will see this "
-                "summary plus compact v4 branch context and pinned EDA findings extraction, not raw EDA files.\n"
+                "Summarize these outputs into eda_summary.md for archive and validation bookkeeping. "
+                "Later integrated coding reads the complete latest eda_findings.md instead.\n"
                 f"EDA mode: {eda_mode}. "
                 "If this is deep_bottleneck mode, emphasize bottleneck findings and concrete next-round hypotheses.\n\n"
                 f"{eda_context}"

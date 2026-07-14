@@ -74,7 +74,7 @@ EDA_SKILL_GUIDANCE = (
     "MANDATORY: use this full EDA skill only for the pre-plan local EDA code phase. The script must "
     "respect the read-only data boundary, perform lightweight discovery and bounded sampling only, "
     "avoid training or model iteration, and write eda_findings.md plus eda_findings.json in the current "
-    "working directory. Later planning and coding phases receive eda_summary.md-derived pinned schema cards plus compact v4 portfolio context."
+    "working directory. Later planning and coding phases read the latest eda_findings.md plus compact v4 portfolio context."
 )
 
 DRAFT_TASK_SKILL_GUARD = """Draft branch contract:

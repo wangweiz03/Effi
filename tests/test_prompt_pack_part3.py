@@ -5,6 +5,7 @@ import json
 from runtime.bootstrap import (
     build_pinned_runtime_context,
     build_v35_context_source_map,
+    filter_user_task_for_context_first_coding,
     pack_prompt_with_pinned_runtime,
 )
 
@@ -12,6 +13,37 @@ from runtime.bootstrap import (
 def _write_json(path, payload) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_coding_user_task_removes_redundant_metadata_but_keeps_task_description() -> None:
+    raw = """[USER TASK]
+
+[SYSTEM]
+duplicated environment
+
+[USER]
+legacy output contract
+
+[METADATA]
+Task: example
+Higher is Better: True
+
+[DATA DESCRIPTION]
+large generated inventory
+
+[TASK DESCRIPTION]
+Authoritative competition description.
+"""
+
+    filtered, record = filter_user_task_for_context_first_coding(raw)
+
+    assert "[METADATA]" not in filtered
+    assert "[DATA DESCRIPTION]" not in filtered
+    assert "duplicated environment" not in filtered
+    assert "legacy output contract" not in filtered
+    assert filtered.count("[TASK DESCRIPTION]") == 1
+    assert "Authoritative competition description." in filtered
+    assert "metadata" in record["removed_blocks"]
 
 
 def test_v3_improve_prompt_uses_one_parent_binding_and_source_map_paths(tmp_path) -> None:
@@ -204,7 +236,7 @@ def test_skill_sources_follow_source_policy_with_required_path_emphasis(tmp_path
         "branch": "draft",
         "branch_state": "initial_seed",
         "source_policy": {
-            "must": ["task_skill", "failure_prevention_skill", "eda_summary"],
+            "must": ["task_skill", "failure_prevention_skill", "eda_findings"],
             "optional": [],
         },
         "budget": {"remaining_budget": 5000},
@@ -282,7 +314,7 @@ def test_draft_static_gate_repair_exposes_current_round_not_history(tmp_path) ->
         "branch": "draft",
         "branch_state": "required_seed",
         "source_policy": {
-            "must": ["task_skill", "failure_prevention_skill", "eda_summary"],
+            "must": ["task_skill", "failure_prevention_skill", "eda_findings"],
             "optional": ["card_index", "top_cards"],
         },
         "draft_prior_memory": {
@@ -396,10 +428,12 @@ def test_missing_high_level_memory_is_omitted_until_it_exists(tmp_path) -> None:
     )
 
 
-def test_eda_file_presence_is_distinct_from_inline_presence(tmp_path) -> None:
+def test_eda_findings_are_required_and_summary_is_not_routed(tmp_path) -> None:
     eda_summary = tmp_path / "early_eda" / "round_0" / "eda_summary.md"
     eda_summary.parent.mkdir(parents=True)
     eda_summary.write_text("# EDA Summary\n", encoding="utf-8")
+    eda_findings = eda_summary.with_name("eda_findings.md")
+    eda_findings.write_text("# EDA Findings\n", encoding="utf-8")
     _write_json(tmp_path / "index" / "current_branch_decision.json", {
         "schema_version": "branch_decision_v3",
         "round": 0,
@@ -407,7 +441,7 @@ def test_eda_file_presence_is_distinct_from_inline_presence(tmp_path) -> None:
         "branch_state": "initial_seed",
         "runtime_profile": "new_seed_score_first",
         "runtime_control": {"strict_score_first_required": True},
-        "source_policy": {"must": ["eda_summary"], "optional": []},
+        "source_policy": {"must": ["eda_findings"], "optional": []},
     })
 
     _context, info = build_pinned_runtime_context(
@@ -418,9 +452,57 @@ def test_eda_file_presence_is_distinct_from_inline_presence(tmp_path) -> None:
     )
 
     assert info["latest_eda_summary_exists"] is True
+    assert info["latest_eda_findings_exists"] is True
+    assert info["latest_eda_findings_path"] == str(eda_findings)
+    assert info["latest_eda_source_kind"] == "findings"
     assert info["source_presence"]["latest_eda_summary"] is True
+    assert info["source_presence"]["latest_eda_findings"] is True
     assert "early_eda_summary" not in info["source_presence"]
     assert info["inline_presence"]["early_eda_summary"] is False
+
+    source_map, source_info = build_v35_context_source_map(info)
+    assert "- latest_eda_findings: early_eda/round_0/eda_findings.md" in source_map
+    assert "eda_summary.md" not in source_map
+    assert any(entry["label"] == "latest_eda_findings" for entry in source_info["must_inspect"])
+
+
+def test_latest_deep_eda_findings_win_over_early_findings(tmp_path) -> None:
+    early = tmp_path / "early_eda" / "round_0" / "eda_findings.md"
+    deep = tmp_path / "deep_eda" / "round_3" / "eda_findings.md"
+    early.parent.mkdir(parents=True)
+    deep.parent.mkdir(parents=True)
+    early.write_text("# Early findings\n", encoding="utf-8")
+    deep.write_text("# Deep findings\n", encoding="utf-8")
+
+    _context, info = build_pinned_runtime_context(
+        tmp_path,
+        {"task_name": "unit-task", "branch": "draft", "higher_is_better": True},
+        None,
+        "coding",
+    )
+
+    assert info["latest_eda_findings_path"] == str(deep)
+    source_map, _source_info = build_v35_context_source_map(info)
+    assert "- latest_eda_findings: deep_eda/round_3/eda_findings.md" in source_map
+
+
+def test_legacy_eda_summary_is_required_only_when_findings_are_absent(tmp_path) -> None:
+    summary = tmp_path / "early_eda" / "round_0" / "eda_summary.md"
+    summary.parent.mkdir(parents=True)
+    summary.write_text("# Legacy EDA Summary\n", encoding="utf-8")
+
+    _context, info = build_pinned_runtime_context(
+        tmp_path,
+        {"task_name": "unit-task", "branch": "draft", "higher_is_better": True},
+        None,
+        "coding",
+    )
+    source_map, source_info = build_v35_context_source_map(info)
+
+    assert info["latest_eda_findings_exists"] is False
+    assert info["latest_eda_source_kind"] == "summary_fallback"
+    assert "- legacy_eda_summary_fallback: early_eda/round_0/eda_summary.md" in source_map
+    assert any(entry["label"] == "legacy_eda_summary_fallback" for entry in source_info["must_inspect"])
 
 
 def test_historical_legacy_prompt_context_is_not_exposed_in_part4(tmp_path) -> None:

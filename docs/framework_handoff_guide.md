@@ -40,8 +40,24 @@ Full runs require external skill directories, datasets, inference services, and 
 A typical run is:
 
 ```bash
-DATA_FILE=/path/to/eval.parquet ./run_selected_tasks.sh leaf-classification
+./run_selected_tasks.sh leaf-classification
 ```
+
+`run_selected_tasks.sh` defaults to
+`/hpc_data/weizwang@weizwang/frameworks/resources/automl_parquet_test_all_0406/eval.parquet`.
+`DATA_FILE` or `--data-file` may override it explicitly. The script writes only the selected task rows to a temporary Parquet and records that temporary path in the run's `config.json`; the source path remains visible in the launcher output.
+
+The default Parquet includes two post-generation task-description corrections. For
+`ranzcr-clip-catheter-line-classification`, the submission contract exposes only the
+nine columns present in `sample_submission.csv`; `CVC - Normal` and
+`Swan Ganz Catheter Present` are identified only as train-side auxiliary labels. For
+`siim-isic-melanoma-classification`, the non-operational `Timeline`, `Prizes`,
+`Acknowledgements`, and `SIIM AI Conference` sections are removed while the problem,
+metric, submission, citation, and dataset sections remain intact. The adjacent
+`generation_audit.*` and `read_parquet.txt` files are original generation snapshots,
+not runtime inputs; inspect `eval.parquet` itself when auditing these corrections.
+
+The task Parquet's `metadata.task_description` is the source of PART 2 `[TASK DESCRIPTION]`. During coding prompt packing, the framework removes the duplicated `[METADATA]` block, bulky `[DATA DESCRIPTION]`, embedded benchmark system block, legacy chat-output user block, and obsolete refinement-routing text. It retains one complete `[TASK DESCRIPTION]`; operational metadata needed by the runtime remains in the in-memory task record and selected facts are projected into pinned runtime sections.
 
 For each task, the runner repeats:
 
@@ -133,9 +149,11 @@ Its content boundary is limited to the directive, routed memory, bounded score h
 
 Branch source policy is:
 
-- draft: task skill, failure-prevention skill, EDA, existing high-level memory, and frozen summary-only draft prior;
-- improve: anchor card/code/feedback, task skill, EDA, existing high-level memory, plus optional differentiated evidence;
-- debug: failed parent card/code/feedback, failure-prevention skill, EDA, and optional broader history.
+- draft: task skill, failure-prevention skill, latest EDA findings, existing high-level memory, and frozen summary-only draft prior;
+- improve: anchor card/code/feedback, task skill, latest EDA findings, existing high-level memory, plus optional differentiated evidence;
+- debug: failed parent card/code/feedback, failure-prevention skill, latest EDA findings, and optional broader history.
+
+The required EDA source is the freshest `eda_findings.md` across `early_eda/round_*` and `deep_eda/round_*`. This file is the complete human-readable coding handoff and also receives accepted context deep-EDA updates. `eda_findings.json` remains an optional structured complement. `eda_summary.md` is retained for EDA generation/archive compatibility but is not routed when findings exist; it becomes a required fallback only for a legacy archive that has no findings markdown.
 
 Existing required task-skill and failure-prevention paths are bold in PART 4. Missing required sources remain explicit. `memory_bank/high_level_memory.md` is omitted until it exists. `memory_bank/prompt_context.md` is no longer generated or routed.
 
@@ -162,6 +180,8 @@ Only actual sandbox runtime is charged. A process that exits after 300 seconds c
 ## EDA
 
 Round zero normally runs early EDA or reuses an archive. Later deep EDA is allowed only when a concrete ambiguity changes implementation. It is bounded, read-only, and recorded through the readiness deep-EDA JSON contract.
+
+Coding reads the latest complete `eda_findings.md`, not the generated `eda_summary.md` wrapper. The resolver compares valid findings across early and deep EDA round directories by modification time. A legacy summary fallback preserves compatibility with old archives, but it must not displace an available findings file.
 
 Deep EDA does not train models, run validation, decode an unbounded media tree, or create reusable prediction artifacts.
 

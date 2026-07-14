@@ -2972,13 +2972,13 @@ def choose_branch_for_round(
     best_candidate = state.get("best_candidate") if isinstance(state.get("best_candidate"), dict) else None
     source_policy: dict[str, list[str]] = {"must": [], "optional": []}
     if branch == "draft":
-        source_policy["must"] = ["task_skill", "failure_prevention_skill", "eda_summary", "high_level_memory"]
+        source_policy["must"] = ["task_skill", "failure_prevention_skill", "eda_findings", "high_level_memory"]
         source_policy["optional"] = ["eda_full", "card_index", "best_card", "top_cards", "eda_insight_store"]
     elif branch == "debug":
-        source_policy["must"] = ["failure_prevention_skill", "eda_summary", "debug_parent_card", "debug_parent_code", "debug_parent_feedback"]
+        source_policy["must"] = ["failure_prevention_skill", "eda_findings", "debug_parent_card", "debug_parent_code", "debug_parent_feedback"]
         source_policy["optional"] = ["task_skill", "eda_full", "card_index", "top_cards", "eda_insight_store", "high_level_memory"]
     else:
-        source_policy["must"] = ["task_skill", "eda_summary", "anchor_card", "anchor_code", "anchor_feedback", "high_level_memory"]
+        source_policy["must"] = ["task_skill", "eda_findings", "anchor_card", "anchor_code", "anchor_feedback", "high_level_memory"]
         source_policy["optional"] = ["eda_full", "card_index", "top_cards", "top_code", "top_feedback", "memory_diffs", "eda_insight_store"]
     runtime_profile = str(state.get("runtime_profile") or RUNTIME_PROFILE_STANDARD)
     strict_score_first_required = runtime_profile in {

@@ -132,7 +132,7 @@ def pack_prompt_with_pinned_runtime(
         )
         eda_record = {
             "status": "source_map_only",
-            "reason": "EDA is not inlined in coding prompts; read latest_eda_summary and optional full EDA paths from CONTEXT SOURCE MAP.",
+            "reason": "EDA is not inlined in coding prompts; read latest_eda_findings and optional structured EDA paths from CONTEXT SOURCE MAP.",
         }
         hard_contract_section, hard_contract_record = build_v35_hard_task_contract(skill_raw)
 
@@ -241,7 +241,9 @@ def pack_prompt_with_pinned_runtime(
             "round_directive": "[ROUND DIRECTIVE]" in full_prompt,
             "parent_abs_path": path_reference_present(pinned_info.get("parent_abs_path")),
             "parent_validation_feedback": path_reference_present(pinned_info.get("parent_validation_feedback_path")),
-            "latest_eda_summary": path_reference_present(pinned_info.get("latest_eda_summary_path")),
+            "latest_eda_findings": path_reference_present(
+                pinned_info.get("latest_eda_findings_path") or pinned_info.get("latest_eda_summary_path")
+            ),
         }
         critical_failures = [
             name for name, present in pinned_markers_after_pack.items()

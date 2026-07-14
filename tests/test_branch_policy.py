@@ -87,6 +87,8 @@ def test_current_decision_is_control_snapshot_without_history_log(tmp_path) -> N
     }
     assert "runtime_budget_bounds" not in decision
     assert "high_level_memory" in decision["source_policy"]["must"]
+    assert "eda_findings" in decision["source_policy"]["must"]
+    assert "eda_summary" not in decision["source_policy"]["must"]
     assert "portfolio_state" not in decision
     assert "score_history" not in decision
     assert (tmp_path / "index" / "current_branch_decision.json").exists()

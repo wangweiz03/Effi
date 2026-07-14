@@ -8,11 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TASKS=(
-    spooky-author-identification
-    leaf-classification
-    mlsp-2013-birds
-    aptos2019-blindness-detection
-    jigsaw-toxic-comment-classification-challenge
+    siim-isic-melanoma-classification
 )
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
@@ -31,8 +27,8 @@ EOF
     exit 0
 fi
 
-export OUTPUT_DIR="${OUTPUT_DIR:-./cur/test2-timeout-simple2}"
-export NUM_ROUNDS="${NUM_ROUNDS:-6}"
+export OUTPUT_DIR="${OUTPUT_DIR:-./cur/test2-siim-hack}"
+export NUM_ROUNDS="${NUM_ROUNDS:-5}"
 
 cd "$SCRIPT_DIR"
 exec ./run_selected_tasks.sh "$@" "${TASKS[@]}"

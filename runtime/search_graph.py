@@ -94,6 +94,40 @@ def _format_time(value: Any) -> str:
     return f"{seconds:.1f}s"
 
 
+def _load_medal_thresholds(task_name: str) -> dict[str, float]:
+    """Read the task's public medal cutoffs from the framework resource table."""
+    path = FRAMEWORK_RESOURCES_ROOT / "medal_thres.md"
+    if not path.exists():
+        return {}
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 5 or cells[0].strip("`") != task_name:
+            continue
+        values = [_as_float(value) for value in cells[2:5]]
+        if any(value is None for value in values):
+            return {}
+        return dict(zip(("gold", "silver", "bronze"), values))
+    return {}
+
+
+def _medal_for_score(
+    score: Any,
+    thresholds: dict[str, float],
+    *,
+    higher_is_better: bool,
+) -> str | None:
+    numeric_score = _as_float(score)
+    if numeric_score is None or not thresholds:
+        return None
+    for medal in ("gold", "silver", "bronze"):
+        threshold = _as_float(thresholds.get(medal))
+        if threshold is None:
+            continue
+        if numeric_score >= threshold if higher_is_better else numeric_score <= threshold:
+            return medal
+    return "none"
+
+
 def _parent_round_from_payload(payload: Any) -> int | None:
     if not isinstance(payload, dict):
         return None
@@ -130,6 +164,9 @@ def _merge_round_record(records: dict[int, dict[str, Any]], record: dict[str, An
             "status",
             "score",
             "raw_score",
+            "submit_status",
+            "submit_score",
+            "submit_run_time",
             "run_time",
             "wall_time",
             "failure_primary",
@@ -182,6 +219,7 @@ def _record_from_graph_node(row: dict[str, Any]) -> dict[str, Any]:
 
 def _record_from_summary_round(row: dict[str, Any]) -> dict[str, Any]:
     validation = row.get("validation") if isinstance(row.get("validation"), dict) else {}
+    submit = row.get("submit") if isinstance(row.get("submit"), dict) else {}
     quality = validation.get("quality") if isinstance(validation.get("quality"), dict) else {}
     failure_taxonomy = validation.get("failure_taxonomy") if isinstance(validation.get("failure_taxonomy"), dict) else {}
     branch_decision = row.get("branch_decision") if isinstance(row.get("branch_decision"), dict) else {}
@@ -200,6 +238,9 @@ def _record_from_summary_round(row: dict[str, Any]) -> dict[str, Any]:
         "status": status,
         "score": validation.get("score") if validation else row.get("score"),
         "raw_score": validation.get("raw_score"),
+        "submit_status": submit.get("status"),
+        "submit_score": submit.get("score"),
+        "submit_run_time": submit.get("run_time"),
         "run_time": validation.get("run_time"),
         "wall_time": row.get("round_wall_time"),
         "failure_primary": failure_primary,
@@ -373,10 +414,10 @@ def _graph_layout(state: dict[str, Any]) -> tuple[list[str], dict[str, int], dic
     for branch in sorted({str(node.get("branch") or "unknown") for node in nodes}):
         if branch not in branches:
             branches.append(branch)
-    lane_y = {branch: 118 + idx * 182 for idx, branch in enumerate(branches)}
+    lane_y = {branch: 118 + idx * 202 for idx, branch in enumerate(branches)}
     max_round = max([_as_int(node.get("round")) or 0 for node in nodes], default=0)
     width = max(1100, 260 + (max_round + 1) * 190)
-    height = max(420, 190 + len(branches) * 182)
+    height = max(460, 190 + len(branches) * 202)
     positions: dict[str, tuple[int, int]] = {}
     for node in nodes:
         round_num = _as_int(node.get("round")) or 0
@@ -389,6 +430,13 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
     task_dir = Path(task_dir)
     graph_path = task_dir / V3_GRAPH_DIR
     summary = _safe_load_json(task_dir / "rounds_summary.json")
+    summary_rounds = summary.get("rounds")
+    task_name = (
+        summary_rounds[0].get("task_name")
+        if isinstance(summary_rounds, list) and summary_rounds and isinstance(summary_rounds[0], dict)
+        else task_dir.name
+    )
+    medal_thresholds = _load_medal_thresholds(str(task_name))
     records: dict[int, dict[str, Any]] = {}
 
     for row in _load_jsonl_file(task_dir / "memory_bank" / "rounds.jsonl"):
@@ -398,12 +446,14 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
             _merge_round_record(records, _record_from_event(row))
     for row in _load_jsonl_file(graph_path / "nodes.jsonl"):
         _merge_round_record(records, _record_from_graph_node(row))
-    summary_rounds = summary.get("rounds")
+    for row in _load_jsonl_file(task_dir / "memory_bank" / "card_index.jsonl"):
+        _merge_round_record(records, _record_from_card_index(row))
+    # The compact summary is rewritten atomically after validation and is the
+    # freshest human-view source. Older append-only graph/card rows must not
+    # hide a recovered or externally reconciled validation result.
     for row in summary_rounds if isinstance(summary_rounds, list) else []:
         if isinstance(row, dict):
             _merge_round_record(records, _record_from_summary_round(row))
-    for row in _load_jsonl_file(task_dir / "memory_bank" / "card_index.jsonl"):
-        _merge_round_record(records, _record_from_card_index(row))
 
     commit_to_round: dict[str, int] = {}
     for round_num, record in records.items():
@@ -422,6 +472,13 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
         record["parent_kind"] = parent_kind
         record["score"] = _as_float(record.get("score"))
         record["raw_score"] = _as_float(record.get("raw_score"))
+        record["submit_score"] = _as_float(record.get("submit_score"))
+        record["submit_medal"] = _medal_for_score(
+            record["submit_score"],
+            medal_thresholds,
+            higher_is_better=bool(higher_is_better),
+        )
+        record["submit_run_time"] = _as_float(record.get("submit_run_time"))
         record["run_time"] = _as_float(record.get("run_time"))
         record["wall_time"] = _as_float(record.get("wall_time"))
         record["feedback_excerpt"] = _shorten(record.get("feedback_excerpt") or record.get("error_excerpt"), 360)
@@ -431,6 +488,7 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
         nodes.append(record)
 
     scored_nodes = [node for node in nodes if node.get("score") is not None]
+    submitted_nodes = [node for node in nodes if node.get("submit_score") is not None]
     best_round: int | None = None
     if scored_nodes:
         best = max(scored_nodes, key=lambda item: float(item["score"])) if higher_is_better else min(scored_nodes, key=lambda item: float(item["score"]))
@@ -440,6 +498,13 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
     else:
         for node in nodes:
             node["is_best"] = False
+
+    best_submit_score = None
+    best_submit_medal = None
+    if submitted_nodes:
+        best_submit = max(submitted_nodes, key=lambda item: float(item["submit_score"])) if higher_is_better else min(submitted_nodes, key=lambda item: float(item["submit_score"]))
+        best_submit_score = best_submit.get("submit_score")
+        best_submit_medal = best_submit.get("submit_medal")
 
     edges: list[dict[str, Any]] = []
     valid_rounds = {int(node["round"]) for node in nodes}
@@ -462,8 +527,12 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
         "round_count": len(nodes),
         "edge_count": len(edges),
         "scored_count": len(scored_nodes),
+        "submitted_count": len(submitted_nodes),
         "best_round": best_round,
         "best_score": next((node.get("score") for node in nodes if node.get("is_best")), None),
+        "best_submit_score": best_submit_score,
+        "best_submit_medal": best_submit_medal,
+        "medal_thresholds": medal_thresholds,
         "branch_counts": dict(branch_counts),
         "status_counts": dict(status_counts),
         "total_sandbox_run_time": summary.get("total_sandbox_run_time"),
@@ -474,7 +543,7 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
     }
     return {
         "schema_version": "search_graph_visualization_v1",
-        "task": summary.get("rounds", [{}])[0].get("task_name") if isinstance(summary.get("rounds"), list) and summary.get("rounds") else task_dir.name,
+        "task": task_name,
         "task_dir": str(task_dir),
         "updated_at": datetime.now().isoformat(),
         "metric_direction": "higher" if higher_is_better else "lower",
@@ -484,6 +553,7 @@ def build_search_graph_state(task_dir: Path, higher_is_better: bool | None = Tru
             "graph_events": f"{V3_GRAPH_DIR}/events.jsonl",
             "memory_rounds": "memory_bank/rounds.jsonl",
             "card_index": "memory_bank/card_index.jsonl",
+            "medal_thresholds": str(FRAMEWORK_RESOURCES_ROOT / "medal_thres.md"),
         },
         "stats": stats,
         "nodes": nodes,
@@ -520,7 +590,9 @@ def render_search_graph_png(state: dict[str, Any], path: Path) -> None:
             f"updated={state.get('updated_at')} metric={state.get('metric_direction')} "
             f"rounds={stats.get('round_count', len(nodes))} scored={stats.get('scored_count', 0)} "
             f"best=R{stats.get('best_round') if stats.get('best_round') is not None else '-'} "
-            f"score={_format_score(stats.get('best_score'))}"
+            f"val={_format_score(stats.get('best_score'))} submitted={stats.get('submitted_count', 0)} "
+            f"best_submit={_format_score(stats.get('best_submit_score'))} "
+            f"medal={stats.get('best_submit_medal') or '-'}"
         ),
         fill="#495057",
         font=font,
@@ -570,7 +642,7 @@ def render_search_graph_png(state: dict[str, Any], path: Path) -> None:
         stroke_rgb = _hex_to_rgb(stroke)
         stroke_width = 4 if node.get("is_best") else 2
         draw.rounded_rectangle(
-            (x, y, x + 160, y + 112),
+            (x, y, x + 160, y + 132),
             radius=8,
             fill=fill_rgb,
             outline=stroke_rgb,
@@ -584,7 +656,8 @@ def render_search_graph_png(state: dict[str, Any], path: Path) -> None:
         lines = [
             f"R{node.get('round')} {node.get('branch') or '-'}",
             f"{commit[:8]} {status[:18]}",
-            f"score {_format_score(node.get('score'))}",
+            f"val {_format_score(node.get('score'))}",
+            f"submit {_format_score(node.get('submit_score'))} {node.get('submit_medal') or '-'}",
             f"run {_format_time(node.get('run_time'))}",
             f"wall {_format_time(node.get('wall_time'))}",
         ]

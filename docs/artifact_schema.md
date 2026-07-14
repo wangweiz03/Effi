@@ -42,6 +42,8 @@ Authority: compact run history and final-selection summary.
 
 `rounds_summary_compact_v1` records branch, frozen compact decision, status, score, validation summary, commit and artifact paths, actual sandbox runtime, memory references, and a short method summary. Root fields record task-level actual sandbox usage, branch summary, best round, best commit, and selection policy.
 
+`graphic.png` is a derived search view. It renders validation and final-submit scores as separate fields. When a final-submit score exists, the node and header also show its `gold`, `silver`, `bronze`, or `none` medal classification using the task cutoffs in `frameworks/resources/medal_thres.md` and the configured metric direction. A missing submit score has no inferred medal.
+
 The configured external timeout and actual sandbox runtime are separate facts. Remaining task budget is calculated from actual sandbox runtime, not from timeout caps.
 
 Large code, raw Codex output, and complete sandbox logs remain in commit or trace artifacts.
@@ -55,6 +57,20 @@ The runner copies the decision read at round start into `result["branch_decision
 ### `config.json`
 
 Authority: evaluator configuration snapshot for one run. Current defaults must still be checked against CLI definitions, runtime constants, and root scripts.
+
+## EDA Artifacts
+
+### `early_eda/round_*/eda_findings.md` and `deep_eda/round_*/eda_findings.md`
+
+Authority: complete human-readable EDA evidence and the required coding handoff. PART 4 routes the freshest existing findings markdown across early and deep EDA rounds. Accepted context deep-EDA updates are appended to the task-local findings record, so the selected file can be newer than the original early-EDA generation time.
+
+### `eda_findings.json`
+
+Authority: structured companion to the findings markdown. It is optional during normal coding and should be read when exact fields or nested EDA records are needed.
+
+### `eda_summary.md`
+
+Authority: generated/archive compatibility view. It is not the normal coding source because it can duplicate the findings markdown and structured JSON. PART 4 does not route it when findings exist. It becomes a required legacy fallback only when an old archive has no `eda_findings.md`.
 
 ## Static Gate Artifacts
 
@@ -252,4 +268,4 @@ Artifact checks should verify:
 
 ### `graphic.png`
 
-Derived human-only search visualization rebuilt from persistent evidence. It never participates in scheduling or prompt construction.
+Derived human-only search visualization rebuilt from persistent evidence. It never participates in scheduling or prompt construction. Each round node shows validation and final-submit scores separately; the header reports the number of scored submissions and the best submit score in the task metric direction. When append-only graph or memory rows disagree with the atomically rewritten `rounds_summary.json`, the compact summary is the final visualization source so recovered validation or submit results appear on the next render.

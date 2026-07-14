@@ -113,9 +113,11 @@ The summary is not character-truncated. The four-card limit bounds total size. P
 
 ## Source Policy
 
-- Draft requires task skill, failure-prevention skill, and EDA summary. High-level memory becomes required once the derived file exists. Historical code remains unavailable as a baseline.
-- Improve requires the anchor card, code, feedback, task skill, EDA summary, and existing high-level memory. Other differentiated evidence may be optional.
-- Debug requires the failed parent card, code, feedback, failure-prevention skill, and EDA summary. Broader history is optional and subordinate to the concrete repair.
+- Draft requires task skill, failure-prevention skill, and the latest complete EDA findings markdown. High-level memory becomes required once the derived file exists. Historical code remains unavailable as a baseline.
+- Improve requires the anchor card, code, feedback, task skill, latest EDA findings, and existing high-level memory. Other differentiated evidence may be optional.
+- Debug requires the failed parent card, code, feedback, failure-prevention skill, and latest EDA findings. Broader history is optional and subordinate to the concrete repair.
+
+The EDA resolver prefers the freshest `eda_findings.md` across early and deep EDA rounds. `eda_findings.json` is optional structured evidence. `eda_summary.md` is not routed when findings exist and is promoted to a required fallback only for a legacy archive without findings markdown.
 
 Static-gate repair suppresses high-level memory for every branch. Draft static repair also suppresses prior and round history and operates only on the current root `solution.py`, readiness, post-code summary, and current blockers.
 
