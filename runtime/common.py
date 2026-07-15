@@ -22,7 +22,6 @@ from dotenv import load_dotenv
 from prompts import (
     EDA_SUMMARY_SYSTEM_PROMPT,
     EDA_SYSTEM_PROMPT,
-    RUNTIME_HARDENING_CONTEXT,
     SYSTEM_PROMPT,
 )
 

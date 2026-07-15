@@ -32,13 +32,19 @@ The scheduler controls state, parent identity, source policy, score response, ru
 
 Draft has no implementation parent. It produces a self-contained solution without historical code prefill. Frozen summaries may prevent repetition, but no historical implementation becomes its baseline.
 
+Draft receives a `3600s` soft ceiling for planning the complete workload. This is not an external timeout or a quota to consume. A route expected to finish in a few minutes remains a few-minute route. The old `test-lite` audit calibrates the ceiling at `92.6%` of completed draft validations inside one hour.
+
 ### Debug
 
 Debug binds the latest failed generated implementation and exposes its card, code, and feedback. A successful repair inherits the failed seed's effective lineage and does not create a new independent seed.
 
+Debug does not inherit the draft ceiling. For timeout or OOM recovery, it uses the failed parent's observed stage and actual runtime to reduce cumulative work; for ordinary repair it changes the smallest concrete cause while preserving boundedness.
+
 ### Improve
 
 Improve binds the highest-scoring eligible validation candidate at round start. Its card, code, and feedback must agree with the prefilled implementation. Final audit uses the same validation-best binding with a lower-risk objective.
+
+Improve does not inherit the draft ceiling. It estimates the added complete-path cost relative to the validation-best parent's actual runtime and keeps a complete incumbent-derived route ahead of optional work.
 
 ### Single Binding
 
@@ -135,9 +141,20 @@ Final selection uses validation score and submission eligibility. It does not us
 
 ## External Validation Timeout
 
-All task budget accounting uses actual sandbox runtime. Before coding, the framework takes the smaller of remaining sandbox runtime and a generous workload cap. Method-neutral branch scheduling uses `10800s`; concrete low-cost and sparse callers may use `3600s` and `7200s` respectively. Historical runtimes and branch state do not shrink the wall.
+All task budget accounting uses actual sandbox runtime. Before coding, the framework takes the smaller of remaining sandbox runtime and a generous external hard cap. Method-neutral branch scheduling uses `10800s`; concrete low-cost and sparse callers may use `3600s` and `7200s` respectively. Historical runtimes and branch state do not shrink the wall.
 
-PART 3 displays the timeout as read-only context. Readiness supplies evidence and implementation intent without changing the framework decision.
+PART 3 displays the timeout as read-only context. The frozen branch decision carries `workload_plan_v1`; a separate draft block projects the `3600s` soft ceiling. Draft readiness records `draft_workload_ceiling_seconds`, `expected_complete_path_seconds`, `runtime_estimate_basis`, `dominant_cost_units`, `complete_workload_product`, `within_ceiling: yes`, and `why_no_further_expansion`.
+
+Runtime history used by `runtime_estimate_basis` follows strict evidence rules:
+
+- use completed rounds of the same task and their actual sandbox runtime, never timeout caps;
+- prefer a comparable successful complete route;
+- identify the cited round, branch, status, actual runtime, comparable work units, and planned adjustment;
+- treat timeout runtime only as a lower bound;
+- do not use a failure before the dominant training or inference stage as an end-to-end estimate;
+- state that no comparable history exists when appropriate, then estimate from explicit bounded work units.
+
+Readiness supplies evidence and implementation intent without changing the external framework decision. No solution-local timer, remaining-time poll, budget exception, or separate sandbox preflight is added.
 
 The solution must remain statically bounded. It should complete a competitive trained path, retain the best complete predictions, skip doubtful optional work, write `submission.csv` atomically, and exit normally before the external sandbox wall whenever possible.
 
@@ -161,6 +178,8 @@ Failure evidence must preserve whether a timeout was observed by solution code o
 10. Static rules, dynamic control, and source paths each have one prompt authority.
 11. High-level memory is reconstructible from diffs and is not a parent selector.
 12. Runtime execution has one framework-owned external timeout and is charged by actual sandbox runtime.
+13. Draft uses `3600s` only as a soft complete-workload ceiling, not a quota.
+14. Non-draft planning remains parent-relative and does not inherit the draft-only `workload_plan_v1`.
 
 ## Known Limits
 

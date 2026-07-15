@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 
 from .common import *
 from .constants import *
+from .model_cache import persist_sandbox_model_cache
 from .search_graph import render_search_graph_artifacts
+from .skills import build_branch_task_skill_view
 
 def _classify_skill_source_path(source_path: Path, task_name: str) -> tuple[str, str]:
     """Return a prompt-facing source label and title for a routed skill path."""
@@ -35,11 +38,26 @@ def persist_runtime_skill_sources(task_dir: Path, skill_route: "SkillRoute") -> 
             continue
         source_label, source_title = _classify_skill_source_path(source_path, task_dir.name)
         used_names[source_label] = used_names.get(source_label, 0) + 1
-        cleaned = sanitize_legacy_prediction_file_language(raw).strip()
+        routed_raw = raw
+        phase_scoped = False
+        if source_label == "task_skill_source":
+            routed_raw, phase_scoped = build_branch_task_skill_view(raw, skill_route.branch)
+        cleaned = sanitize_legacy_prediction_file_language(routed_raw).strip()
+        source_digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
         header = "\n".join([
             f"# {source_title}",
             "",
             f"Original source: {source_path}",
+            f"Original SHA256: {source_digest}",
+            f"Routed branch: {skill_route.branch}",
+            f"Phase scoped: {str(phase_scoped).lower()}",
+            "",
+            (
+                "This file contains only the task-skill sections routed for the current branch. "
+                "Modeling recipes in omitted phases are not instructions for this round."
+                if phase_scoped
+                else "This source does not use the standardized six-section task-skill schema, so it is preserved in full for compatibility."
+            ),
             "",
             "Legacy cross-round prediction-file instructions, if present in the original, have been rewritten here as current-run diagnostics. The coding prompt and runtime static gate allow only `submission.csv` as the solution output file.",
             "",
@@ -88,6 +106,7 @@ def _compact_decision_for_summary(decision: dict[str, Any]) -> dict[str, Any]:
         },
         "budget": decision.get("budget"),
         "external_timeout_plan": decision.get("external_timeout_plan"),
+        "workload_plan": decision.get("workload_plan"),
         "validation_timeout_seconds": decision.get("validation_timeout_seconds"),
     }
 
@@ -1529,6 +1548,7 @@ async def evaluate_single_task_multi_rounds(
     )
 
     init_git_structure(output_dir)
+    persist_sandbox_model_cache(output_dir)
     if not (output_dir / "HEAD").exists():
         set_current_branch(output_dir, "draft")
     metadata = task["metadata"]
@@ -2234,7 +2254,6 @@ def cli_main() -> None:
         default=SANDBOX_BASE_URL,
         help="Sandbox service base URL",
     )
-
     args = parser.parse_args()
 
     asyncio.run(main(

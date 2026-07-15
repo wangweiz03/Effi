@@ -136,6 +136,142 @@ if len(train_df) > MAX_TRAIN_ROWS:
     assert contract["hardcoded_data_cardinality_evidence"] == []
 
 
+def test_static_gate_blocks_invalid_literal_pandas_regex() -> None:
+    code = _trained_solution() + r'''
+def build_text_stats(series):
+    return series.str.contains(r"(?:.)\1{2,}", regex=True)
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["has_valid_literal_regex_contract"] is False
+    assert "has_valid_literal_regex_contract" in contract["blockers"]
+    assert contract["invalid_literal_regex_evidence"] == [{
+        "line": 15,
+        "call": "series.str.contains",
+        "kind": "invalid_regex_pattern",
+        "pattern": "'(?:.)\\\\1{2,}'",
+        "error": "invalid group reference 1 at position 6",
+    }]
+
+
+def test_static_gate_blocks_invalid_constant_regex_replacement() -> None:
+    code = r'''from __future__ import annotations
+import os
+import re
+
+PATTERN = r"(item)"
+REPLACEMENT = r"\2"
+
+def clean(text):
+    return re.sub(PATTERN, REPLACEMENT, text)
+
+data_dir = os.environ.get("DATA_DIR")
+model.fit(train_x, train_y)
+submission.to_csv("submission.csv", index=False)
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["status"] == "block"
+    assert contract["invalid_literal_regex_evidence"][0]["kind"] == "invalid_regex_replacement"
+    assert contract["invalid_literal_regex_evidence"][0]["replacement"] == "'\\\\2'"
+
+
+def test_static_gate_accepts_valid_regex_and_literal_nonregex_replace() -> None:
+    code = _trained_solution() + r'''
+def build_text_stats(series):
+    repeated = series.str.contains(r"(.)\1{2,}", regex=True)
+    literal_contains = series.str.contains("[", regex=False)
+    literal = series.str.replace("(", "", regex=False)
+    return repeated, literal_contains, literal
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["has_valid_literal_regex_contract"] is True
+    assert contract["invalid_literal_regex_evidence"] == []
+    assert "has_valid_literal_regex_contract" not in contract["blockers"]
+
+
+def test_static_gate_does_not_resolve_shadowed_regex_constant() -> None:
+    code = _trained_solution() + r'''
+PATTERN = r"(?:.)\1{2,}"
+
+def dynamic_search(PATTERN, text):
+    return re.search(PATTERN, text)
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["has_valid_literal_regex_contract"] is True
+    assert contract["invalid_literal_regex_evidence"] == []
+
+
+def test_static_gate_blocks_definite_use_after_delete() -> None:
+    code = _trained_solution() + '''
+def assemble(sample_df, test_df, predictions):
+    test_identity = test_df[["id"]].copy()
+    del test_df
+    predictions = predictions.clip(0.0, 1.0)
+    return build_submission(sample_df=sample_df, test_df=test_df, predictions=predictions)
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["avoids_definite_use_after_delete"] is False
+    assert "avoids_definite_use_after_delete" in contract["blockers"]
+    assert contract["definite_use_after_delete_evidence"] == [{
+        "line": 18,
+        "deleted_line": 16,
+        "name": "test_df",
+        "kind": "definite_use_after_delete",
+    }]
+
+
+def test_static_gate_accepts_reassignment_after_delete() -> None:
+    code = _trained_solution() + '''
+def release_and_rebuild(frame):
+    del frame
+    frame = load_frame()
+    return frame.shape
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["avoids_definite_use_after_delete"] is True
+    assert contract["definite_use_after_delete_evidence"] == []
+
+
+def test_static_gate_does_not_propagate_conditional_delete() -> None:
+    code = _trained_solution() + '''
+def maybe_release(frame, should_release):
+    if should_release:
+        del frame
+    return frame
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["avoids_definite_use_after_delete"] is True
+    assert contract["definite_use_after_delete_evidence"] == []
+
+
+def test_static_gate_does_not_report_after_conditional_rebinding() -> None:
+    code = _trained_solution() + '''
+def maybe_rebuild(frame, should_rebuild):
+    del frame
+    if should_rebuild:
+        frame = load_frame()
+    return frame
+'''
+
+    contract = inspect_solution_contract(code)
+
+    assert contract["checks"]["avoids_definite_use_after_delete"] is True
+    assert contract["definite_use_after_delete_evidence"] == []
+
+
 def test_static_gate_has_two_same_round_repair_attempts() -> None:
     assert V4_MAX_STATIC_GATE_REPAIR_ATTEMPTS == 2
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from .common import *
 from .constants import *
 
@@ -2398,6 +2400,115 @@ def compute_validation_timeout(
     return min(cap, remaining_seconds)
 
 
+def _validation_seconds(value: Any) -> float | None:
+    """Return one finite non-negative validation timing value."""
+    if isinstance(value, bool):
+        return None
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(seconds) or seconds < 0:
+        return None
+    return seconds
+
+
+def _bound_runtime_reference(
+    all_rounds: list[dict[str, Any]],
+    parent_binding: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Resolve a bound parent to its full or compact historical round row."""
+    parent_commit = str(parent_binding.get("commit") or "").strip()
+    parent_round = parent_binding.get("round")
+    for row in reversed(all_rounds):
+        row_commit = str(row.get("commit_hash") or row.get("commit") or "").strip()
+        if parent_commit:
+            if row_commit == parent_commit:
+                return row
+            continue
+        if parent_round is not None and row.get("round") == parent_round:
+            return row
+    return None
+
+
+def _workload_runtime_reference(
+    branch: str,
+    all_rounds: list[dict[str, Any]],
+    parent_binding: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Select only the branch-authorized historical runtime reference."""
+    if branch == "draft":
+        for row in reversed(all_rounds):
+            validation = row.get("validation") if isinstance(row.get("validation"), dict) else {}
+            if get_round_branch(row) == "draft" and _validation_seconds(validation.get("run_time")) is not None:
+                return row
+        return None
+    if branch in {"debug", "improve"}:
+        return _bound_runtime_reference(all_rounds, parent_binding)
+    return None
+
+
+def build_workload_plan(
+    *,
+    branch: str,
+    validation_timeout_seconds: int,
+    remaining_budget: float,
+    all_rounds: list[dict[str, Any]],
+    parent_binding: dict[str, Any],
+) -> dict[str, Any]:
+    """Build the soft workload contract without changing the sandbox timeout."""
+    branch = normalize_branch_name(branch)
+    draft_ceiling = (
+        max(0, int(min(
+            V4_DRAFT_WORKLOAD_SOFT_CEILING_SECONDS,
+            validation_timeout_seconds,
+            remaining_budget,
+        )))
+        if branch == "draft"
+        else None
+    )
+    reference_row = _workload_runtime_reference(branch, all_rounds, parent_binding)
+    reference_round = None
+    reference_branch = None
+    reference_status = None
+    runtime_seconds = None
+    timeout_seconds = None
+    saturation = None
+    timed_out = None
+    if reference_row is not None:
+        validation = (
+            reference_row.get("validation")
+            if isinstance(reference_row.get("validation"), dict)
+            else {}
+        )
+        runtime_seconds = _validation_seconds(validation.get("run_time"))
+        timeout_seconds = _validation_seconds(validation.get("timeout"))
+        saturation = (
+            min(1.0, max(0.0, runtime_seconds / timeout_seconds))
+            if runtime_seconds is not None and timeout_seconds not in {None, 0.0}
+            else None
+        )
+        reference_round = reference_row.get("round")
+        reference_branch = get_round_branch(reference_row) or None
+        reference_status = validation_status(reference_row) or None
+        timed_out = bool(row_is_timeout(reference_row))
+    return {
+        "schema_version": "workload_plan_v1",
+        "policy": "earliest_strong_complete_route",
+        "draft_workload_ceiling_seconds": draft_ceiling,
+        "ceiling_is_consumption_target": False,
+        "expansion_requires_evidence": True,
+        "solution_deadline_allowed": False,
+        "reference_round": reference_round,
+        "reference_branch": reference_branch,
+        "reference_status": reference_status,
+        "previous_validation_runtime_seconds": runtime_seconds,
+        "previous_validation_timeout_seconds": timeout_seconds,
+        "previous_timeout_saturation": saturation,
+        "previous_timed_out": timed_out,
+    }
+
+
 def resolve_sandbox_run_budget(time_budget: float, sandbox_run_budget: float | None) -> float:
     """Default sandbox run budget to the main budget for backwards-compatible 12h runs."""
     if sandbox_run_budget is None or sandbox_run_budget <= 0:
@@ -3010,6 +3121,13 @@ def choose_branch_for_round(
         "allocation_basis": "framework_operator_cap",
         "policy": V4_EXTERNAL_TIMEOUT_POLICY,
     }
+    workload_plan = build_workload_plan(
+        branch=branch,
+        validation_timeout_seconds=validation_timeout,
+        remaining_budget=remaining_budget,
+        all_rounds=all_rounds,
+        parent_binding=parent_binding,
+    )
     score_feedback = build_validation_score_feedback(
         all_rounds=all_rounds,
         best_score=float(best_candidate["score"]) if best_candidate and isinstance(best_candidate.get("score"), (int, float)) else None,
@@ -3043,6 +3161,7 @@ def choose_branch_for_round(
         },
         "validation_timeout_seconds": validation_timeout,
         "external_timeout_plan": external_timeout_plan,
+        "workload_plan": workload_plan,
         "goal": spec.goal,
         "instructions": spec.instructions,
         "portfolio_action": spec.name,

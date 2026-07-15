@@ -826,6 +826,10 @@ def _literal_true(node: ast.AST) -> bool:
     return isinstance(node, ast.Constant) and node.value is True
 
 
+def _literal_false(node: ast.AST | None) -> bool:
+    return isinstance(node, ast.Constant) and node.value is False
+
+
 def _literal_none(node: ast.AST) -> bool:
     return isinstance(node, ast.Constant) and node.value is None
 
@@ -909,6 +913,304 @@ def _detect_external_download_evidence(code: str) -> list[dict[str, Any]]:
         if any(name == item or name.endswith(f".{item}") for item in download_call_names):
             evidence.append({"line": line, "call": name, "reason": "external_download_call"})
 
+    return evidence[:12]
+
+
+def _module_string_constants(tree: ast.Module) -> dict[str, str]:
+    """Return unambiguous module-level string constants for static regex checks."""
+    values: dict[str, str] = {}
+    invalid: set[str] = set()
+    for statement in tree.body:
+        name = ""
+        value: ast.AST | None = None
+        if (
+            isinstance(statement, ast.Assign)
+            and len(statement.targets) == 1
+            and isinstance(statement.targets[0], ast.Name)
+        ):
+            name = statement.targets[0].id
+            value = statement.value
+        elif isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
+            name = statement.target.id
+            value = statement.value
+        if not name:
+            continue
+        if name in values or name in invalid or not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+            values.pop(name, None)
+            invalid.add(name)
+            continue
+        values[name] = value.value
+    binding_counts: dict[str, int] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            binding_counts[node.id] = binding_counts.get(node.id, 0) + 1
+        elif isinstance(node, ast.arg):
+            binding_counts[node.arg] = binding_counts.get(node.arg, 0) + 1
+    return {name: value for name, value in values.items() if binding_counts.get(name) == 1}
+
+
+def _constant_string(node: ast.AST | None, constants: dict[str, str]) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.Name):
+        return constants.get(node.id)
+    return None
+
+
+def _call_keyword(call: ast.Call, name: str) -> ast.AST | None:
+    for keyword in call.keywords:
+        if keyword.arg == name:
+            return keyword.value
+    return None
+
+
+def _pandas_str_method(call: ast.Call, method: str) -> bool:
+    func = call.func
+    return bool(
+        isinstance(func, ast.Attribute)
+        and func.attr == method
+        and isinstance(func.value, ast.Attribute)
+        and func.value.attr == "str"
+    )
+
+
+def _detect_invalid_literal_regex_evidence(code: str) -> list[dict[str, Any]]:
+    """Validate only statically known regex patterns and replacement templates."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+
+    constants = _module_string_constants(tree)
+    evidence: list[dict[str, Any]] = []
+    regex_pattern_calls = {
+        "re.compile",
+        "re.search",
+        "re.match",
+        "re.fullmatch",
+        "re.findall",
+        "re.finditer",
+        "re.split",
+        "re.sub",
+        "re.subn",
+    }
+    pandas_pattern_methods = {
+        "contains",
+        "count",
+        "extract",
+        "extractall",
+        "findall",
+        "match",
+        "fullmatch",
+    }
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        call_name = _call_name(node.func).lower()
+        pattern_node: ast.AST | None = None
+        replacement_node: ast.AST | None = None
+
+        if call_name in regex_pattern_calls:
+            pattern_node = node.args[0] if node.args else _call_keyword(node, "pattern")
+            if call_name in {"re.sub", "re.subn"}:
+                replacement_node = node.args[1] if len(node.args) >= 2 else _call_keyword(node, "repl")
+        else:
+            pandas_method = next(
+                (method for method in pandas_pattern_methods if _pandas_str_method(node, method)),
+                None,
+            )
+            if pandas_method:
+                if pandas_method == "contains" and _literal_false(_call_keyword(node, "regex")):
+                    continue
+                pattern_node = node.args[0] if node.args else _call_keyword(node, "pat")
+            elif _pandas_str_method(node, "replace") and _literal_true(_call_keyword(node, "regex")):
+                pattern_node = node.args[0] if node.args else _call_keyword(node, "pat")
+                replacement_node = node.args[1] if len(node.args) >= 2 else _call_keyword(node, "repl")
+            elif call_name.endswith(("tfidfvectorizer", "countvectorizer")):
+                pattern_node = _call_keyword(node, "token_pattern")
+
+        pattern = _constant_string(pattern_node, constants)
+        if pattern is None:
+            continue
+        line = getattr(node, "lineno", None)
+        try:
+            compiled = re.compile(pattern)
+        except re.error as exc:
+            evidence.append({
+                "line": line,
+                "call": call_name,
+                "kind": "invalid_regex_pattern",
+                "pattern": repr(pattern)[:240],
+                "error": str(exc)[:240],
+            })
+            continue
+
+        replacement = _constant_string(replacement_node, constants)
+        if replacement is None:
+            continue
+        try:
+            compiled.sub(replacement, "")
+        except re.error as exc:
+            evidence.append({
+                "line": line,
+                "call": call_name,
+                "kind": "invalid_regex_replacement",
+                "pattern": repr(pattern)[:240],
+                "replacement": repr(replacement)[:240],
+                "error": str(exc)[:240],
+            })
+    return evidence[:12]
+
+
+def _binding_names(target: ast.AST | None) -> set[str]:
+    if isinstance(target, ast.Name):
+        return {target.id}
+    if isinstance(target, (ast.Tuple, ast.List)):
+        names: set[str] = set()
+        for item in target.elts:
+            names.update(_binding_names(item))
+        return names
+    return set()
+
+
+class _ImmediateLoadVisitor(ast.NodeVisitor):
+    """Collect loads evaluated by one statement, excluding nested control blocks."""
+
+    def __init__(self) -> None:
+        self.names: set[str] = set()
+
+    def visit_Name(self, node: ast.Name) -> None:  # noqa: N802 - ast visitor API
+        if isinstance(node.ctx, ast.Load):
+            self.names.add(node.id)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:  # noqa: N802
+        return
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:  # noqa: N802
+        return
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:  # noqa: N802
+        return
+
+    def visit_Lambda(self, node: ast.Lambda) -> None:  # noqa: N802
+        return
+
+    def visit_If(self, node: ast.If) -> None:  # noqa: N802
+        self.visit(node.test)
+
+    def visit_While(self, node: ast.While) -> None:  # noqa: N802
+        self.visit(node.test)
+
+    def visit_For(self, node: ast.For) -> None:  # noqa: N802
+        self.visit(node.iter)
+
+    def visit_AsyncFor(self, node: ast.AsyncFor) -> None:  # noqa: N802
+        self.visit(node.iter)
+
+    def visit_With(self, node: ast.With) -> None:  # noqa: N802
+        for item in node.items:
+            self.visit(item.context_expr)
+
+    def visit_AsyncWith(self, node: ast.AsyncWith) -> None:  # noqa: N802
+        for item in node.items:
+            self.visit(item.context_expr)
+
+    def visit_Try(self, node: ast.Try) -> None:  # noqa: N802
+        return
+
+    def visit_Match(self, node: ast.Match) -> None:  # noqa: N802
+        self.visit(node.subject)
+
+
+def _statement_binding_names(statement: ast.stmt) -> set[str]:
+    if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+        targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+        names: set[str] = set()
+        for target in targets:
+            names.update(_binding_names(target))
+        return names
+    if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return {statement.name}
+    if isinstance(statement, ast.Import):
+        return {alias.asname or alias.name.split(".", 1)[0] for alias in statement.names}
+    if isinstance(statement, ast.ImportFrom):
+        return {alias.asname or alias.name for alias in statement.names if alias.name != "*"}
+    if isinstance(statement, (ast.With, ast.AsyncWith)):
+        names: set[str] = set()
+        for item in statement.items:
+            names.update(_binding_names(item.optional_vars))
+        return names
+    return set()
+
+
+def _nested_statement_blocks(statement: ast.stmt) -> list[list[ast.stmt]]:
+    blocks: list[list[ast.stmt]] = []
+    if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        blocks.append(statement.body)
+    elif isinstance(statement, (ast.If, ast.For, ast.AsyncFor, ast.While)):
+        blocks.extend([statement.body, statement.orelse])
+    elif isinstance(statement, (ast.With, ast.AsyncWith)):
+        blocks.append(statement.body)
+    elif isinstance(statement, ast.Try):
+        blocks.extend([statement.body, statement.orelse, statement.finalbody])
+        blocks.extend(handler.body for handler in statement.handlers)
+    elif isinstance(statement, ast.Match):
+        blocks.extend(case.body for case in statement.cases)
+    return [block for block in blocks if block]
+
+
+def _conditional_binding_names(statement: ast.stmt) -> set[str]:
+    """Return bindings in compound paths whose execution cannot be proven."""
+    if not isinstance(statement, (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.Match)):
+        return set()
+    names: set[str] = set()
+    if isinstance(statement, (ast.For, ast.AsyncFor)):
+        names.update(_binding_names(statement.target))
+    if isinstance(statement, ast.Try):
+        names.update(handler.name for handler in statement.handlers if handler.name)
+    for block in _nested_statement_blocks(statement):
+        for node in ast.walk(ast.Module(body=block, type_ignores=[])):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                names.add(node.id)
+            elif isinstance(node, ast.arg):
+                names.add(node.arg)
+    return names
+
+
+def _detect_definite_use_after_delete_evidence(code: str) -> list[dict[str, Any]]:
+    """Detect direct reads after `del name` in the same ordered statement block."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+
+    evidence: list[dict[str, Any]] = []
+
+    def scan(block: list[ast.stmt]) -> None:
+        deleted: dict[str, int | None] = {}
+        for statement in block:
+            visitor = _ImmediateLoadVisitor()
+            visitor.visit(statement)
+            for name in sorted(visitor.names.intersection(deleted)):
+                evidence.append({
+                    "line": getattr(statement, "lineno", None),
+                    "deleted_line": deleted[name],
+                    "name": name,
+                    "kind": "definite_use_after_delete",
+                })
+            for name in _statement_binding_names(statement):
+                deleted.pop(name, None)
+            for name in _conditional_binding_names(statement):
+                deleted.pop(name, None)
+            if isinstance(statement, ast.Delete):
+                for target in statement.targets:
+                    for name in _binding_names(target):
+                        deleted[name] = getattr(statement, "lineno", None)
+            for nested in _nested_statement_blocks(statement):
+                scan(nested)
+
+    scan(tree.body)
     return evidence[:12]
 
 
@@ -1622,6 +1924,8 @@ def inspect_solution_contract(
     creates_side_output_files = bool(side_output_evidence)
     external_download_evidence = _detect_external_download_evidence(code)
     uses_external_downloads = bool(external_download_evidence)
+    invalid_literal_regex_evidence = _detect_invalid_literal_regex_evidence(code)
+    definite_use_after_delete_evidence = _detect_definite_use_after_delete_evidence(code)
     score_first_envelope = _score_first_envelope_report(
         code,
         search_operator,
@@ -1642,6 +1946,8 @@ def inspect_solution_contract(
         "avoids_ambiguous_sample_column_class_inference": not ambiguous_sample_column_class_inference,
         "avoids_side_output_files": not creates_side_output_files,
         "avoids_external_downloads": not uses_external_downloads,
+        "has_valid_literal_regex_contract": not invalid_literal_regex_evidence,
+        "avoids_definite_use_after_delete": not definite_use_after_delete_evidence,
         "has_fast_score_first_envelope": has_fast_score_first_envelope,
     }
     missing = [name for name, ok in checks.items() if not ok]
@@ -1653,6 +1959,8 @@ def inspect_solution_contract(
         "avoids_untrained_constant_submission",
         "avoids_side_output_files",
         "avoids_external_downloads",
+        "has_valid_literal_regex_contract",
+        "avoids_definite_use_after_delete",
     )
     blockers = [
         name for name in (
@@ -1682,11 +1990,14 @@ def inspect_solution_contract(
             "reason": (
                 "Static workload size and score-first ordering are diagnostics, not internal-deadline requirements. "
                 "They should not consume a modeling round through static-gate repair "
-                "unless a hard submission, path, download, side-output, constant-output, or fixed data-cardinality issue is present."
+                "unless a hard submission, path, download, side-output, constant-output, fixed data-cardinality, "
+                "or high-confidence semantic issue is present."
             ),
         },
         "side_output_evidence": side_output_evidence[:5],
         "external_download_evidence": external_download_evidence[:5],
+        "invalid_literal_regex_evidence": invalid_literal_regex_evidence,
+        "definite_use_after_delete_evidence": definite_use_after_delete_evidence,
         "hardcoded_data_cardinality_evidence": hardcoded_data_cardinality_evidence,
         "score_first_envelope": score_first_envelope,
         "submission_eligible": not blockers,
@@ -1751,7 +2062,8 @@ async def repair_static_gate_failure(
             "solution_contract.missing or solution_contract.soft_warnings during this repair. "
             "Hard requirements: DATA_DIR-only loading, no hardcoded local paths or public row constants, "
             "sample_submission alignment when available, output validation, and no untrained constant/sample-template "
-            "emergency submission when data, labels, targets, or submission units cannot be parsed. "
+            "emergency submission when data, labels, targets, or submission units cannot be parsed. Literal regular "
+            "expressions and replacements must compile, and a local name must not be read after it is explicitly deleted. "
             "Name discovered DATA_DIR inputs as input_paths/data_files/source_files, not as reusable side-output buckets. "
             "Do not write side files for reusable predictions, models, fold dumps, or later-round blending; "
             "print diagnostics to stdout and write only submission.csv."

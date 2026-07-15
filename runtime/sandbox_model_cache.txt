@@ -1,0 +1,648 @@
+HF	ai-forever/FRED-T5-1.7B	revision=fbff67a8b062bb34656fe27794b7874b63f54db8	bytes=6961671585
+HF	ai-forever/FRED-T5-large	revision=6e975f28be6e77dc3a3d5d6854bccd0a1dc2bbe9	bytes=3282242213
+HF	ai-forever/ruBERT-base	revision=05f37a2ca9e333fd18f30cd0c96c68d274793c69	bytes=716133354
+HF	ai-forever/rugpt3medium_based_on_gpt2	revision=d7fd75dc7644c87ee6b147040464a9b950715bdc	bytes=1730074771
+HF	ai-forever/rugpt3small_based_on_gpt2	revision=a9307e696cd3c5b7f953ff4cb19d76a4d81821d5	bytes=551290714
+HF	ai-forever/ruT5-base	revision=e7529ab6ad41978ed21a532aa25da58d5f01338b	bytes=891737400
+HF	AI-MO/NuminaMath-7B-TIR	revision=cf2aaf3f706eef519a80523e21c655903203e984	bytes=13820763168
+HF	ai4bharat/indic-bert	revision=4842dd258ecc0546f0d660b76a3b22a9c632f401	bytes=134982446
+HF	albert-base-v1	revision=082438ba120d36b97b9288772a41144e941705b9	bytes=47372900
+HF	albert-base-v2	revision=8e2f239c5f8a2c0f253781ca60135db913e5c80c	bytes=47372894
+HF	albert-large-v2	revision=dfed3a5ef4499fb3351c4ebbcf487375d1e942c8	bytes=71505534
+HF	albert-xlarge-v2	revision=4fd2c2aa9aeb305f87704a7e595be7bfffa3db88	bytes=236193504
+HF	albert/albert-base-v2	revision=8e2f239c5f8a2c0f253781ca60135db913e5c80c	bytes=47372894
+HF	allenai/biomed_roberta_base	revision=0641aa1783909c6f94801601d4a166101f3d51a6	bytes=655615582
+HF	allenai/led-base-16384	revision=38335783885b338d93791936c54bb4be46bebed9	bytes=647693783
+HF	allenai/led-large-16384	revision=cd59d11c3528415b7dda4dfc95cc8f138aceda2e	bytes=1839633783
+HF	allenai/Longformer-base-4096	revision=301e6a42cb0d9976a6d6a26a079fef81c18aa895	bytes=597257159
+HF	allenai/longformer-base-4096	revision=301e6a42cb0d9976a6d6a26a079fef81c18aa895	bytes=1361823931
+HF	allenai/longformer-large-4096	revision=b190dd42e462d2dee634d1162c839710079f97ab	bytes=1742910431
+HF	allenai/scibert_scivocab_cased	revision=ddf0be025f8e432a1870e34811997ba6725bf04a	bytes=442301670
+HF	allenai/scibert_scivocab_uncased	revision=24f92d32b1bfb0bcaf9ab193ff3ad01e87732fc1	bytes=442221694
+HF	allenai/specter	revision=81cbfb43d4fc2e728d5b4201ce14987db8d0854c	bytes=439803023
+HF	allenai/specter2_base	revision=3447645e1def9117997203454fa4495937bfbd83	bytes=439740465
+HF	almanach/camembert-base	revision=a75967561c78f2aa81cc41045378d3b4ee25af9e	bytes=445008750
+HF	answerdotai/ModernBERT-base	revision=8949b909ec900327062f0ebf497f51aef5e6f0c8	bytes=598635032
+HF	answerdotai/ModernBERT-large	revision=45bb4654a4d5aaff24dd11d4781fa46d39bf8c13	bytes=1583544840
+HF	anton-l/wav2vec2-base-superb-sv	revision=eb0be47779dda10620d068ab579fca970ee7e417	bytes=404494903
+HF	asafaya/bert-base-arabic	revision=39ecd286ebaadb68d0dea2381b8ed1ce01360f13	bytes=444989788
+HF	aubmindlab/bert-base-arabertv01	revision=01f6b7d2d17afcd0f79498f26f47dfc6207b56ea	bytes=543428136
+HF	aubmindlab/bert-base-arabertv02	revision=016fb9d6768f522a59c6e0d2d5d5d43a4e1bff60	bytes=543432324
+HF	aubmindlab/bert-base-arabertv2	revision=97522efce17efa33036ac619802d5cec238dcad9	bytes=543432324
+HF	aubmindlab/bert-large-arabertv2	revision=345ef02845e16b2b235ad8f04892057a3450c555	bytes=1482216094
+HF	BAAI/bge-base-en-v1.5	revision=a5beb1e3e68b9ab74eb54cfd186867f64f240e1a	bytes=437955512
+HF	BAAI/bge-base-zh-v1.5	revision=f03589ceff5aac7111bd60cfc7d497ca17ecac65	bytes=409138989
+HF	BAAI/bge-large-en	revision=abe7d9d814b775ca171121fb03f394dc42974275	bytes=1340616616
+HF	BAAI/bge-large-en-v1.5	revision=d4aa6901d3a41ba39fb536a557fa166f842b0e09	bytes=1340616616
+HF	BAAI/bge-m3	revision=5617a9f61b028005a4858fdac845db406aefb181	bytes=2271145830
+HF	BAAI/bge-reranker-base	revision=2cfc18c9415c912f9d8155881c133215df768a70	bytes=1112206140
+HF	BAAI/bge-reranker-large	revision=55611d7bca2a7133960a6d3b71e083071bbfc312	bytes=2239618772
+HF	BAAI/bge-reranker-v2-m3	revision=953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e	bytes=2271071852
+HF	BAAI/bge-small-en	revision=2275a7bdee235e9b4f01fa73aa60d3311983cfea	bytes=133466304
+HF	BAAI/bge-small-en-v1.5	revision=5c38ec7c405ec4b44b94cc5a9bb96e735b38267a	bytes=133466304
+HF	BAAI/bge-small-zh-v1.5	revision=7999e1d3359715c523056ef9478215996d62a620	bytes=95827648
+HF	beomi/KcBERT-base	revision=0f2f3f8ce58a3e2dab3f4c9f547cbb612061c2ed	bytes=438192852
+HF	bert-base-cased	revision=cd5ef92a9fb2f889e972770a36d4ed042daf221e	bytes=435755784
+HF	bert-base-chinese	revision=8f23c25b06e129b6c986331a13d8d025a92cf0ea	bytes=411553788
+HF	bert-base-multilingual-cased	revision=3f076fdb1ab68d5b2880cb87a0886f315b8146f8	bytes=714290682
+HF	bert-base-multilingual-uncased	revision=7cbf9a625e29989f6b9c6c2fa68234c304f7e38f	bytes=672247920
+HF	bert-base-uncased	revision=86b5e0934494bd15c9632b12f734a8a67f723594	bytes=880922901
+HF	bert-large-cased	revision=06fa25dc1b6e034e91607fd67c247051ccaeff65	bytes=1338695354
+HF	bert-large-uncased	revision=6da4b6a26a1877e173fca3225479512db81a5e5b	bytes=1344951957
+HF	bert-large-uncased-whole-word-masking	revision=bf1420893378c390773c9452c3602fcee89f9241	bytes=1344952014
+HF	bhadresh-savani/bert-base-uncased-emotion	revision=04e32b0ce2cd9c6cc36daffabeda36857058da63	bytes=437975140
+HF	bigscience/mt0-base	revision=0c500042c1f80b6b6ec208cf73d9ee43f1dac245	bytes=2329638768
+HF	cahya/bert-base-indonesian-522M	revision=7baa8f5fa385e6eff31184f11876d0d19bf5eb6c	bytes=445021516
+HF	cahya/bert-base-indonesian-522m	revision=7baa8f5fa385e6eff31184f11876d0d19bf5eb6c	bytes=445021516
+HF	CAMeL-Lab/bert-base-arabic-camelbert-mix	revision=9be352797bdf28a9ae21e2ae582aaaca7abdb22d	bytes=438873130
+HF	camembert-base	revision=a75967561c78f2aa81cc41045378d3b4ee25af9e	bytes=445008750
+HF	cardiffnlp/twitter-roberta-base	revision=cbb417e9647b51504caf68cbe1af6bbf56da06b7	bytes=501204462
+HF	cardiffnlp/twitter-roberta-base-2022-154m	revision=646b337456c22aad0cea05ab13ae59c7c90754f4	bytes=498861675
+HF	cardiffnlp/twitter-roberta-base-emotion	revision=2848306ad936b7cd47c76c2c4e14d694a41e0f54	bytes=498682569
+HF	cardiffnlp/twitter-roberta-base-emotion-latest	revision=415620c4fbc8bd82b82b9fd46642fcec6519d537	bytes=498640508
+HF	cardiffnlp/twitter-roberta-base-hate	revision=51a4ae0f2512772f140a2620327be0f88807c6d9	bytes=498676425
+HF	cardiffnlp/twitter-roberta-base-hate-latest	revision=cc56585908cbda6d04ba2e1234d911fd1578c9ab	bytes=498659253
+HF	cardiffnlp/twitter-roberta-base-offensive	revision=c77b3b9d3b2284d628d03b2d74ccd6dd1bc60698	bytes=498676425
+HF	cardiffnlp/twitter-roberta-base-sentiment	revision=daefdd1f6ae931839bce4d0f3db0a1a4265cd50f	bytes=498679497
+HF	cardiffnlp/twitter-roberta-base-sentiment-latest	revision=3216a57f2a0d9c45a2e6c20157c20c49fb4bf9c7	bytes=501045531
+HF	cardiffnlp/twitter-xlm-roberta-base	revision=4c365f1490cb329b52150ad72f922ea467b5f4e6	bytes=1113236958
+HF	cardiffnlp/twitter-xlm-roberta-base-sentiment	revision=f2f1202b1bdeb07342385c3f807f9c07cd8f5cf8	bytes=1112271561
+HF	codellama/CodeLlama-7b-Instruct-hf	revision=22cb240e0292b0b5ab4c17ccd97aa3a2f799cbed	bytes=13477127208
+HF	cointegrated/rubert-tiny	revision=5441c5ea8026d4f6d7505ec004845409f1259fb1	bytes=47661730
+HF	cointegrated/rubert-tiny2	revision=e8ed3b0c8bbf4fb6984c3de043bf7d2f4e5969ae	bytes=236038607
+HF	cointegrated/ruT5-base	revision=49ce7aa5a7540620121965a8486f66019f7447d2	bytes=977270634
+HF	cointegrated/rut5-base	revision=49ce7aa5a7540620121965a8486f66019f7447d2	bytes=977270634
+HF	cointegrated/rut5-base-multitask	revision=54bbd6542540528b9e99bbbe8feff7150d805588	bytes=977270634
+HF	cointegrated/rut5-small	revision=8d74f734a90cfb55f71d9792bfd446b0e9b5267b	bytes=258600360
+HF	cross-encoder/mmarco-mMiniLMv2-L12-H384-v1	revision=1427fd652930e4ba29e8149678df786c240d8825	bytes=470592698
+HF	cross-encoder/ms-marco-electra-base	revision=8b9301757513f8a695920c334c3a9f365ebeb357	bytes=437960356
+HF	cross-encoder/ms-marco-MiniLM-L-12-v2	revision=7b0235231ca2674cb8ca8f022859a6eba2b1c968	bytes=133469020
+HF	cross-encoder/ms-marco-MiniLM-L-2-v2	revision=1b5cd67b15209f24824c50370e0397743aa9b787	bytes=62471772
+HF	cross-encoder/ms-marco-MiniLM-L-4-v2	revision=777b2f369bc1c2f850df8bd367ed1654bda4497b	bytes=76671186
+HF	cross-encoder/ms-marco-MiniLM-L-6-v2	revision=c5ee24cb16019beea0893ab7796b1df96625c6b8	bytes=90870598
+HF	cross-encoder/ms-marco-MiniLM-L6-v2	revision=c5ee24cb16019beea0893ab7796b1df96625c6b8	bytes=90870598
+HF	cross-encoder/ms-marco-TinyBERT-L-2	revision=c9187181f395bd1e7907e7764adc9f3aa6afb26a	bytes=17552986
+HF	cross-encoder/ms-marco-TinyBERT-L-2-v2	revision=81d1926f67cb8eee2c2be17ca9f793c7c3bd20cc	bytes=17552980
+HF	cross-encoder/msmarco-MiniLM-L6-en-de-v1	revision=9eb610d90d409cfefb7422e13debd405f8465af6	bytes=428045844
+HF	cross-encoder/nli-deberta-v3-base	revision=6c749ce3425cd33b46d187e45b92bbf96ee12ec7	bytes=737726552
+HF	cross-encoder/nli-deberta-v3-large	revision=bab4bc7178836f731dcfd18c06ca9def0a137712	bytes=1740312740
+HF	cross-encoder/nli-deberta-v3-small	revision=fa2804872c3b4bd748f38c0185cc85775361e735	bytes=567605820
+HF	cross-encoder/nli-distilroberta-base	revision=b14d131f9d32668a5e6a982729b57ff6ed5dfcbd	bytes=328499560
+HF	cross-encoder/nli-roberta-base	revision=1be0567456f0543475805e758725f151f283705a	bytes=498620100
+HF	cross-encoder/quora-distilroberta-base	revision=f62e7a4b20b97195c2868e53ec59126df5eac743	bytes=328493408
+HF	cross-encoder/stsb-distilroberta-base	revision=6b71347df6e2b34246b53e06d6bce70ef67de368	bytes=328493408
+HF	cross-encoder/stsb-roberta-base	revision=d576534b67143e2c70ee9966d7fdbf5835728d13	bytes=498613948
+HF	csebuetnlp/banglabert	revision=9ce791f330578f50da6bc52b54205166fb5d1c8c	bytes=442560329
+HF	csebuetnlp/banglabert_large	revision=a64fb146d81ec4d7f8838b85e084b0c6a325a22f	bytes=1346790431
+HF	csebuetnlp/banglat5	revision=76b135c096e619ec6145bfac591d4cf1bfe4e98d	bytes=990441433
+HF	csebuetnlp/mT5_multilingual_XLSum	revision=2437a524effdbadc327ced84595508f1e32025b3	bytes=2329707353
+HF	dandelin/vilt-b32-finetuned-vqa	revision=d0a1f6ab88522427a7ae76ceb6e1e1e7b68a1d08	bytes=470435927
+HF	dbmdz/bert-base-german-cased	revision=43cce138f63f8bd34b42d8a77321e3262fd7bbba	bytes=442227532
+HF	dbmdz/bert-base-german-uncased	revision=b705f0ee07840c383f9d9cb1e69cb2b60abbe780	bytes=442233876
+HF	dbmdz/bert-base-turkish-128k-cased	revision=fea322505a69df97c8bd7a01863159eb4b45900f	bytes=740292264
+HF	dbmdz/bert-base-turkish-128k-uncased	revision=3fcfd3ff3e0b55775ff2a11e186b63e187bf1a25	bytes=740292264
+HF	dbmdz/bert-base-turkish-uncased	revision=6cb8cd880acc6f7d9723161b573fce0dfd23b39b	bytes=445018749
+HF	dbmdz/distilbert-base-turkish-cased	revision=8ecd4d034c2612d4c5940795b4f2552a9f3543d6	bytes=272501176
+HF	dccuchile/bert-base-spanish-wwm-cased	revision=c4d86612f51b4f46759c8390d1798c2febe71b93	bytes=439621341
+HF	dccuchile/bert-base-spanish-wwm-uncased	revision=d1c9c4565c9d6731e57ed7f027b802697bad861e	bytes=439621341
+HF	DeepChem/ChemBERTa-10M-MLM	revision=a5cfe173103cff3149e7322130342a4880010cba	bytes=13734116
+HF	DeepChem/ChemBERTa-10M-MTR	revision=b65d0a6af3156071d9519e867d695aa265bb393f	bytes=14036589
+HF	DeepChem/ChemBERTa-77M-MLM	revision=ed8a5374f2024ec8da53760af91a33fb8f6a15ff	bytes=13734116
+HF	deepchem/ChemBERTa-77M-MLM	revision=ed8a5374f2024ec8da53760af91a33fb8f6a15ff	bytes=13734116
+HF	DeepChem/ChemBERTa-77M-MTR	revision=66b895cab8adebea0cb59a8effa66b2020f204ca	bytes=14036589
+HF	deepchem/ChemBERTa-77M-MTR	revision=66b895cab8adebea0cb59a8effa66b2020f204ca	bytes=14036589
+HF	DeepPavlov/distilrubert-base-cased-conversational	revision=9b4f8c20bdc51934ef2ef586ef9afee85549cccb	bytes=541826656
+HF	DeepPavlov/rubert-base-cased	revision=4036cab694767a299f2b9e6492909664d9414229	bytes=714355318
+HF	DeepPavlov/rubert-base-cased-conversational	revision=645946ce91842a52eaacb2705c77e59194145ffa	bytes=714355318
+HF	deepseek-ai/deepseek-math-7b-instruct	revision=0a5828f800a36df0fd7f0ed581b983246c0677ff	bytes=13820824960
+HF	deepset/deberta-v3-base-squad2	revision=eea39c60cc305c2e4a9504f5ff117294bebb42db	bytes=735360940
+HF	deepset/gbert-base	revision=d50cb1df9660ff2de1af8a5362d322b3d5a1a28a	bytes=442233876
+HF	deepset/minilm-uncased-squad2	revision=934656cdda79824eabf503ed56e15c01ddbdbe3f	bytes=133466376
+HF	deepset/roberta-base-squad2	revision=adc3b06f79f797d1c575d5479d6f5efe54a9e3b4	bytes=496254442
+HF	deepset/roberta-large-squad2	revision=78fb38a59ea3cb6902e04d96da93efc87aeeff76	bytes=1417300994
+HF	deepset/xlm-roberta-base-squad2	revision=a5fab9908c8d856e8c583fd41ba6d92444e46477	bytes=2219752423
+HF	deepset/xlm-roberta-large-squad2	revision=dafe59921a75cdffc06ed3ad6e45c581b22b85cc	bytes=4479285066
+HF	distilbert-base-cased	revision=6ea81172465e8b0ad3fddeed32b986cdcdcffcf0	bytes=263260784
+HF	distilbert-base-cased-distilled-squad	revision=564e9b582944a57a3e586bbb98fd6f0a4118db7f	bytes=260782156
+HF	distilbert-base-german-cased	revision=6f96562de9886779ce7d48810dff8f5c4afb6d0b	bytes=269738848
+HF	distilbert-base-multilingual-cased	revision=45c032ab32cc946ad88a166f7cb282f58c753c2e	bytes=541795680
+HF	distilBert-base-uncased	revision=12040accade4e8a0f71eabdb258fecc2e7e948be	bytes=267954768
+HF	distilbert-base-uncased	revision=12040accade4e8a0f71eabdb258fecc2e7e948be	bytes=267954768
+HF	distilbert-base-uncased-distilled-squad	revision=dfb8fa0e03905f0b6ea92133e56b6fef138015f2	bytes=265470036
+HF	distilbert-base-uncased-finetuned-sst-2-english	revision=714eb0fa89d2f80546fda750413ed43d93601a13	bytes=267832558
+HF	distilbert/distilbert-base-multilingual-cased	revision=45c032ab32cc946ad88a166f7cb282f58c753c2e	bytes=1994353726
+HF	distilbert/distilbert-base-uncased	revision=12040accade4e8a0f71eabdb258fecc2e7e948be	bytes=899346155
+HF	distilbert/distilbert-base-uncased-distilled-squad	revision=dfb8fa0e03905f0b6ea92133e56b6fef138015f2	bytes=796534430
+HF	distilbert/distilbert-base-uncased-finetuned-sst-2-english	revision=714eb0fa89d2f80546fda750413ed43d93601a13	bytes=803626682
+HF	distilbert/distilgpt2	revision=2290a62682d06624634c1f46a6ad5be0f47f38aa	bytes=352824413
+HF	distilbert/distilroberta-base	revision=fb53ab8802853c8e4fbdbcd0529f21fc6f459b2b	bytes=1149330097
+HF	distilgpt2	revision=2290a62682d06624634c1f46a6ad5be0f47f38aa	bytes=352824413
+HF	distilroberta-base	revision=fb53ab8802853c8e4fbdbcd0529f21fc6f459b2b	bytes=331055963
+HF	dmis-lab/biobert-base-cased-v1.1	revision=924f12e0c3db7f156a765ad53fb6b11e7afedbc8	bytes=435780550
+HF	dmis-lab/biobert-base-cased-v1.2	revision=67c9c25b46986521ca33df05d8540da1210b3256	bytes=435783451
+HF	dmis-lab/biobert-v1.1	revision=551ca18efd7f052c8dfa0b01c94c2a8e68bc5488	bytes=433286112
+HF	dslim/bert-base-NER	revision=d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc	bytes=433292294
+HF	dumitrescustefan/bert-base-romanian-cased-v1	revision=37fb0ffb4bc4f7c4cde429626775685fb18f234f	bytes=500364136
+HF	emilyalsentzer/Bio_ClinicalBERT	revision=d5892b39a4adaed74b92212a44081509db72f87b	bytes=435778770
+HF	emilyalsentzer/Bio_ClinicalBert	revision=d5892b39a4adaed74b92212a44081509db72f87b	bytes=435778770
+HF	facebook/bart-base	revision=aadd2ab0ae0c8268c7c9693540e9904811f36177	bytes=1673431582
+HF	facebook/bart-large	revision=cb48c1365bd826bd521f650dc2e0940aee54720c	bytes=1018571383
+HF	facebook/bart-large-cnn	revision=37f520fa929c961707657b28798b30c003dd100b	bytes=1625222120
+HF	facebook/bart-large-mnli	revision=d7645e127eaf1aefc7862fd59a17a5aa8558b8ce	bytes=1629437147
+HF	facebook/blenderbot-400M-distill	revision=eaaf64e3be20ad1f1fb0bdf689565ba52c97eafe	bytes=729755983
+HF	facebook/convnext-base-224	revision=8550c1da008c99b90c9c42f1d4e1cb650d7a8c05	bytes=354492753
+HF	facebook/convnext-tiny-224	revision=6166b7613034066690a621d8bf25ffdf181a34f0	bytes=114423189
+HF	facebook/deit-base-distilled-patch16-224	revision=a0fc9b37fdb63c112e76104f669208784ecfe4ea	bytes=349435207
+HF	facebook/deit-base-patch16-224	revision=fb2c78a54a5637dec350432794f7b93e31f910c9	bytes=346351599
+HF	facebook/deit-small-patch16-224	revision=164deee347853469b97442b3817f22eece80c7e3	bytes=88283631
+HF	facebook/deit-tiny-distilled-patch16-224	revision=488ad407f8f6bcfc79829ece3507658c46d15563	bytes=23725127
+HF	facebook/deit-tiny-patch16-224	revision=b3428f18dcc7b543470d07f14b4a4157815d1880	bytes=22950127
+HF	facebook/detr-resnet-50	revision=1d5f47bd3bdd2c4bbfa585418ffe6da5028b4c0b	bytes=166587896
+HF	facebook/dinov2-base	revision=f9e44c814b77203eaa57a6bdbbd535f21ede1415	bytes=346345912
+HF	facebook/dinov2-large	revision=47b73eefe95e8d44ec3623f8890bd894b6ea2d6c	bytes=1217522888
+HF	facebook/dinov2-small	revision=ed25f3a31f01632728cabb09d1542f84ab7b0056	bytes=88249960
+HF	facebook/esm1b_t33_650M_UR50S	revision=7b37824baec4d3658e1df7479222a7c79b465b76	bytes=2609617413
+HF	facebook/esm2_t12_35M_UR50D	revision=6fbf070e65b0b7291e7bbcd451118c216cff79d8	bytes=136008798
+HF	facebook/esm2_t30_150M_UR50D	revision=a695f6045e2e32885fa60af20c13cb35398ce30c	bytes=595257706
+HF	facebook/esm2_t33_650M_UR50D	revision=08e4846e537177426273712802403f7ba8261b6c	bytes=2609506392
+HF	facebook/esm2_t6_8M_UR50D	revision=c731040fcd8d73dceaa04b0a8e6329b345b0f5df	bytes=31384292
+HF	facebook/hubert-base-ls960	revision=dba3bb02fda4248b6e082697eee756de8fe8aa8a	bytes=377569754
+HF	facebook/hubert-large-ls960-ft	revision=ece5fabbf034c1073acae96d5401b25be96709d8	bytes=1262057559
+HF	facebook/m2m100_1.2B	revision=7b36184180524c1a1bbfa37f120a608046250b98	bytes=4958230644
+HF	facebook/m2m100_418M	revision=55c2e61bbf05dfb8d7abccdc3fae6fc8512fd636	bytes=1935796948
+HF	facebook/mbart-large-50	revision=4ef55a20b36c6903b832e38f0604ab4bdf22c7d6	bytes=2444714899
+HF	facebook/mbart-large-50-many-to-many-mmt	revision=e30b6cb8eb0d43a0b73cab73c7676b9863223a30	bytes=7334374275
+HF	facebook/mbart-large-cc25	revision=f417e5563320b2cc8aabe4329d986b238809067f	bytes=4889487393
+HF	facebook/nllb-200-distilled-600M	revision=f8d333a098d19b4fd9a8b18f94170487ad3f821d	bytes=2460457927
+HF	facebook/opt-1.3b	revision=3f5c25d0bc631cb57ac65913f76e22c2dfb61d62	bytes=2631639353
+HF	facebook/opt-125m	revision=27dcfa74d334bc871f3234de431e71c6eeba5dd6	bytes=250540281
+HF	facebook/opt-350m	revision=08ab08cc4b72ff5593870b5d527cf4230323703c	bytes=662513657
+HF	facebook/roberta-hate-speech-dynabench-r4-target	revision=391c99ab8b3f65beb77746a2cf6ddf1ddf9817e6	bytes=498617024
+HF	facebook/timesformer-base-finetuned-k400	revision=8aaf40ea7d3d282dcb0a5dea01a198320d15d6c0	bytes=486348721
+HF	facebook/wav2Vec2-base	revision=0b5b8e868dd84f03fd87d01f9c4ff0f080fecfe8	bytes=380267417
+HF	facebook/wav2vec2-base-100h	revision=9c1fef36b62a428a658e5b022ef9f21b38f47e0b	bytes=377671532
+HF	facebook/wav2Vec2-base-960h	revision=22aad52d435eb6dbaf354bdad9b0da84ce7d6156	bytes=377607901
+HF	facebook/wav2vec2-base-960h	revision=22aad52d435eb6dbaf354bdad9b0da84ce7d6156	bytes=1133116039
+HF	facebook/wav2vec2-large	revision=312b2410566b698c7a649068d413b2067848bd75	bytes=1269691161
+HF	facebook/wav2vec2-large-960h	revision=bdeaacdf88f7a155f50a2704bc967aa81fbbb2ab	bytes=1262009187
+HF	facebook/wav2vec2-large-lv60	revision=0cde644b64dac88d8416bec1c92a4099b850ba0b	bytes=1269737156
+HF	facebook/wav2vec2-large-robust	revision=2493a2c576276145c3e066d9243b0e391fab673a	bytes=1269726951
+HF	facebook/wav2vec2-large-xlsr-53	revision=c3f9d884181a224a6ac87bf8885c84d1cff3384f	bytes=1269737156
+HF	facebook/wav2vec2-xls-r-300m	revision=1a640f32ac3e39899438a2931f9924c02f080a54	bytes=1269737156
+HF	FacebookAI/roberta-base	revision=e2da8e2f811d1448a5b465c236feacd80ffbac7b	bytes=1657453388
+HF	FacebookAI/roberta-large	revision=722cf37b1afa9454edce342e7895e588b6ff1d59	bytes=4482017736
+HF	FacebookAI/xlm-roberta-base	revision=e73636d4f797dec63c3081bb6ed5c7b0bb3f2089	bytes=3343599634
+HF	facebookai/xlm-roberta-base	revision=e73636d4f797dec63c3081bb6ed5c7b0bb3f2089	bytes=1115567652
+HF	FacebookAI/xlm-roberta-large	revision=c23d21b0620b635a76227c604d44e43a9f0ee389	bytes=6729755153
+HF	finiteautomata/bertweet-base-sentiment-analysis	revision=924fc4c80bccb8003d21fe84dd92c7887717f245	bytes=539679413
+HF	google-bert/bert-base-cased	revision=cd5ef92a9fb2f889e972770a36d4ed042daf221e	bytes=1398216741
+HF	google-bert/bert-base-chinese	revision=8f23c25b06e129b6c986331a13d8d025a92cf0ea	bytes=411553788
+HF	google-bert/bert-base-multilingual-cased	revision=3f076fdb1ab68d5b2880cb87a0886f315b8146f8	bytes=2511994071
+HF	google-bert/bert-base-uncased	revision=86b5e0934494bd15c9632b12f734a8a67f723594	bytes=1948819965
+HF	google-bert/bert-large-uncased	revision=6da4b6a26a1877e173fca3225479512db81a5e5b	bytes=4162519095
+HF	google-bert/bert-large-uncased-whole-word-masking-finetuned-squad	revision=979de3ccf2f366b17c326254262eff51aec29d62	bytes=4022388818
+HF	google-t5/t5-base	revision=a9723ea7f1b39c1eae772870f3b547bf6ef7e6c1	bytes=2675483900
+HF	google-t5/t5-large	revision=150ebc2c4b72291e770f58e6057481c8d2ed331a	bytes=2950736730
+HF	google-t5/t5-small	revision=df1b051c49625cf57a3d0d8d3863ed4d13564fe4	bytes=726412537
+HF	google/bert_uncased_L-4_H-256_A-4	revision=387825ce42dbb39b87911cdf8e383ee3b25184f8	bytes=45088961
+HF	google/bert_uncased_L-4_H-512_A-8	revision=606e4d55252882ac25ba1f1d1a182075830f5a90	bytes=116252865
+HF	google/bigbird-roberta-base	revision=5a145f7852cba9bd431386a58137bf8a29903b90	bytes=512568261
+HF	google/bigbird-roberta-large	revision=27d7740da6faaa26a001e74c5325a0d0b5537d19	bytes=1441107653
+HF	google/byt5-small	revision=68377bdc18a2ffec8a0533fef03b1c513a4dd49d	bytes=1198627927
+HF	google/efficientnet-b0	revision=3d8d75d0812b65064f0151b456f869c6344bf20c	bytes=21444205
+HF	google/efficientnet-b3	revision=130db5303a4beac0bd515b81620bb2ebbf06ea41	bytes=49475717
+HF	google/electra-base-discriminator	revision=1ae76a97c7e84a4e640876a07453fccd636f0667	bytes=440343552
+HF	google/electra-large-discriminator	revision=c13c3df7efadc2162f42588bd28eb4e187d602a5	bytes=1344867008
+HF	google/electra-small-discriminator	revision=fa8239aadc095e9164941d05878b98afe9b953c3	bytes=54245363
+HF	google/electra-small-generator	revision=0dbbbf928f000ba9d2be7eb769dee35e8d9d6e39	bytes=54236116
+HF	google/flan-t5-base	revision=7bcac572ce56db69c1ea7c8af255c5d7c9672fc2	bytes=3169032738
+HF	google/flan-t5-large	revision=0613663d0d48ea86ba8cb3d7a44f0f65dc596a2a	bytes=3132668804
+HF	google/flan-t5-small	revision=0fc9ddf78a1e988dac52e2dac162b0ede4fd74ab	bytes=1055604133
+HF	google/long-t5-tglobal-base	revision=aecb1376e5bd78db32ebc5c9deb257449b9e2b21	bytes=990446387
+HF	google/long-t5-tglobal-large	revision=fb4ba84440d10e9b93fd626fb460683372329d4a	bytes=3001178152
+HF	google/long-t5-tglobal-xl	revision=aef658ccfcaddf6156e819e2005b3a04d3a1ff46	bytes=11399424178
+HF	google/longt5-tglobal-base	revision=aecb1376e5bd78db32ebc5c9deb257449b9e2b21	bytes=990446387
+HF	google/mobilebert-uncased	revision=1f90a6c24c7879273a291d34a849033eba2dbc0f	bytes=146863759
+HF	google/mT5-base	revision=2eb15465c5dd7f72a8f7984306ad05ebc3dd1e1f	bytes=2329735129
+HF	google/mt5-base	revision=2eb15465c5dd7f72a8f7984306ad05ebc3dd1e1f	bytes=4659908073
+HF	google/mt5-large	revision=50b7223e98fcd124b0cabb1ec81bc6324c7df107	bytes=4918584617
+HF	google/mT5-small	revision=73fb5dbe4756edadc8fbe8c769b0a109493acf7a	bytes=1200794589
+HF	google/mt5-small	revision=73fb5dbe4756edadc8fbe8c769b0a109493acf7a	bytes=2401888277
+HF	google/mt5-xl	revision=63fc6450d80515b48e026b69ef2fbbd426433e84	bytes=14970735570
+HF	google/murIL-base-cased	revision=afd9f36c7923d54e97903922ff1b260d091d202f	bytes=953477430
+HF	google/muril-base-cased	revision=afd9f36c7923d54e97903922ff1b260d091d202f	bytes=953477430
+HF	google/muril-large-cased	revision=ace319f0d17524297957e249aff028b0b7357ab5	bytes=2028800502
+HF	google/pegasus-large	revision=dec7796b22f29b7d1c476192313eae8ed57b6b77	bytes=2275327883
+HF	google/pegasus-x-large	revision=ff38c5db1f5b97b923dbecdaf58b15c8e213a27a	bytes=2274834869
+HF	google/pegasus-xsum	revision=8d8ffc158a3bee9fbb03afacdfc347c823c5ec8b	bytes=2275329241
+HF	google/siglip-base-patch16-224	revision=7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed	bytes=812672320
+HF	google/siglip-base-patch16-384	revision=41aec1c83b32e0a6fca20ad88ba058aa5b5ea394	bytes=813839680
+HF	google/siglip-so400m-patch14-384	revision=9fdffc58afc957d1a03a25b10dba0329ab15c2a3	bytes=3511950624
+HF	google/siglip2-base-patch16-224	revision=75de2d55ec2d0b4efc50b3e9ad70dba96a7b2fa2	bytes=1500800904
+HF	google/siglip2-base-patch16-384	revision=f775b65a79762255128c981547af89addcfe0f88	bytes=1501968264
+HF	google/t5-efficient-mini	revision=af3816c2dbd386f7786f7757c536f0314084ff8b	bytes=124920602
+HF	google/t5-efficient-tiny	revision=3441d7e8bf3f89841f366d39452b95200416e4a9	bytes=62321434
+HF	google/t5-large-lm-adapt	revision=50221db6cb0b917d3d0f7441b2af8c6928d563ee	bytes=3132845093
+HF	google/t5-small-lm-adapt	revision=4ff52753a4ddd906de166c573db99280719b22f9	bytes=307927045
+HF	google/t5-small-ssm	revision=9d5a5cda37e65b1b34679f088e2e61b070348339	bytes=616163165
+HF	google/t5-small-ssm-nq	revision=4371c64b6f65176f6663af43066bd094597b1116	bytes=307932125
+HF	google/t5-v1_1-base	revision=b5fc947a416ea3cb079532cb3c2bbadeb7f800fc	bytes=990441433
+HF	google/t5-v1_1-large	revision=a98b0fcd0b8137ded40cdf0c0cf0ee884e7c9726	bytes=3132858253
+HF	google/t5-v1_1-small	revision=8a88af75516269158a3aa488d1abdfd3d5e4ee49	bytes=307932125
+HF	google/t5-v1_1-xl	revision=e827710dfd12562d3ef5ea28853b2d0b31859bc6	bytes=11399285345
+HF	google/t5-v1_1-xxl	revision=3db67ab1af984cf10548a73467f0e5bca2aaaeb2	bytes=44541587809
+HF	google/vit-base-patch16-224	revision=3f49326eb077187dfe1c2a2bb15fbd74e6ab91e3	bytes=1039183115
+HF	google/vit-base-patch16-224-in21k	revision=b4569560a39a0f1af58e3ddaf17facf20ab919b0	bytes=345579424
+HF	google/vit-base-patch16-384	revision=2960116e809e2fca84146dbb240289aee7db4827	bytes=347461216
+HF	google/vit-base-patch32-224-in21k	revision=98cb6f7099d372694c8547bf7002289b36857dc7	bytes=352205741
+HF	google/vit-large-patch16-224-in21k	revision=6074eaf2211423e928c93b93ef773d5da618aa7e	bytes=1217449944
+HF	google/vivit-b-16x2-kinetics400	revision=8a7171a57f79b9aaa58bc8d977c002a0ea0f0d42	bytes=355881581
+HF	gpt2	revision=607a30d783dfa663caf39e06633721c8d4cfcd7e	bytes=548105171
+HF	gpt2-large	revision=32b71b12589c2f8d625668d2335a01cac3249519	bytes=3247159078
+HF	gpt2-medium	revision=6dcaa7a952f72f9298047fd5137cd6e4f05f41da	bytes=1519984962
+HF	gpt2-xl	revision=15ea56dee5df4983c59b2538573817e1667135e2	bytes=6431829964
+HF	GroNLP/bert-base-dutch-cased	revision=aeb2fedfdd322b3a22195f250a43cd59c40832d3	bytes=436703956
+HF	GroNLP/hateBERT	revision=ab7a2d40f6c973cb57e63f23bfa2b51d981d028c	bytes=440443452
+HF	Hate-speech-CNERG/dehatebert-mono-english	revision=25d0e4d9122d2a5c283e07405a325e3dfd4a73b3	bytes=669482093
+HF	Helsinki-NLP/opus-mt-ar-en	revision=c5b2a50db78d6be98ae207223f8d4f63bc7a0ff1	bytes=307640325
+HF	Helsinki-NLP/opus-mt-bn-en	revision=098d427088fba65d683639e91742c783cc7c1434	bytes=309206001
+HF	Helsinki-NLP/opus-mt-de-en	revision=1a922f3b32a8e809e17a47d4b32142d8105924e5	bytes=297928209
+HF	Helsinki-NLP/opus-mt-en-ar	revision=03087980e8ce753d64b3248ed0a912444545b840	bytes=307574661
+HF	Helsinki-NLP/opus-mt-en-de	revision=6183067f769a302e3861815543b9f312c71b0ca4	bytes=297928209
+HF	Helsinki-NLP/opus-mt-en-es	revision=5bc4493d463cf000c1f0b50f8d56886a392ed4ab	bytes=312087523
+HF	Helsinki-NLP/opus-mt-en-fr	revision=dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18	bytes=602127013
+HF	Helsinki-NLP/opus-mt-en-hi	revision=75d7f7c9232b2891c7d65fe4ef635616c72be867	bytes=305826357
+HF	Helsinki-NLP/opus-mt-en-ro	revision=96e8fea9e44dae942c2e8a9078dc1615dd871ed9	bytes=300887193
+HF	Helsinki-NLP/opus-mt-en-ru	revision=bb09c99d180016eac6819df3dae68edb1690fdee	bytes=306991893
+HF	Helsinki-NLP/opus-mt-en-sw	revision=28780399d37e1161afc94577a717d7fcfa54fecc	bytes=299670357
+HF	Helsinki-NLP/opus-mt-fr-en	revision=c4aed37b318c763fd177aa449b44e3b783cc6c02	bytes=300803608
+HF	Helsinki-NLP/opus-mt-ru-en	revision=fbd6dc73284f95536648512cc21d57f19191961a	bytes=306991893
+HF	Helsinki-NLP/opus-mt-tr-en	revision=19c65427cc2af5f191337d4899e0348c4af25902	bytes=306727185
+HF	Helsinki-NLP/opus-mt-zh-en	revision=cf109095479db38d6df799875e34039d4938aaa6	bytes=312087009
+HF	hfl/chinese-bert-wwm-ext	revision=2a995a880017c60e4683869e817130d8af548486	bytes=411578458
+HF	hfl/chinese-electra-180g-base-discriminator	revision=693c1a7e58307777ad4cdf6b80b47c777c028572	bytes=409126723
+HF	hfl/chinese-electra-180g-large-discriminator	revision=d017e219578df8e4885484edbc8969dbdea9cbe0	bytes=1302194688
+HF	hfl/chinese-macbert-base	revision=a986e004d2a7f2a1c2f5a3edef4e20604a974ed1	bytes=411582858
+HF	hfl/chinese-macbert-large	revision=1cf2677c782975600ce58e2961656b1b29eddbae	bytes=1306488754
+HF	hfl/chinese-roberta-wwm-ext	revision=5c58d0b8ec1d9014354d691c538661bf00bfdb44	bytes=411578458
+HF	hfl/chinese-roberta-wwm-ext-large	revision=a25cc9e05974bd9687e528edd516f2cfdb3f5db9	bytes=1306484351
+HF	HooshvareLab/bert-base-parsbert-uncased	revision=d73a0e2c7492c33bd5819bcdb23eba207404dd19	bytes=654186735
+HF	hooshvarelab/bert-fa-base-uncased	revision=a04aa40c97bcdde570ae11986a534542c2995a62	bytes=654226731
+HF	HooshvareLab/bert-fa-zwnj-base	revision=3880fac085e1a338e9564907cba0adeb9e14bc72	bytes=473451616
+HF	huggingface/CodeBERTa-small-v1	revision=e93b5898cff07f03f1c1c09cde284d1b85962363	bytes=336407488
+HF	HuggingFaceH4/zephyr-7b-beta	revision=892b3d7a7b1cf10c7a701c60881cd93df615734c	bytes=14483497952
+HF	HuggingFaceTB/SmolLM2-1.7B-Instruct	revision=31b70e2e869a7173562077fd711b654946d38674	bytes=3422777952
+HF	indobenchmark/indobert-base-p1	revision=c2cd0b51ddce6580eb35263b39b0a1e5fb0a39e2	bytes=497810400
+HF	indobenchmark/indobert-base-p2	revision=94b4e0a82081fa57f227fcc2024d1ea89b57ac1f	bytes=497810400
+HF	indobenchmark/indobert-large-p1	revision=ee2669aee95421008ad3833c3866c57a006e662d	bytes=1340657204
+HF	indolem/indobert-base-uncased	revision=7ccb3cd0f5b08ffbaa465aade22328e8600e23eb	bytes=444780374
+HF	indolem/indobertweet-base-uncased	revision=32e28c05b47e33b6675d2670a1745c50a65e987a	bytes=444780374
+HF	Intel/dpt-hybrid-midas	revision=11eaf7a1cf4bd70740697dbc216f98980c0aeb03	bytes=489648389
+HF	intfloat/e5-base-v2	revision=f52bf8ec8c7124536f0efb74aca902b2995e5bcd	bytes=437955512
+HF	intfloat/e5-large-v2	revision=f169b11e22de13617baa190a028a32f3493550b6	bytes=1340616616
+HF	intfloat/e5-small-v2	revision=ffb93f3bd4047442299a41ebb6fa998a38507c52	bytes=133466304
+HF	intfloat/multilingual-e5-base	revision=d128750597153bb5987e10b1c3493a34e5a4502a	bytes=1112201288
+HF	intfloat/multilingual-e5-large	revision=3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3	bytes=2239611368
+HF	intfloat/multilingual-e5-small	revision=614241f622f53c4eeff9890bdc4f31cfecc418b3	bytes=470641600
+HF	j-hartmann/emotion-english-distilroberta-base	revision=0e1cd914e3d46199ed785853e12b57304e04178b	bytes=328544361
+HF	jhgan/ko-sbert-nli	revision=b78c95e43b7ef3f8a7cca8b287367ba57516a5bf	bytes=442555895
+HF	joeddav/xlm-roberta-large-xnli	revision=b227ee8435ceadfa86dc1368a34254e2838bf242	bytes=2243825580
+HF	jonatasgrosman/wav2vec2-large-xlsr-53-english	revision=569a6236e92bd5f7652a0420bfe9bb94c5664080	bytes=1261942732
+HF	klue/bert-base	revision=77c8b3d707df785034b4e50f2da5d37be5f0f546	bytes=445000316
+HF	klue/roberta-base	revision=02f94ba5e3fcb7e2a58a390b8639b0fac974a8da	bytes=442635012
+HF	laion/CLIP-ViT-B-32-laion2B-s34B-b79K	revision=1a25a446712ba5ee05982a381eed697ef9b435cf	bytes=605157884
+HF	martin-ha/toxic-comment-model	revision=9842c08b35a4687e7b211187d676986c8c96256d	bytes=267858673
+HF	MCG-NJU/videomae-base	revision=dc740ceda42fce44faed2ea03c6d447db72f6af9	bytes=376873760
+HF	MCG-NJU/videomae-base-finetuned-kinetics	revision=488eb9a0565f257b32866000305c8178965eb9f6	bytes=346161616
+HF	michiyasunaga/BioLinkBERT-base	revision=b71f5d70f063d1c8f1124070ce86f1ee463ca1fe	bytes=433019313
+HF	microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract	revision=d673b8835373c6fa116d6d8006b33d48734e305d	bytes=440474434
+HF	microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext	revision=e1354b7a3a09615f6aba48dfad4b7a613eef7062	bytes=440474434
+HF	microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract	revision=d673b8835373c6fa116d6d8006b33d48734e305d	bytes=440474434
+HF	microsoft/BiomedNlp-PubMedBERT-base-uncased-abstract	revision=d673b8835373c6fa116d6d8006b33d48734e305d	bytes=440474434
+HF	microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext	revision=e1354b7a3a09615f6aba48dfad4b7a613eef7062	bytes=440474434
+HF	microsoft/BiomedNLP-PubMedBERT-large-uncased-abstract	revision=f18ff5ec008285849e7c467b2618262b0def6238	bytes=1344995087
+HF	microsoft/codebert-base	revision=3b0952feddeffad0063f274080e3c23d75e7eb39	bytes=997473174
+HF	microsoft/codebert-base-mlm	revision=71b41964e82666ecdb8c72b11d8a02395e6fcda5	bytes=501201999
+HF	microsoft/deberta-base	revision=0d1b43ccf21b5acd9f4e5f7b077fa698f05cf195	bytes=558614189
+HF	microsoft/deberta-large	revision=a97e054da5f34feed3d26951db4a25831dfcb486	bytes=1627284589
+HF	microsoft/deberta-v2-xlarge	revision=1d134961d4db8e7e8eb1bc1ab81cb370244c57f7	bytes=1775809831
+HF	microsoft/deberta-v3-base	revision=8ccc9b6f36199bec6961081d44eb72fb3f7353f3	bytes=1106735597
+HF	microsoft/deberta-v3-large	revision=64a8c8eab3e352a784c658aef62be1662607476f	bytes=3181558566
+HF	microsoft/deberta-v3-small	revision=a36c739020e01763fe789b4b85e2df55d6180012	bytes=851416085
+HF	microsoft/deberta-v3-xsmall	revision=4b419818330868dff6a60ad3e6b1c730f8b8c0c6	bytes=241453931
+HF	microsoft/DialoGPT-small	revision=49c537161a457d5256512f9d2d38a87d81ae0f0e	bytes=351256598
+HF	microsoft/git-base	revision=1f7fe8444292beb4a259e3a5b6eba440cd5999d4	bytes=706526022
+HF	microsoft/graphcodebert-base	revision=2b0488a7bb0eefc7041f1bb2cad1ab26b0da269d	bytes=498845934
+HF	microsoft/layoutlmv3-base	revision=cfbbbff0762e6aab37086fdd4739ad14fe7d5db4	bytes=501338056
+HF	microsoft/mdeberta-v3-base	revision=a0484667b22365f84929a935b5e50a51f71f159d	bytes=1332809049
+HF	microsoft/MiniLM-L12-H384-uncased	revision=44acabbec0ef496f6dbc93adadea57f376b7c0ec	bytes=133483028
+HF	microsoft/mpnet-base	revision=6996ce1e91bd2a9c7d7f61daec37463394f73f09	bytes=531998632
+HF	microsoft/Multilingual-MiniLM-L12-H384	revision=6e8c1ec6b4ec4e3fc6eb7d2cd834fcd582b61daf	bytes=470657952
+HF	microsoft/phi-1_5	revision=77aa61eeac94fbf33d492b9f2744c98b42d5b5eb	bytes=2836578696
+HF	microsoft/Phi-2	revision=810d367871c1d460086d9f82db8696f2e0a0fcd0	bytes=5559417400
+HF	microsoft/phi-2	revision=810d367871c1d460086d9f82db8696f2e0a0fcd0	bytes=5559417400
+HF	microsoft/Phi-3-mini-128k-instruct	revision=f3c06aed622e14ca0abf5115094e4fc9a9948f36	bytes=7642181880
+HF	microsoft/Phi-3-mini-4k-instruct	revision=f39ac1d28e925b323eae81227eaba4464caced4e	bytes=7642181880
+HF	microsoft/phi-3-mini-4k-instruct	revision=f39ac1d28e925b323eae81227eaba4464caced4e	bytes=7642181880
+HF	microsoft/resnet-50	revision=34c2154c194f829b11125337b98c8f5f9965ff19	bytes=102482854
+HF	microsoft/swin-base-patch4-window7-224	revision=20d6c26ef6455d36c0a78671d787c5da57513d4b	bytes=351590690
+HF	microsoft/swin-tiny-patch4-window7-224	revision=d00d478bfaf1f417d34a1186673ad4b4be264c51	bytes=113412768
+HF	microsoft/swinv2-base-patch4-window8-256	revision=485f4d7059ce28604233e20188df5ee19ab960c6	bytes=351833871
+HF	microsoft/trocr-base-handwritten	revision=eaacaf452b06415df8f10bb6fad3a4c11e609406	bytes=1333384464
+HF	microsoft/trocr-base-printed	revision=93450be3f1ed40a930690d951ef3932687cc1892	bytes=1333384464
+HF	microsoft/trocr-small-handwritten	revision=b4648cfa171985a6745f37ddd637e98c0da958ac	bytes=245933041
+HF	microsoft/unixcoder-base	revision=5604afdc964f6c53782a6813140ade5216b99006	bytes=503809527
+HF	microsoft/wavlm-base	revision=efa81aae7ff777e464159e0f877d54eac5b84f81	bytes=377617425
+HF	microsoft/wavlm-base-plus	revision=4c66d4806a428f2e922ccfa1a962776e232d487b	bytes=377617425
+HF	microsoft/wavlm-base-plus-sv	revision=feb593a6c23c1cc3d9510425c29b0a14d2b07b1e	bytes=404547053
+HF	microsoft/wavlm-large	revision=c1423ed94bb01d80a3f5ce5bc39f6026a0f4828c	bytes=1261990257
+HF	mistralai/Mistral-7B-Instruct-v0.2	revision=63a8b081895390a26e140280378bc85ec8bce07a	bytes=14483498016
+HF	mistralai/Mistral-7B-Instruct-v0.3	revision=c170c708c41dac9275d15a8fff4eca08d52bab71	bytes=14496080928
+HF	mistralai/Mistral-7B-v0.1	revision=27d67f1b5f57dc0953326b2601d68371d40ea8da	bytes=14483498040
+HF	MIT/ast-finetuned-audioset-10-10-0.4593	revision=f826b80d28226b62986cc218e5cec390b1096902	bytes=346404948
+HF	mit/ast-finetuned-audioset-10-10-0.4593	revision=f826b80d28226b62986cc218e5cec390b1096902	bytes=346404948
+HF	MIT/ast-finetuned-speech-commands-v2	revision=315b0b847a3ca207e68b718503ad72066612eacd	bytes=341610652
+HF	monologg/biobert_v1.1_pubmed	revision=e0bfdabd7f7ec276a32230a4e612373f52d5befb	bytes=435755812
+HF	monologg/kobert	revision=38279184ba645e8c94d709fbe92eb5bcb47312c1	bytes=368769812
+HF	monologg/koelectra-base-v3-discriminator	revision=68b30cd259f34a4b5aa8786392612ba2a2617fcc	bytes=451741507
+HF	MoritzLaurer/DeBERTa-v3-large-mnli-fever-anli-ling-wanli	revision=b3546ea6b0346eb6f8d5d68b13c7dc6d0376b3d7	bytes=870182606
+HF	MoritzLaurer/mDeBERTa-v3-base-mnli-xnli	revision=8adb042d524ecd5c26d3e3ba0e3fbcf7e2d0864c	bytes=557652046
+HF	mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis	revision=ae0eab9ad336d7d548e0efe394b07c04bcaf6e91	bytes=328499560
+HF	naver-clova-ix/donut-base-finetuned-docvqa	revision=b19d2e332684b0e2d35d9144ce34047767335cf8	bytes=803430203
+HF	neuralmind/bert-base-portuguese-cased	revision=94d69c95f98f7d5b2a8700c420230ae10def0baa	bytes=438235074
+HF	nlpaueb/legal-bert-base-uncased	revision=15b570cbf88259610b082a167dacc190124f60f6	bytes=440474526
+HF	nlpconnect/vit-gpt2-image-captioning	revision=dc68f91c06a1ba6f15268e5b9c13ae7a7c514084	bytes=982141993
+HF	nlptown/bert-base-multilingual-uncased-sentiment	revision=8f6f4e3a8f70be4b65d3a4a8762b6d781cda240d	bytes=669464588
+HF	nomic-ai/nomic-embed-text-v1.5	revision=e9b6763023c676ca8431644204f50c2b100d9aab	bytes=546938168
+HF	nreimers/MiniLM-L6-H384-uncased	revision=3276f0fac9d818781d7a1327b3ff818fc4e643c0	bytes=90898263
+HF	nvidia/mit-b0	revision=80983a413c30d36a39c20203974ae7807835e2b4	bytes=14380029
+HF	nvidia/mit-b2	revision=3bb39e8739149c3777d0325349b2a6c32c6413db	bytes=98978917
+HF	nvidia/mit-b3	revision=0e0522cf0515903a0d35abc5adc9df78a25fde7c	bytes=178586005
+HF	nvidia/segformer-b0-finetuned-ade-512-512	revision=489d5cd81a0b59fab9b7ea758d3548ebe99677da	bytes=15036944
+HF	nvidia/segformer-b2-finetuned-ade-512-512	revision=de01bae28967510f9ddd496c60a969357195400c	bytes=110000905
+HF	nvidia/segformer-b3-finetuned-ade-512-512	revision=a820c29fc1e53723079d94ca0e09a14d2657fae6	bytes=189607929
+HF	nvidia/segformer-b5-finetuned-ade-640-640	revision=739f5d4692954e4a185eac280dec1ba5a7d52f1d	bytes=339299397
+HF	Open-Orca/Mistral-7B-OpenOrca	revision=4a37328cef00f524d3791b1c0cc559a3cc6af14d	bytes=14483596459
+HF	openai/clip-vit-base-patch16	revision=57c216476eefef5ab752ec549e440a49ae4ae5f3	bytes=598641023
+HF	openai/clip-vit-base-patch32	revision=3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268	bytes=605247071
+HF	openai/clip-vit-large-patch14	revision=32bd64288804d66eefd0ccbe215aa642df71cc41	bytes=1710540580
+HF	openai/clip-vit-large-patch14-336	revision=ce19dc912ca5cd21c8a653c79e251e808ccabcd1	bytes=1711974081
+HF	openai/whisper-base.en	revision=911407f4214e0e1d82085af863093ec0b66f9cd6	bytes=290401888
+HF	openai/whisper-large	revision=4ef9b41f0d4fe232daafdb5f76bb1dd8b23e01d7	bytes=6173370152
+HF	openai/whisper-large-v2	revision=ae4642769ce2ad8fc292556ccea8e901f1530655	bytes=6173370152
+HF	openai/whisper-large-v3	revision=06f233fe06e710322aca913c1bc4249a0d71fce1	bytes=3087130976
+HF	openai/whisper-medium	revision=abdf7c39ab9d0397620ccaea8974cc764cd0953e	bytes=3055544304
+HF	OpenAI/whisper-small	revision=973afd24965f72e36ca33b3055d56a652f456b4d	bytes=966995080
+HF	openai/whisper-small	revision=973afd24965f72e36ca33b3055d56a652f456b4d	bytes=966995080
+HF	openai/whisper-small.en	revision=e8727524f962ee844a7319d92be39ac1bd25655a	bytes=966992008
+HF	openai/whisper-tiny	revision=169d4a4341b33bc18d8881c4b69c2e104e1cc0af	bytes=151061672
+HF	openai/whisper-tiny.en	revision=87c7102498dcde7456f24cfd30239ca606ed9063	bytes=151060136
+HF	pdelobelle/robbert-v2-dutch-base	revision=271b8bf12b7e429434ce953efb432e8373e84453	bytes=467243012
+HF	philschmid/bart-large-cnn-samsum	revision=e49b3d60d923f12db22bdd363356f1a4c68532ad	bytes=1625565295
+HF	prajjwal1/bert-small	revision=0ec5f86f27c1a77d704439db5e01c307ea11b9d4	bytes=116270890
+HF	prajjwal1/bert-tiny	revision=6f75de8b60a9f8a2fdf7b69cbd86d9e64bcb3837	bytes=17756393
+HF	pritamdeka/S-PubMedBert-MS-MARCO	revision=96786c7024f95c5aac7f2b9a18086c7b97b23036	bytes=438010289
+HF	ProsusAI/finbert	revision=4556d13015211d73dccd3fdd39d39232506f3e43	bytes=437992753
+HF	Qwen/Qwen1.5-1.8B-Chat	revision=e482ee3f73c375a627a16fdf66fd0c8279743ca6	bytes=3673690696
+HF	Qwen/Qwen2-0.5B-Instruct	revision=c540970f9e29518b1d8f06ab8b24cba66ad77b6d	bytes=988097824
+HF	Qwen/Qwen2-1.5B	revision=8a16abf2848eda07cc5253dec660bf1ce007ad7a	bytes=3087467144
+HF	Qwen/Qwen2-1.5B-Instruct	revision=ba1cf1846d7df0a0591d6c00649f57e798519da8	bytes=3087467144
+HF	Qwen/Qwen2-7B	revision=453ed1575b739b5b03ce3758b23befdb0967f40e	bytes=15231271872
+HF	Qwen/Qwen2-7B-Instruct	revision=f2826a00ceef68f0f2b946d945ecc0477ce4450c	bytes=15231271872
+HF	Qwen/Qwen2.5-0.5B	revision=060db6499f32faf8b98477b0a26969ef7d8b9987	bytes=988097824
+HF	Qwen/Qwen2.5-0.5B-Instruct	revision=7ae557604adf67be50417f59c2c2f167def9a775	bytes=988097824
+HF	Qwen/Qwen2.5-1.5B	revision=8faed761d45a263340a0528343f099c05c9a4323	bytes=3087467144
+HF	Qwen/Qwen2.5-1.5B-Instruct	revision=989aa7980e4cf806f80c7fef2b1adb7bc71aa306	bytes=3087467144
+HF	Qwen/Qwen2.5-3B	revision=3aab1f1954e9cc14eb9509a215f9e5ca08227a9b	bytes=6171926992
+HF	Qwen/Qwen2.5-3B-Instruct	revision=aa8e72537993ba99e69dfaafa59ed015b17504d1	bytes=6171926992
+HF	Qwen/Qwen2.5-7B	revision=d149729398750b98c0af14eb82c78cfe92750796	bytes=15231271888
+HF	Qwen/Qwen2.5-7B-Instruct	revision=a09a35458c702b33eeacc393d103063234e8bc28	bytes=15231271888
+HF	Qwen/Qwen2.5-Coder-0.5B-Instruct	revision=ea3f2471cf1b1f0db85067f1ef93848e38e88c25	bytes=988097824
+HF	Qwen/Qwen2.5-Coder-7B-Instruct	revision=c03e6d358207e414f1eca0bb1891e29f1db0e242	bytes=15231271864
+HF	Qwen/Qwen2.5-Math-1.5B	revision=4a83ca6e4526a4f2da3aa259ec36c259f66b2ab2	bytes=3087467144
+HF	Qwen/Qwen2.5-Math-1.5B-Instruct	revision=aafeb0fc6f22cbf0eaeed126eff8be45b0360a35	bytes=3087467144
+HF	Qwen/Qwen2.5-Math-7B-Instruct	revision=ef9926d75ab1d54532f6a30dd5e760355eb9aa4d	bytes=15231271888
+HF	readerbench/RoBERT-base	revision=5cd118697a6dee9e8ffe03cea5aa3931555c001a	bytes=462828602
+HF	roberta-base	revision=e2da8e2f811d1448a5b465c236feacd80ffbac7b	bytes=498818054
+HF	roberta-base-openai-detector	revision=6cba99c003b711c7fe94f8a3aa2be35a792cb6fa	bytes=500975390
+HF	roberta-large	revision=722cf37b1afa9454edce342e7895e588b6ff1d59	bytes=1421700479
+HF	roberta-large-mnli	revision=2a8f12d27941090092df78e4ba6f0928eb5eac98	bytes=1425698116
+HF	roberta-large-openai-detector	revision=38f3e0ccf205e9c4e0b38ae9d75ec948141bf832	bytes=1425694016
+HF	Rostlab/prot_bert	revision=7a894481acdc12202f0a415dd567f6cfdb698908	bytes=1684058277
+HF	Rostlab/prot_t5_xl_uniref50	revision=973be27c52ee6474de9c945952a8008aeb2a1a73	bytes=11275562724
+HF	s-nlp/roberta_toxicity_classifier	revision=048c25bb1e199b98802784f96325f4840f22145d	bytes=501037970
+HF	sagorsarker/bangla-bert-base	revision=875aa80a42ec196c16bd931ae5d85ad949f58b16	bytes=660393036
+HF	Salesforce/blip-image-captioning-base	revision=82a37760796d32b1411fe092ab5d4e227313294b	bytes=989820849
+HF	Salesforce/blip-image-captioning-large	revision=353689b859fcf0523410b1806dace5fb46ecdf41	bytes=1879014680
+HF	Salesforce/blip-itm-base-coco	revision=bed8ad38cb2d04a5a4bdf2d071b3c3c0a4aa724c	bytes=895139697
+HF	Salesforce/blip-vqa-base	revision=787b3d35d57e49572baabd22884b3d5a05acf072	bytes=1538800584
+HF	Salesforce/blip2-flan-t5-xl	revision=0eb0d3b46c14c1f8c7680bca2693baafdb90bb28	bytes=15769954544
+HF	Salesforce/blip2-opt-2.7b	revision=59a1ef6c1e5117b3f65523d1c6066825bcf315e3	bytes=14979207136
+HF	Salesforce/codegen-350M-mono	revision=d9107f71cca463240db1143f4a75a927a27fcb27	bytes=797367631
+HF	Salesforce/codet5-small	revision=b1ee9570c289f21b5922b9c768a1ce12957bf968	bytes=242026427
+HF	savasy/bert-base-turkish-squad	revision=f0d70e33d7c4c796a03273ea111d8aa92fdeec14	bytes=442499068
+HF	sberbank-ai/ruBERT-base	revision=05f37a2ca9e333fd18f30cd0c96c68d274793c69	bytes=716133354
+HF	sberbank-ai/ruBert-base	revision=05f37a2ca9e333fd18f30cd0c96c68d274793c69	bytes=716133354
+HF	sberbank-ai/rugpt3small_based_on_gpt2	revision=a9307e696cd3c5b7f953ff4cb19d76a4d81821d5	bytes=551290714
+HF	sentence-transformers/all-distilroberta-v1	revision=842eaed40bee4d61673a81c92d5689a8fed7a09f	bytes=328489328
+HF	sentence-transformers/all-MiniLM-L12-v2	revision=936af83a2ecce5fe87a09109ff5cbcefe073173a	bytes=133466304
+HF	sentence-transformers/all-MiniLM-L6-v2	revision=1110a243fdf4706b3f48f1d95db1a4f5529b4d41	bytes=90868376
+HF	sentence-transformers/all-MPNET-base-v2	revision=e8c3b32edf5434bc2275fc9bab85f82640a19130	bytes=437971872
+HF	sentence-transformers/all-MPNet-base-v2	revision=e8c3b32edf5434bc2275fc9bab85f82640a19130	bytes=437971872
+HF	sentence-transformers/all-Mpnet-base-v2	revision=e8c3b32edf5434bc2275fc9bab85f82640a19130	bytes=437971872
+HF	sentence-transformers/all-roberta-large-v1	revision=cf74d8acd4f198de950bf004b262e6accfed5d2c	bytes=1421488104
+HF	sentence-transformers/allenai-specter	revision=2c68eeca61259b2dd70c3f2628219f925df7031a	bytes=439780280
+HF	sentence-transformers/bert-base-nli-mean-tokens	revision=160a52b38a51ae87295ec3eabcf11755e5d27a8d	bytes=437955512
+HF	sentence-transformers/bert-base-nli-stsb-mean-tokens	revision=c1e99553cc170c78b16717e93e8042552f5bef20	bytes=437955512
+HF	sentence-transformers/clip-ViT-B-32-multilingual-v1	revision=58edf8cada9e398793dca955574a48cbb7f18be2	bytes=540520400
+HF	sentence-transformers/distilbert-base-nli-mean-tokens	revision=b404353e5a0ef9cdf6a4500baa81aaec875d4db0	bytes=265462608
+HF	sentence-transformers/distilbert-base-nli-stsb-mean-tokens	revision=84fc3c34014de8c85cde3fece74ab56fbe9d4fce	bytes=265462608
+HF	sentence-transformers/distiluse-base-multilingual-cased	revision=d20bcb62652b24c368dd1e20f65665d9d5dfe088	bytes=540522520
+HF	sentence-transformers/distiluse-base-multilingual-cased-v1	revision=826fee3d516ebb14987355af373f5b69101c7006	bytes=538947416
+HF	sentence-transformers/distiluse-base-multilingual-cased-v2	revision=bfe45d0732ca50787611c0fe107ba278c7f3f889	bytes=540522520
+HF	sentence-transformers/LaBSE	revision=836121a0533e5664b21c7aacc5d22951f2b8b25b	bytes=1886096872
+HF	sentence-transformers/msmarco-distilbert-base-v4	revision=b2f66c95aba1481a880479165582020c2b9b64d7	bytes=265462608
+HF	sentence-transformers/multi-qa-MiniLM-L6-cos-v1	revision=b207367332321f8e44f96e224ef15bc607f4dbf0	bytes=90868376
+HF	sentence-transformers/multi-qa-MiniLM-L6-dot-v1	revision=4151c507ffb0f2fcd311cf431f54b5fc7d097851	bytes=90868376
+HF	sentence-transformers/multi-qa-mpnet-base-dot-v1	revision=17997f24dca0df1a4fed68894fb0e1e133e60482	bytes=437971872
+HF	sentence-transformers/nli-roberta-base-v2	revision=f83f701a097e6fa75b956a3e601dde649ea818cc	bytes=498609104
+HF	sentence-transformers/paraphrase-distilroberta-base-v1	revision=48bffbbd27bf028ecdd0cd55abb51236ec12ef1b	bytes=328489328
+HF	sentence-transformers/paraphrase-distilroberta-base-v2	revision=1972a507973d92e15f4f7cd9457d9fcf43ea117f	bytes=328489328
+HF	sentence-transformers/paraphrase-MiniLM-L12-v2	revision=2b9058918c3d228389532ccf813578658e4af706	bytes=133466304
+HF	sentence-transformers/paraphrase-MiniLM-L3-v2	revision=4ca70771034acceecb2e72475f72050fcdde4ddc	bytes=69569488
+HF	sentence-transformers/paraphrase-MiniLM-L6-v2	revision=c9a2bfebc254878aee8c3aca9e6844d5bbb102d1	bytes=90868373
+HF	sentence-transformers/paraphrase-mpnet-base-v2	revision=6cc9279c672dc57f94445ef259b28a1b736fec8f	bytes=437971872
+HF	sentence-transformers/paraphrase-multilingual-MiniLM-L12-V2	revision=e8f8c211226b894fcb81acc59f3b34ba3efd5f42	bytes=470641600
+HF	sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2	revision=e8f8c211226b894fcb81acc59f3b34ba3efd5f42	bytes=470641600
+HF	sentence-transformers/paraphrase-multilingual-MiniLM-l12-v2	revision=e8f8c211226b894fcb81acc59f3b34ba3efd5f42	bytes=470641600
+HF	sentence-transformers/paraphrase-multilingual-mpNet-base-v2	revision=4328cf26390c98c5e3c738b4460a05b95f4911f5	bytes=1112201288
+HF	sentence-transformers/paraphrase-multilingual-mpnet-base-v2	revision=4328cf26390c98c5e3c738b4460a05b95f4911f5	bytes=1112201288
+HF	sentence-transformers/paraphrase-xlm-r-multilingual-v1	revision=c2e19453aae46f98a865abfdf173f35f2e119f5a	bytes=1112201288
+HF	sentence-transformers/roberta-base-nli-mean-tokens	revision=84386c833d43bdea66b52f3fd4c1f77b21ba92da	bytes=498609104
+HF	sentence-transformers/roberta-base-nli-stsb-mean-tokens	revision=637539d0f7482cdd043040c1b59a7270b5e0ecc6	bytes=498609104
+HF	sentence-transformers/sentence-t5-base	revision=fc5d4628481afbbaaacd7af6bb07cf9d3865f781	bytes=221628192
+HF	sentence-transformers/sentence-t5-large	revision=1b36eb48a1df42a07ffd02234d25abfbf3e3f3cb	bytes=673048648
+HF	sentence-transformers/stsb-roberta-base	revision=32d471df2968a46d1fe447d66a9275e8e63fcf12	bytes=498609104
+HF	sentence-transformers/xlm-r-100langs-bert-base-nli-mean-tokens	revision=8aeb773f49910d94067d0acad9de0143922c5e8e	bytes=1112201288
+HF	sentence-transformers/xlm-r-distilroberta-base-paraphrase-v1	revision=da45da457830903b91ec80da60611e6ba5846008	bytes=1112201288
+HF	seyonec/CHEMBERTa-zinc-base-v1	revision=761d6a18cf99db371e0b43baf3e2d21b3e865a20	bytes=178812144
+HF	seyonec/ChemBERTa-Zinc-base-v1	revision=761d6a18cf99db371e0b43baf3e2d21b3e865a20	bytes=178812144
+HF	seyonec/ChemBERTa-zinc-base-v1	revision=761d6a18cf99db371e0b43baf3e2d21b3e865a20	bytes=178812144
+HF	seyonec/ChemBERTa-Zinc250k-v1	revision=9caca1b46a6a3155b4b0ed3bd0772065b989ed3a	bytes=336404667
+HF	seyonec/ChemBERTa-zinc250k-v1	revision=9caca1b46a6a3155b4b0ed3bd0772065b989ed3a	bytes=336404667
+HF	smp-hub/efficientnet-b0.imagenet	revision=1bbe7ecc1d5ea1d2058de1a2db063b8701aff314	bytes=21355856
+HF	smp-hub/efficientnet-b2.imagenet	revision=a96d4f0295ffbae18ebba173bf7f3c0c8f21990e	bytes=36757968
+HF	smp-hub/efficientnet-b3.imagenet	revision=074c54a6c473e0d294690d49cedb6cf463e7127d	bytes=49336200
+HF	smp-hub/efficientnet-b4.imagenet	revision=05cd5dde5dab658f00c463f9b9aa0ced76784f40	bytes=77934080
+HF	smp-hub/mit_b3.imagenet	revision=32558d12a65f1daa0ebcf4f4053c4285e2c1cbda	bytes=178393776
+HF	smp-hub/mit_b5.imagenet	revision=ced04d96c586b6297fd59a7a1e244fc78fdb6531	bytes=327923200
+HF	smp-hub/resnet18.imagenet	revision=3f2325ff978283d47aa6a1d6878ca20565622683	bytes=46805552
+HF	smp-hub/resnet34.imagenet	revision=7a57b34f723329ff020b3f8bc41771163c519d0c	bytes=87275112
+HF	smp-hub/resnet50.imagenet	revision=00cb74e366966d59cd9a35af57e618af9f88efe9	bytes=102464800
+HF	speechbrain/spkrec-ecapa-voxceleb	revision=0f99f2d0ebe89ac095bcc5903c4dd8f72b367286	bytes=88852935
+HF	squeezebert/squeezebert-uncased	revision=7978b0c163f11850ec35d5cd541828159313ac41	bytes=103473649
+HF	sshleifer/distilbart-cnn-12-6	revision=a4f8f3ea906ed274767e9906dbaede7531d660ff	bytes=1222317369
+HF	sshleifer/distilbart-cnn-6-6	revision=d2fde4ca965ba893255479612e4b801aa6500029	bytes=460021128
+HF	sshleifer/tiny-mbart	revision=9d6b9b3b2774b464bb6b14eda4efe30f82846136	bytes=1528827
+HF	stabilityai/stablelm-2-zephyr-1_6b	revision=2f275b1127d59fc31e4f7c7426d528768ada9ea4	bytes=3289069184
+HF	stabilityai/stablelm-zephyr-3b	revision=fe1fd5e36ccb8cb2cb1dc225ab6d2962692b9837	bytes=5590927496
+HF	t5-base	revision=a9723ea7f1b39c1eae772870f3b547bf6ef7e6c1	bytes=891646390
+HF	t5-large	revision=150ebc2c4b72291e770f58e6057481c8d2ed331a	bytes=2950736730
+HF	t5-small	revision=df1b051c49625cf57a3d0d8d3863ed4d13564fe4	bytes=242043056
+HF	textattack/albert-base-v2-CoLA	revision=3e02233591f32405d343657a2f056d5afe21e86c	bytes=46747112
+HF	textattack/bert-base-uncased-CoLA	revision=5fed03dd6bc5f0b40e86cb04cd1a16eb404ba391	bytes=437985387
+HF	textattack/bert-base-uncased-imdb	revision=c70b9f391af2067f7eff69a03940218bba9b8d39	bytes=437985387
+HF	textattack/bert-base-uncased-MNLI	revision=3a97f689528cbd91bcc71ab29ea6c20c089d8f28	bytes=437988463
+HF	textattack/roberta-base-ag-news	revision=80f0a42b53970634dc15f4b59342978410585b46	bytes=501009162
+HF	textattack/roberta-base-CoLA	revision=3ccf3a400f2fa75ff257eac171047603ffbe84f1	bytes=501003010
+HF	textattack/roberta-base-MNLI	revision=6f2e633322381bc5897405e417ec531ea3633a3f	bytes=501006086
+HF	THUDM/chatglm2-6b	revision=d2e2d91789248536a747d9ce60642a336444186c	bytes=12487241401
+HF	THUDM/chatglm3-6b	revision=e9e0406d062cdb887444fe5bd546833920abd4ac	bytes=12487194904
+HF	TinyLlama/TinyLlama-1.1B-Chat-v1.0	revision=fe8a4ea1ffedaf415f4da2f062534de366a451e6	bytes=2200119864
+HF	typeform/distilbert-base-uncased-mnli	revision=cfa538a0fddbbd978fefe8966c1aeff7ad409c90	bytes=267835640
+HF	UBC-NLP/MARBERT	revision=88e1fa192dd723cf0b3563500aec46209762eb22	bytes=654186400
+HF	UBC-NLP/MARBERTv2	revision=fe88db9db8ccdb0c4e1627495f405c44a5f89066	bytes=654190940
+HF	unitary/multilingual-toxic-xlm-roberta	revision=4ad6f5c104d9ce813a1a2f33cac0c5b579ef6ee5	bytes=1112265417
+HF	unitary/toxic-bert	revision=4d6c22e74ba2fdd26bc4f7238f50766b045a0d94	bytes=437975136
+HF	unitary/unbiased-toxic-roberta	revision=36295dd80b422dc49f40052021430dae76241adc	bytes=498719497
+HF	VietAI/vit5-base	revision=2209a38d735ede63e88f5aa52bcdc11a05a37b85	bytes=903886847
+HF	vinai/bartpho-syllable	revision=36eee8b4d648dd99da56462edcda3c5c97f7f3de	bytes=1583451917
+HF	vinai/bartpho-syllable-base	revision=83024e88c51296d684ef1eb07a0f7b713baf8e4b	bytes=526341109
+HF	vinai/bartpho-word	revision=bee56ed0f2723cf4510ad3775cf4c5a38eb5e6fa	bytes=1681637133
+HF	vinai/bertweet-base	revision=b349c1243407b0dcffeabb2337497477286e27ab	bytes=542529064
+HF	vinai/bertweet-large	revision=fad96e7b21614951ae1b3c8c42c5b1cd07afd227	bytes=1422008553
+HF	vinai/phobert-base	revision=c1e37c5c86f918761049cef6fa216b4779d0d01d	bytes=542923308
+HF	xlm-roberta-base	revision=e73636d4f797dec63c3081bb6ed5c7b0bb3f2089	bytes=1115567652
+HF	xlm-roberta-large	revision=c23d21b0620b635a76227c604d44e43a9f0ee389	bytes=2244817354
+HF	xlnet-base-cased	revision=ceaa69c7bc5e512b5007106a7ccbb7daf24b2c79	bytes=467042463
+HF	xlnet-large-cased	revision=37658b4f179eaf971d127d16bfbd9ca676a93034	bytes=1441285815
+HF	yiyanghkust/finbert-tone	revision=4921590d3c0c3832c0efea24c8381ce0bda7844b	bytes=439101405
+TORCH	alexnet-owt-7be5be79.pth	bytes=244408911
+TORCH	convnext_base-6075fbad.pth	bytes=354486097
+TORCH	convnext_large-ea097f82.pth	bytes=791189585
+TORCH	convnext_small-0c510722.pth	bytes=201014929
+TORCH	convnext_tiny-983f1562.pth	bytes=114419221
+TORCH	deeplabv3_mobilenet_v3_large-fc3c493d.pth	bytes=44356159
+TORCH	deeplabv3_resnet101_coco-586e9e4e.pth	bytes=244545539
+TORCH	deeplabv3_resnet50_coco-cd0a2569.pth	bytes=168312152
+TORCH	deit_base_patch16_224-b5f2ef4d.pth	bytes=346319111
+TORCH	deit_small_patch16_224-cd65a155.pth	bytes=88251143
+TORCH	deit_tiny_patch16_224-a1311bcf.pth	bytes=22917895
+TORCH	densenet121-a639ec97.pth	bytes=32342954
+TORCH	densenet169-b2777c0a.pth	bytes=57365526
+TORCH	detr-r50-e632da11.pth	bytes=166618694
+TORCH	dino_deitsmall16_pretrain.pth	bytes=86710517
+TORCH	dino_vitbase16_pretrain.pth	bytes=343242485
+TORCH	dinov2_vitb14_pretrain.pth	bytes=346378731
+TORCH	dinov2_vitl14_pretrain.pth	bytes=1217586395
+TORCH	dinov2_vits14_pretrain.pth	bytes=88283115
+TORCH	efficientnet_b0_ra-3dd342df.pth	bytes=21376743
+TORCH	efficientnet_b0_rwightman-3dd342df.pth	bytes=21444401
+TORCH	efficientnet_b0_rwightman-7f5810bc.pth	bytes=21444401
+TORCH	efficientnet_b1-c27df63c.pth	bytes=31600329
+TORCH	efficientnet_b1_rwightman-bac287d4.pth	bytes=31597577
+TORCH	efficientnet_b2_ra-bcdf34b7.pth	bytes=36788104
+TORCH	efficientnet_b2_rwightman-c35c1473.pth	bytes=36882185
+TORCH	efficientnet_b3_ra2-cf984f9c.pth	bytes=49369973
+TORCH	efficientnet_b3_rwightman-b3899882.pth	bytes=49475909
+TORCH	efficientnet_b4_rwightman-23ab8bcd.pth	bytes=78107389
+TORCH	efficientnet_b5_lukemelas-1a07897c.pth	bytes=122540693
+TORCH	efficientnet_b6_lukemelas-24a108a5.pth	bytes=173394125
+TORCH	efficientnet_b7_lukemelas-c5b4e57e.pth	bytes=267046505
+TORCH	efficientnet_b7_lukemelas-dcc49843.pth	bytes=267046505
+TORCH	efficientnet_v2_l-59c71312.pth	bytes=476654413
+TORCH	efficientnet_v2_m-dc08266a.pth	bytes=218114489
+TORCH	efficientnet_v2_s-dd5fe13b.pth	bytes=86721253
+TORCH	esm2_t12_35M_UR50D.pt	bytes=111813084
+TORCH	fasterrcnn_mobilenet_v3_large_320_fpn-907ea3f9.pth	bytes=77844807
+TORCH	fasterrcnn_mobilenet_v3_large_fpn-fb6a3cc7.pth	bytes=77844807
+TORCH	fasterrcnn_resnet50_fpn_coco-258fb6c6.pth	bytes=167502836
+TORCH	fasterrcnn_resnet50_fpn_v2_coco-dd69338a.pth	bytes=175221657
+TORCH	fcn_resnet50_coco-1167a1af.pth	bytes=141567418
+TORCH	hubert_fairseq_base_ls960.pth	bytes=377565405
+TORCH	ig_resnext101_32x8-c38310e5.pth	bytes=356056638
+TORCH	inception_v3_google-0cc3c7bd.pth	bytes=108949747
+TORCH	lraspp_mobilenet_v3_large-d234d4ea.pth	bytes=13097061
+TORCH	maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth	bytes=178090079
+TORCH	maskrcnn_resnet50_fpn_v2_coco-73cbd019.pth	bytes=185828065
+TORCH	mc3_18-a90a0ba3.pth	bytes=46841888
+TORCH	mobilenet_v2-7ebf99e0.pth	bytes=14258573
+TORCH	mobilenet_v2-b0353104.pth	bytes=14212972
+TORCH	mobilenet_v3_large-5c1a4163.pth	bytes=22132113
+TORCH	mobilenet_v3_large-8738ca79.pth	bytes=22139423
+TORCH	mobilenet_v3_small-047dcff4.pth	bytes=10306551
+TORCH	mvit_v1_b-dbeb1030.pth	bytes=146553423
+TORCH	mvit_v2_s-ae3be167.pth	bytes=138290087
+TORCH	nvidia_efficientnet-b0_210412.pth	bytes=21452055
+TORCH	nvidia_efficientnet-b4_210412.pth	bytes=78122305
+TORCH	r2plus1d_18-91a641e6.pth	bytes=126162996
+TORCH	r3d_18-b3b3357e.pth	bytes=133546016
+TORCH	regnet_y_16gf-3e4a00f9.pth	bytes=335009897
+TORCH	regnet_y_3_2gf-9180c971.pth	bytes=78189157
+TORCH	regnet_y_8gf-dc2b1b54.pth	bytes=158021909
+TORCH	resnet101-63fe2227.pth	bytes=178793939
+TORCH	resnet101-cd907fc2.pth	bytes=178814045
+TORCH	resnet152-394f9c45.pth	bytes=241627721
+TORCH	resnet152-f82ba261.pth	bytes=241669177
+TORCH	resnet18-5c106cde.pth	bytes=46827520
+TORCH	resnet18-f37072fd.pth	bytes=46830571
+TORCH	resnet34-b627a593.pth	bytes=87319819
+TORCH	resnet50-0676ba61.pth	bytes=102530333
+TORCH	resnet50-11ad3fa6.pth	bytes=102540417
+TORCH	resnet50-19c8e357.pth	bytes=102502400
+TORCH	resnext101_32x8d-110c445d.pth	bytes=356173021
+TORCH	resnext101_32x8d-8ba56ff5.pth	bytes=356082095
+TORCH	resnext50_32x4d-1a0047aa.pth	bytes=100488385
+TORCH	resnext50_32x4d-7cdf4587.pth	bytes=100441675
+TORCH	retinanet_resnet50_fpn_coco-eeacb38b.pth	bytes=136595076
+TORCH	semi_supervised_resnet50-08389792.pth	bytes=102480594
+TORCH	semi_supervised_resnext50_32x4-ddb3e555.pth	bytes=73399275
+TORCH	seresnet18-4bb0ce65.pth	bytes=44134913
+TORCH	shufflenetv2_x0.5-f707e7126e.pth	bytes=5538128
+TORCH	squeezenet1_0-b66bff10.pth	bytes=5010551
+TORCH	squeezenet1_1-b8a52dc0.pth	bytes=4958839
+TORCH	ssdlite320_mobilenet_v3_large_coco-a79551df.pth	bytes=14069355
+TORCH	superpoint_v1.pth	bytes=5206086
+TORCH	swin3d_t-7615ae03.pth	bytes=127447114
+TORCH	swin_b-68c6b09e.pth	bytes=351654207
+TORCH	swin_t-704ceda3.pth	bytes=113445839
+TORCH	swin_v2_t-b137f0e2.pth	bytes=113902449
+TORCH	tf_efficientnet_b3_ns-9d44bf68.pth	bytes=49385734
+TORCH	tf_efficientnet_b4_ns-d6313a46.pth	bytes=77995057
+TORCH	unet-e012d006.pt	bytes=31096708
+TORCH	vgg11-8a719046.pth	bytes=531460341
+TORCH	vgg11_bn-6002323d.pth	bytes=531503671
+TORCH	vgg16-397923af.pth	bytes=553433881
+TORCH	vgg16_bn-6c64b313.pth	bytes=553507836
+TORCH	vgg19-dcbb9e9d.pth	bytes=574673361
+TORCH	vit_b_16-c867db91.pth	bytes=346328529
+TORCH	vit_b_16_swag-9ac1b537.pth	bytes=347495889
+TORCH	vit_b_32-d86f8d99.pth	bytes=352954833
+TORCH	vit_l_16-852ce7e3.pth	bytes=1217421105
+TORCH	wav2vec2_fairseq_base_ls960.pth	bytes=377565405
+TORCH	wav2vec2_fairseq_base_ls960_asr_ls960.pth	bytes=377664473
+TORCH	wav2vec2_fairseq_large_xlsr53.pth	bytes=1261914423
+TORCH	wav2vec2_xlsr_300m.pth	bytes=1261921380
+TORCH	wide_resnet50_2-95faca4d.pth	bytes=138223492
+TORCH	wide_resnet50_2-9ba9bcbe.pth	bytes=275905729
+TORCH	xception-43020ad28.pth	bytes=32220340

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 from prompts import SYSTEM_PROMPT
+from runtime.runner import compact_round_for_summary
 from runtime.text_context import (
     _build_prior_draft_memory,
     _build_round_context_packet,
@@ -15,8 +16,10 @@ def test_system_prompt_references_current_round_runtime_sections() -> None:
     assert "[PINNED RUNTIME CONTROL]" not in SYSTEM_PROMPT
     assert "[RUNTIME BUDGET ENVELOPE]" not in SYSTEM_PROMPT
     assert "[EXTERNAL VALIDATION TIMEOUT]" in SYSTEM_PROMPT
-    assert "strict score-first status" in SYSTEM_PROMPT
-    assert "Do not request or negotiate a runtime budget" in SYSTEM_PROMPT
+    assert "[ROUND DIRECTIVE]" in SYSTEM_PROMPT
+    assert "Do not copy it into code" in SYSTEM_PROMPT
+    assert "internal timers" in SYSTEM_PROMPT
+    assert "complete end-to-end path" in SYSTEM_PROMPT
 
 
 def _round(round_num: int, branch: str, score: float | None, state: str = "frontier_improve") -> dict:
@@ -31,6 +34,38 @@ def _round(round_num: int, branch: str, score: float | None, state: str = "front
     }
 
 
+def _workload_plan(*, ceiling: int | None, reference: dict | None = None) -> dict:
+    reference = reference or {}
+    return {
+        "schema_version": "workload_plan_v1",
+        "policy": "earliest_strong_complete_route",
+        "draft_workload_ceiling_seconds": ceiling,
+        "ceiling_is_consumption_target": False,
+        "expansion_requires_evidence": True,
+        "solution_deadline_allowed": False,
+        "reference_round": reference.get("round"),
+        "reference_branch": reference.get("branch"),
+        "reference_status": reference.get("status"),
+        "previous_validation_runtime_seconds": reference.get("runtime"),
+        "previous_validation_timeout_seconds": reference.get("timeout"),
+        "previous_timeout_saturation": reference.get("saturation"),
+        "previous_timed_out": reference.get("timed_out"),
+    }
+
+
+def test_compact_round_summary_preserves_frozen_workload_plan() -> None:
+    plan = _workload_plan(ceiling=3600)
+    compact = compact_round_for_summary({
+        "round": 0,
+        "branch": "draft",
+        "status": "success",
+        "branch_decision": {"branch": "draft", "workload_plan": plan},
+        "validation": {"status": "success", "score": 0.5, "run_time": 120.0, "timeout": 10800},
+    })
+
+    assert compact["branch_decision"]["workload_plan"] == plan
+
+
 def test_round_history_is_bounded_and_keeps_parent() -> None:
     rows = [_round(index, "draft" if index % 9 == 0 else "improve", index / 100) for index in range(100)]
     text = _build_round_history(rows, parent_round=37, higher_is_better=True)
@@ -40,6 +75,34 @@ def test_round_history_is_bounded_and_keeps_parent() -> None:
     assert any(line.startswith("37 |") and line.endswith("| parent") for line in data_lines)
     assert "Omitted historical rounds: 76" in text
     assert "anchor_parent" not in text
+
+
+def test_round_history_uses_validation_runtime_and_exposes_timeout_saturation() -> None:
+    rows = [
+        {
+            **_round(0, "draft", 0.6, "initial_seed"),
+            "round_wall_time": 9999.0,
+            "validation": {"status": "success", "score": 0.6, "run_time": 1800.0, "timeout": 3600},
+        },
+        {
+            **_round(1, "draft", None, "required_seed"),
+            "round_wall_time": 8888.0,
+            "validation": {"status": "timeout", "score": None, "run_time": 3599.0, "timeout": 3600},
+        },
+    ]
+
+    text = _build_round_history(rows, parent_round=None, higher_is_better=True)
+    lowered = text.lower()
+
+    assert "sandbox_runtime_seconds" in lowered
+    assert "timeout_saturation" in lowered
+    assert "1800" in text
+    assert "3599" in text
+    assert "0.500" in text or "0.5" in text
+    assert "1.000" in text or "0.999" in text
+    assert "9999" not in text
+    assert "8888" not in text
+    assert "timeout" in lowered
 
 
 def test_prior_draft_memory_lists_cards_without_code_or_compat_operator(tmp_path) -> None:
@@ -130,8 +193,9 @@ def test_draft_round_packet_has_no_parent_and_includes_external_timeout(tmp_path
         "branch_reason": "round_0_initial_seed",
         "runtime_profile": "new_seed_score_first",
         "runtime_control": {"strict_score_first_required": True},
-        "validation_timeout_seconds": 1800,
-        "budget": {"remaining_budget": 7200},
+        "validation_timeout_seconds": 10800,
+        "budget": {"remaining_budget": 12000},
+        "workload_plan": _workload_plan(ceiling=3600),
     }
 
     text, _ = _build_round_context_packet(
@@ -150,16 +214,56 @@ def test_draft_round_packet_has_no_parent_and_includes_external_timeout(tmp_path
     assert "runtime_profile: new_seed_score_first" in text
     assert "strict_score_first_required: true" in text
     assert "[EXTERNAL VALIDATION TIMEOUT]" in text
-    assert "validation_timeout_seconds: 1800" in text
-    assert "remaining_sandbox_runtime_seconds: 7200" in text
-    assert "enforces this single timeout externally" in text
-    assert "read-only and not negotiable" in text
+    assert "validation_timeout_seconds: 10800" in text
+    assert "remaining_sandbox_runtime_seconds: 12000" in text
+    assert "enforces this sandbox kill ceiling externally" in text
+    assert "not an expected runtime or quota" in text
     assert "[RUNTIME BUDGET ENVELOPE]" not in text
     assert "framework_reference" not in text
     assert "solution_internal_budget" not in text
     assert "allocation_basis" not in text
     assert "[PINNED RUNTIME CONTROL" not in text
     assert "[BEST VALIDATION CANDIDATE]" not in text
+    assert "[DRAFT WORKLOAD CEILING]" in text
+    assert "draft_workload_ceiling_seconds: 3600" in text
+    assert "not a target" in text.lower()
+    assert "headroom" in text.lower()
+
+
+def test_non_draft_round_packet_renders_observed_parent_runtime_without_a_draft_ceiling(tmp_path) -> None:
+    reference = {
+        "round": 2,
+        "branch": "draft",
+        "status": "success",
+        "runtime": 321.0,
+        "timeout": 10800,
+        "saturation": 321.0 / 10800.0,
+        "timed_out": False,
+    }
+    decision = {
+        "round": 3,
+        "branch_state": "frontier_improve",
+        "budget": {"remaining_budget": 12_000},
+        "validation_timeout_seconds": 10_800,
+        "workload_plan": _workload_plan(ceiling=None, reference=reference),
+    }
+
+    text, _ = _build_round_context_packet(
+        task_dir=tmp_path,
+        metadata={"higher_is_better": True},
+        branch_decision=decision,
+        branch="improve",
+        parent={"round": 2, "score": 0.7},
+        parent_card_path="",
+        all_rounds=[],
+    )
+
+    assert "[OBSERVED RUNTIME EVIDENCE]" in text
+    assert "reference_round: 2" in text
+    assert "reference_branch: draft" in text
+    assert "previous_validation_runtime_seconds: 321" in text
+    assert "previous_validation_timeout_seconds: 10800" in text
+    assert "[DRAFT WORKLOAD CEILING]" not in text
 
 
 def test_round_packet_falls_back_to_remaining_runtime_for_external_timeout(tmp_path) -> None:
@@ -181,6 +285,26 @@ def test_round_packet_falls_back_to_remaining_runtime_for_external_timeout(tmp_p
 
     assert "validation_timeout_seconds: 5000" in text
     assert "solution_internal_budget" not in text
+
+
+def test_round_directive_owns_branch_specific_execution_guards(tmp_path) -> None:
+    cases = (
+        ("draft", "initial_seed", "independent phase-scoped strong seed"),
+        ("debug", "repair_failure", "repair exactly the linked failed parent and failure class"),
+        ("improve", "frontier_improve", "one evidence-backed material improvement"),
+    )
+    for branch, state, expected in cases:
+        text, _ = _build_round_context_packet(
+            task_dir=tmp_path,
+            metadata={"higher_is_better": True},
+            branch_decision={"round": 1, "branch_state": state},
+            branch=branch,
+            parent={},
+            parent_card_path="",
+            all_rounds=[],
+        )
+
+        assert expected in text
 
 
 def test_debug_and_improve_packets_route_only_parent_memory(tmp_path) -> None:
@@ -205,6 +329,18 @@ def test_debug_and_improve_packets_route_only_parent_memory(tmp_path) -> None:
             branch_decision={
                 "round": 3,
                 "branch_state": state,
+                "workload_plan": _workload_plan(
+                    ceiling=None,
+                    reference={
+                        "round": 2,
+                        "branch": "draft",
+                        "status": "success",
+                        "runtime": 120.0,
+                        "timeout": 1800,
+                        "saturation": 120.0 / 1800.0,
+                        "timed_out": False,
+                    },
+                ),
                 "draft_prior_memory": {
                     "cards": [{"round": 0, "method_family": "must_not_render"}],
                 },
@@ -221,6 +357,7 @@ def test_debug_and_improve_packets_route_only_parent_memory(tmp_path) -> None:
         assert "- score: 0.7" in text
         assert f"- method_summary: {complete_parent_summary}" in text
         assert "PARENT_COMPLETE_END." in text
-        assert "status:" not in text
+        assert "- status:" not in text
         assert "must_not_render" not in text
         assert draft_paths == []
+        assert "[OBSERVED RUNTIME EVIDENCE]" in text

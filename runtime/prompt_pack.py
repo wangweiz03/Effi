@@ -17,6 +17,8 @@ def _round_context_token_counts(text: str) -> dict[str, int]:
         "[PRIOR DRAFT MEMORY]": "prior_draft_memory",
         "[SCORE CONTEXT]": "score_context",
         "[ROUND HISTORY]": "round_history",
+        "[DRAFT WORKLOAD CEILING]": "draft_workload_ceiling",
+        "[OBSERVED RUNTIME EVIDENCE]": "observed_runtime_evidence",
         "[EXTERNAL VALIDATION TIMEOUT]": "external_validation_timeout",
     }
     sections: dict[str, list[str]] = {}
@@ -35,7 +37,6 @@ V50_PROMPT_HEADING_LEVELS = {
     "[SYSTEM INSTRUCTIONS]": 2,
     "[PINNED SANDBOX ENVIRONMENT]": 2,
     "[CONTEXT-FIRST PROTOCOL]": 2,
-    "[BRANCH INLINE GUARDS]": 2,
     "[OUTPUT CONTRACT]": 2,
     "[PINNED HARD TASK CONTRACT]": 2,
     "[USER TASK]": 2,
@@ -44,6 +45,8 @@ V50_PROMPT_HEADING_LEVELS = {
     "[PRIOR DRAFT MEMORY]": 2,
     "[SCORE CONTEXT]": 2,
     "[ROUND HISTORY]": 2,
+    "[DRAFT WORKLOAD CEILING]": 2,
+    "[OBSERVED RUNTIME EVIDENCE]": 2,
     "[EXTERNAL VALIDATION TIMEOUT]": 2,
     "[CONTEXT SOURCE MAP]": 2,
     "[CURRENT FRAMEWORK USER CONTRACT]": 3,
@@ -108,8 +111,8 @@ def pack_prompt_with_pinned_runtime(
     local paths before coding. Schema-critical task contract facts remain
     inline; EDA details are source-map-only so the coding prompt does not repeat
     the completed EDA report. Large sections may be reduced by complete lines,
-    but branch guards and user task are never replaced by a weak retrieval-only
-    instruction.
+    while branch behavior stays in the round directive and routed skill bodies
+    remain available through the source map.
     """
     system_section = "[SYSTEM INSTRUCTIONS]\n\n" + system_prompt
     pinned_section = "[PINNED RUNTIME PACKET]\n\n" + pinned_context if pinned_context else ""
@@ -136,13 +139,11 @@ def pack_prompt_with_pinned_runtime(
         }
         hard_contract_section, hard_contract_record = build_v35_hard_task_contract(skill_raw)
 
-        skill_section = "[BRANCH INLINE GUARDS]\n\n" + skill_raw.strip() if skill_raw.strip() else ""
-        skill_record = {
+        branch_routing_record = {
             "original_chars": len(skill_raw),
-            "card_chars": len(skill_section),
             "original_tokens": prompt_token_count(skill_raw),
-            "card_tokens": prompt_token_count(skill_section),
-            "source": "branch_inline_guards_no_selected_skill_context",
+            "inlined": False,
+            "source": "part3_round_directive_and_part4_skill_paths",
         }
 
         filtered_user_task, user_record = filter_user_task_for_context_first_coding(user_task_raw)
@@ -166,21 +167,19 @@ def pack_prompt_with_pinned_runtime(
         if phase_name == "static_gate_repair":
             output_section = (
                 "[OUTPUT CONTRACT]\n"
-                "Follow the context-first protocol above, repair the blocker in the required local files, do not run generated files, "
-                "and make the final response only confirm that `solution.py` was repaired."
+                "Repair the required local artifacts and make the final response only confirm that `solution.py` was repaired."
             )
         else:
             output_section = (
                 "[OUTPUT CONTRACT]\n"
-                "Follow the context-first protocol above, create the required local files, do not run generated files, "
-                "and make the final response only confirm that `solution.py` was created."
+                "Create the required local artifacts and make the final response only confirm that `solution.py` was created."
             )
 
         def build_part_sections() -> dict[str, str]:
             part1 = _v41_part(
                 "PART 1 - HARD EXECUTION RULES AND SANDBOX",
-                "Non-negotiable execution protocol, sandbox resources, package/API constraints, and output contract. Do not treat later cards as permission to weaken these rules.",
-                [system_section, sandbox_environment_section, context_first_section, skill_section, output_section],
+                "Static execution protocol, sandbox facts, package/API constraints, and output contract.",
+                [system_section, sandbox_environment_section, context_first_section, output_section],
             )
             part2 = _v41_part(
                 "PART 2 - TASK DESCRIPTION AND CONTRACT",
@@ -189,7 +188,7 @@ def pack_prompt_with_pinned_runtime(
             )
             part3 = _v41_part(
                 "PART 3 - CURRENT ROUND ITERATION STATE",
-                "Authoritative current-round metadata, branch action, parent or prior-draft memory, score context, bounded history, and the runtime budget envelope.",
+                "Authoritative current-round metadata, branch action, parent or prior-draft memory, score context, bounded history, and the external validation timeout.",
                 [round_context_section],
             )
             part4 = _v41_part(
@@ -239,6 +238,7 @@ def pack_prompt_with_pinned_runtime(
             "context_source_map": "[CONTEXT SOURCE MAP]" in full_prompt,
             "sandbox_environment": "[PINNED SANDBOX ENVIRONMENT]" in full_prompt,
             "round_directive": "[ROUND DIRECTIVE]" in full_prompt,
+            "draft_workload_ceiling": "[DRAFT WORKLOAD CEILING]" in full_prompt,
             "parent_abs_path": path_reference_present(pinned_info.get("parent_abs_path")),
             "parent_validation_feedback": path_reference_present(pinned_info.get("parent_validation_feedback_path")),
             "latest_eda_findings": path_reference_present(
@@ -259,13 +259,16 @@ def pack_prompt_with_pinned_runtime(
         source_presence = pinned_info.get("source_presence") if isinstance(pinned_info.get("source_presence"), dict) else {}
         if source_presence.get("round_directive") and not pinned_markers_after_pack["round_directive"]:
             critical_failures.append("round_directive")
+        prompt_branch = normalize_branch_name(str(pinned_info.get("branch") or ""))
+        if phase_name in {"coding", "static_gate_repair"} and prompt_branch == "draft" and not pinned_markers_after_pack["draft_workload_ceiling"]:
+            critical_failures.append("draft_workload_ceiling")
         if prompt_token_count(full_prompt) > prompt_cap:
             critical_failures.append(f"prompt_token_cap_exceeded:{prompt_token_count(full_prompt)}>{prompt_cap}")
 
         prompt_pack = {
             "policy": V33_LLM_POLICY,
-            "packing": "v51_compact_part3_branch_memory_source_map",
-            "round_context_schema": "part3_compact_v2",
+            "packing": "v54_draft_workload_ceiling",
+            "round_context_schema": "part3_compact_v3",
             "cap_tokens": prompt_cap,
             "phase_name": phase_name,
             "prompt_chars_before_pack": original_prompt_chars,
@@ -281,7 +284,6 @@ def pack_prompt_with_pinned_runtime(
                 "sandbox_environment": len(sandbox_environment_section),
                 "round_context": len(round_context_section),
                 "hard_task_contract": len(hard_contract_section),
-                "branch_inline_guards": len(skill_section),
                 "user_task": len(user_section),
                 "output": len(output_section),
                 **{key: len(value) for key, value in build_part_sections().items()},
@@ -293,7 +295,6 @@ def pack_prompt_with_pinned_runtime(
                 "sandbox_environment": prompt_token_count(sandbox_environment_section),
                 "round_context": prompt_token_count(round_context_section),
                 "hard_task_contract": prompt_token_count(hard_contract_section),
-                "branch_inline_guards": prompt_token_count(skill_section),
                 "user_task": prompt_token_count(user_section),
                 "output": prompt_token_count(output_section),
                 **{key: prompt_token_count(value) for key, value in build_part_sections().items()},
@@ -307,7 +308,7 @@ def pack_prompt_with_pinned_runtime(
             "sandbox_environment": sandbox_environment_record,
             "hard_task_contract": hard_contract_record,
             "user_task_filter": user_record,
-            "selected_skill_filter": skill_record,
+            "branch_context_routing": branch_routing_record,
             "pinned_markers_after_pack": pinned_markers_after_pack,
         }
         if critical_failures:

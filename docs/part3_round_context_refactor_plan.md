@@ -2,7 +2,7 @@
 
 ## Status
 
-The compact PART 3 design is implemented as `part3_compact_v2`. It replaces the former recursive round state, duplicated best-candidate objects, compatibility operator placeholders, and repeated runtime directives.
+The compact PART 3 design is implemented as `part3_compact_v3`. It replaces the former recursive round state, duplicated best-candidate objects, compatibility operator placeholders, and repeated runtime directives.
 
 The refactor changes only the prompt-facing current-round projection and the parent contract. Historical run directories remain readable and are not rewritten.
 
@@ -29,7 +29,7 @@ The coding prompt has four fixed responsibilities:
 3. PART 3 projects already-decided current-round metadata and bounded memory.
 4. PART 4 is the only list of local must-read and optional paths.
 
-PART 3 does not repeat static runtime policy or expose raw scheduler JSON. `[ROUND DIRECTIVE]` is the sole prompt-facing authority for current branch behavior.
+PART 3 does not repeat static runtime policy or expose raw scheduler JSON. `[ROUND DIRECTIVE]` is the sole prompt-facing authority for current branch behavior and its branch-specific execution guard. PART 1 contains no branch guard or routed skill body; PART 4 exposes the branch-routed source paths.
 
 ## Current Structure
 
@@ -38,7 +38,7 @@ PART 3 does not repeat static runtime policy or expose raw scheduler JSON. `[ROU
 
 ## [ROUND DIRECTIVE]
 round_index, branch, state, reason, runtime_profile,
-strict_score_first_required, metric_direction, action
+strict_score_first_required, metric_direction, action,
 
 ## [PARENT MEMORY CARD]          # debug/improve only
 round, score, complete Method Portrait.method_summary
@@ -50,13 +50,19 @@ up to four frozen round/score/complete method_summary records
 latest, incumbent, deltas, material issues, required response
 
 ## [ROUND HISTORY]
-bounded round/branch/state/status/score/family/commit overview
+bounded round/branch/state/status/score/runtime/saturation/family/commit overview
+
+## [DRAFT WORKLOAD CEILING]      # draft only
+soft ceiling, prior-draft runtime evidence, non-quota policy
+
+## [OBSERVED RUNTIME EVIDENCE]   # non-draft when parent evidence exists
+bound-parent runtime, timeout, saturation, evidence limits
 
 ## [EXTERNAL VALIDATION TIMEOUT]
 remaining sandbox runtime and one read-only external validation cap
 ```
 
-`runtime/prompt_pack.py` records the compact packing schema, section token counts, and critical marker coverage. `critical_marker_failures` must be empty.
+`runtime/prompt_pack.py` records the `v54_draft_workload_ceiling` packing schema, section token counts, and critical marker coverage. `critical_marker_failures` must be empty.
 
 ## Parent Rules
 
@@ -94,11 +100,17 @@ Draft prior memory is not a parent, does not expose code, does not prescribe a m
 
 ## External Validation Timeout
 
-The framework takes the smaller of remaining sandbox runtime and a generous workload cap before coding. Method-neutral branch scheduling uses `10800s`; concrete low-cost and sparse callers may use `3600s` and `7200s`. Historical runtimes and branch state do not shrink the wall. PART 3 displays only the resulting cap and remaining sandbox runtime as read-only context.
+The framework takes the smaller of remaining sandbox runtime and a generous workload hard cap before coding. Method-neutral branch scheduling uses `10800s`; concrete low-cost and sparse callers may use `3600s` and `7200s`. Historical runtimes and branch state do not shrink the wall. `[EXTERNAL VALIDATION TIMEOUT]` displays only the resulting cap and remaining sandbox runtime as read-only execution context.
 
-`context_readiness.md` records evidence and implementation intent without changing the frozen framework timeout.
+The frozen branch decision carries `workload_plan_v1`; `[DRAFT WORKLOAD CEILING]` separately supplies `draft_workload_ceiling_seconds: 3600` and requires ordinary readiness planning fields. This is a soft ceiling on the planned complete workload, not an execution timeout or quota. Expected runtime can be only a few minutes and must not be expanded to fill the hour. The old `test-lite` calibration reports `92.6%` of audited completed draft validations within this envelope.
+
+The required draft plan fields are `draft_workload_ceiling_seconds`, `expected_complete_path_seconds`, `runtime_estimate_basis`, `dominant_cost_units`, `complete_workload_product`, `within_ceiling: yes`, and `why_no_further_expansion`. Historical basis uses completed same-task actual sandbox runtime: comparable successes are strongest, timeouts are lower bounds, and failures before dominant work are not end-to-end estimates.
+
+Debug and improve keep `workload_plan_v1` with a null draft ceiling and bound-parent runtime evidence. They do not emit the draft-only prompt or readiness fields. Debug reduces timeout/OOM work relative to the failed parent; improve bounds its change from validation-best parent evidence.
 
 Only actual sandbox runtime is charged against the task budget. The solution remains responsible for bounded work, a competitive score-first route, and an atomic `submission.csv` before optional heavy work risks the external wall.
+
+The design does not restore solution-local timers, remaining-time polls, budget exceptions, or a separate sandbox preflight.
 
 ## Source Routing
 
@@ -124,9 +136,11 @@ The implementation is complete when:
 2. draft has no parent or prefill but can see bounded frozen draft summaries;
 3. debug binds failed code and improve/final-audit bind validation-best eligible code;
 4. parent text is non-recursive and all paths are exclusive to PART 4;
-5. PART 3 shows one read-only external timeout and no Codex budget request;
-6. readiness contains evidence and implementation planning, not budget negotiation;
+5. PART 3 distinguishes one read-only external hard timeout from the draft-only `3600s` soft workload ceiling;
+6. the frozen decision contains `workload_plan_v1`, while draft readiness contains ordinary implementation-planning fields rather than budget negotiation;
 7. new prompts contain no legacy round-state, full best-candidate, recursive portfolio, or neutral operator block;
-8. historical artifacts remain readable without extending deprecated schema.
+8. historical artifacts remain readable without extending deprecated schema;
+9. debug and improve retain parent-relative bounded-work behavior without inheriting a draft quota;
+10. no internal timer or separate sandbox preflight is introduced.
 
 The historical projection replay reduced median PART 3 size to 924 tokens and total size to 21,780 tokens, approximately 70.9% below the audited baseline. External sandbox and inference services are still required for full evaluator smoke runs.

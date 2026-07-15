@@ -237,8 +237,86 @@ def extract_markdown_sections(text: str, wanted_titles: list[str]) -> str:
     return "\n".join(selected).strip()
 
 
+PHASE_SCOPED_TASK_SKILL_SECTIONS: dict[str, tuple[str, ...]] = {
+    "draft": (
+        "Task Contract And Traps",
+        "Seed Route",
+        "Validation Contract",
+        "Avoid Or Delay",
+    ),
+    "debug": (
+        "Task Contract And Traps",
+        "Debug And Fallback",
+        "Validation Contract",
+        "Avoid Or Delay",
+    ),
+    "improve": (
+        "Task Contract And Traps",
+        "Improve Library",
+        "Validation Contract",
+        "Avoid Or Delay",
+    ),
+}
+
+STANDARD_TASK_SKILL_SECTIONS = (
+    "Task Contract And Traps",
+    "Seed Route",
+    "Improve Library",
+    "Debug And Fallback",
+    "Validation Contract",
+    "Avoid Or Delay",
+)
+
+
+def build_branch_task_skill_view(skill_text: str, branch: str) -> tuple[str, bool]:
+    """Return only the standardized task-skill sections relevant to a branch."""
+    normalized_branch = normalize_branch_name(branch)
+    wanted = PHASE_SCOPED_TASK_SKILL_SECTIONS.get(normalized_branch)
+    if not wanted or not skill_text.strip():
+        return skill_text, False
+
+    section_lines: dict[str, list[str]] = {}
+    level_two_headings: list[str] = []
+    title_line = ""
+    current: str | None = None
+    for line in skill_text.splitlines():
+        if line.startswith("# ") and not title_line:
+            title_line = line
+        if line.startswith("## "):
+            current = line[3:].strip()
+            level_two_headings.append(current)
+            section_lines.setdefault(current, [line])
+            continue
+        if current is not None:
+            section_lines[current].append(line)
+
+    if any(level_two_headings.count(section) != 1 for section in STANDARD_TASK_SKILL_SECTIONS):
+        return skill_text, False
+
+    output = [title_line or "# Routed Task Skill", ""]
+    for section in wanted:
+        output.extend(section_lines[section])
+        output.append("")
+    return "\n".join(output).rstrip() + "\n", True
+
+
 def extract_skill_schema(skill_text: str) -> dict[str, str]:
-    """Turn the seven-section reimagined skill into phase-specific text fields."""
+    """Turn either task-skill schema into phase-specific text fields."""
+    headings = {
+        line[3:].strip()
+        for line in skill_text.splitlines()
+        if line.startswith("## ")
+    }
+    standardized = {
+        "task_contract": extract_markdown_sections(skill_text, ["task contract and traps"]),
+        "first_run": extract_markdown_sections(skill_text, ["seed route"]),
+        "upgrade_menu": extract_markdown_sections(skill_text, ["improve library"]),
+        "debug_fallback": extract_markdown_sections(skill_text, ["debug and fallback"]),
+        "validation_contract": extract_markdown_sections(skill_text, ["validation contract"]),
+        "avoid_rules": extract_markdown_sections(skill_text, ["avoid or delay"]),
+    }
+    if set(STANDARD_TASK_SKILL_SECTIONS).issubset(headings):
+        return standardized
     return {
         "task_contract": extract_markdown_sections(skill_text, ["task-specific reading"]),
         "strategy": extract_markdown_sections(skill_text, ["highest-expected-score strategy"]),
@@ -764,7 +842,7 @@ def build_v33_skill_packet(
         per_key_limit = 2300
         total_limit = V33_SKILL_CONTEXT_LIMITS["draft"]
     elif branch == "debug":
-        keys = ["task_contract", "validation_contract", "avoid_rules"]
+        keys = ["task_contract", "debug_fallback", "validation_contract", "avoid_rules"]
         per_key_limit = 1200
         total_limit = V33_SKILL_CONTEXT_LIMITS["debug"]
     elif intent in {INTENT_EXPLORE_ALTERNATIVE, INTENT_STRATEGY_REPLACE, INTENT_PORTFOLIO_EXPAND}:
@@ -776,7 +854,7 @@ def build_v33_skill_packet(
         per_key_limit = 1400
         total_limit = V33_SKILL_CONTEXT_LIMITS["improve"]
     elif intent == INTENT_TIMEOUT_SAFE:
-        keys = ["task_contract", "validation_contract", "avoid_rules"]
+        keys = ["task_contract", "debug_fallback", "validation_contract", "avoid_rules"]
         per_key_limit = 1200
         total_limit = V33_SKILL_CONTEXT_LIMITS["debug"]
     else:
@@ -851,26 +929,20 @@ def route_skills_for_branch(
             sections.extend([f"## {title}", content.strip()])
 
     if branch == "draft":
-        task_skill_path, task_skill = load_task_skill(task_name, task_skills_dir)
+        task_skill_path, _task_skill = load_task_skill(task_name, task_skills_dir)
         error_path, _error_skill = load_skill_package(error_skill_file, limit=1)
         add_source("Task Skill Source", task_skill_path)
         add_source("Failure Prevention Skill Source", error_path)
-        add_source("Draft Guard", None, DRAFT_TASK_SKILL_GUARD)
-        add_source("Runtime Hardening Guard", None, RUNTIME_HARDENING_CONTEXT)
-        reason = "draft must inspect task skill and failure-prevention skill paths; only compact branch guards are inlined"
+        reason = "draft must inspect task skill and failure-prevention skill paths"
     elif branch == "debug":
         error_path, _error_skill = load_skill_package(error_skill_file, limit=1)
         task_skill_path, _task_skill = load_task_skill(task_name, task_skills_dir)
         add_source("Failure Prevention Skill Source", error_path)
         add_source("Task Skill Source", task_skill_path)
-        add_source("Debug Error Taxonomy Guard", None, DEBUG_ERROR_GUARD)
-        add_source("Runtime Hardening Guard", None, RUNTIME_HARDENING_CONTEXT)
         reason = "debug must inspect failure-prevention skill plus linked parent code and feedback; task skill is available as optional task-specific modeling prior"
     elif branch == "improve":
-        task_skill_path, task_skill = load_task_skill(task_name, task_skills_dir)
+        task_skill_path, _task_skill = load_task_skill(task_name, task_skills_dir)
         add_source("Task Skill Source", task_skill_path)
-        add_source("Improve Best Guard", None, IMPROVE_BEST_GUARD)
-        add_source("Runtime Hardening Guard", None, RUNTIME_HARDENING_CONTEXT)
         reason = "improve must inspect task skill and anchor parent paths, then may inspect extra cards/code"
     else:
         task_skill_path, task_skill = load_task_skill(task_name, task_skills_dir)
@@ -878,6 +950,4 @@ def route_skills_for_branch(
         reason = "fallback route"
 
     content = "\n\n".join(sections).strip()
-    if not content:
-        content = "No large skill text is inlined. Inspect required skill source paths from the context source map."
     return SkillRoute(branch=branch, reason=reason, sources=sources, content=content)

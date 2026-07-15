@@ -77,34 +77,6 @@ EDA_SKILL_GUIDANCE = (
     "working directory. Later planning and coding phases read the latest eda_findings.md plus compact v4 portfolio context."
 )
 
-DRAFT_TASK_SKILL_GUARD = """Draft branch contract:
-- Draft is a code-action only: it means build an independent candidate without prefilled incumbent code. It does not imply running EDA.
-- Use the full task-specific Kaggle skill as the primary modeling recipe.
-- Use EDA/local schema evidence only to verify files, columns, target, metric, resource risks, and submission format.
-- Do not spend a draft round on EDA-only output or generic AutoML search.
-- Implement the skill's highest-ROI stable baseline directly, with conservative resource bounds and trained downgrade paths.
-- A draft seed must be a strong seed: build the task-appropriate main high-value family, but if the selected route is high-cost image/audio/transformer/sparse-text/tree-ensemble work, first execute a trained score-first path before optional heavy tiers. Prefer a sharply bounded supervised version of the selected primary route when it can finish; metadata, thumbnail/descriptors, sparse/frozen features, or shallow models are protection/fusion support, not replacements for a feasible stronger primary route.
-- For the first no-score high-cost seed, Tier 1 is a fast evidence envelope, not a disguised full sweep. For sparse text or large tabular routes, use one capped pipeline with at most a small fold count/holdout, capped features/iterations/model count, and no broad sibling table before the first score. For image/audio routes, use metadata/descriptors/frozen features or one low-resolution single-fold primary model with one or two epochs and no TTA before heavier tiers. After Tier 1 has produced OOF/local evidence and test predictions, optional tiers may spend remaining time on the high-value recipe.
-- For image/audio/media data discovery, use CSV-first schema inference and common train/test media directory names before any recursive/native directory traversal. Do not scan the whole DATA_DIR with `os.walk`, `os.scandir`, or recursive `rglob` before the first scored path; resolve only needed train/test IDs whenever possible.
-- Use a budget ladder rather than all-or-nothing model piling: finish one competitive trained candidate, then optionally add extra views/models/blends as time-safe increments; shrink folds/features/iterations/epochs/model count before abandoning the main family.
-- Do not put the only score-first/fallback path after all heavy candidates fail; it must be available before the first optional expensive tier starts.
-- After the first trained candidate completes, keep a current-best submission candidate in memory. Before optional heavy tiers, either prove enough internal time remains or write that current-best `submission.csv` and exit normally before the sandbox wall.
-- Before writing code, extract the routed skill's named recipe items into a coverage table. Implement the primary route plus enough cheap complementary items to make a real seed; defer only items that are expensive, unavailable, risky, or clearly reserved for later rounds.
-- Preserve composite recipes when turning that table into code. If the skill presents compatible features, views, model heads, calibration, or blending pieces as one high-value route, at least one primary trained candidate must keep those pieces together in a single estimator/pipeline or OOF-selected composite. Do not replace a strong joint recipe with only isolated submodels.
-- Preserve recipe fidelity before adding generic diversity. Implement the selected route's named primary model family, feature composition, validation pattern, and cheap blend/stack/calibration pieces before spending budget on substitute learner families not present in the routed skill.
-- If the selected route is rich but cheap enough for multiple candidates, produce several faithful joint variants of the route's primary family before adding substitute learners from generic prior.
-- Keep optional auxiliary feature blocks out of at least one pure core candidate. Add optional/support blocks as a separate validated variant or support model rather than forcing them into every primary candidate.
-- When OOF predictions for several routed candidates already exist, blend/stack/calibrator is a cheap core step. With three or more base OOF candidates, compare both weighted blend and regularized stack/calibrator unless there is a hard implementation failure.
-- If the first candidate table collapses to one useful model and cheap recipe items remain, the code should add the next bounded variant when time permits rather than declaring the seed complete.
-- Make the seed reproducible: fixed seeds, deterministic folds/candidate order, and stdout diagnostics that record seeds, candidates, selected route, scores, and fallback activation.
-- Do not mask data, label, target, or submission-unit parsing failures with untrained constant submissions."""
-
-IMPROVE_BEST_GUARD = """Improve/frontier contract:
-- Treat best_local_cv as the score anchor, but do not let a weak incumbent constrain the implementation.
-- Follow the portfolio action: seed/expand must produce a materially distinct strong candidate; strengthen may tune the best candidate; blend must compare and combine existing candidates.
-- Prefer high-ROI changes with visible validation evidence: feature family, model family, folds/seeds, calibration, postprocessing, TTA, or candidate selection.
-- If score is stable and recent attempts do not improve, add diversity or a selector/blend before spending another round on narrow local tuning."""
-
 V37_HARD_DIVERSITY_GUARD = """V4 search contract:
 - A selected portfolio-expansion or strategy-replacement round must create a new primary method family unless the scheduler explicitly says every bounded family is exhausted.
 - Initial search first collects two successful draft-origin seed families by default. A debug repair that makes a failed draft seed runnable inherits that draft seed identity and counts. Only after this breadth pool is ready should the scheduler optimize the best scored code; later independent drafts are used after real plateau or dead-route signals.
@@ -127,22 +99,6 @@ ALTERNATIVE_GUARD = """Explore-alternative contract:
 - best_local_cv is a comparison anchor, not the implementation template.
 - Avoid only the explicitly listed avoid method family; do not ban the best family globally for future improve-best rounds.
 - Keep the implementation bounded and include a trained fallback or simpler model path when resources/dependencies fail."""
-
-DEBUG_ERROR_GUARD = """Debug branch contract:
-- Repair only the uniquely linked latest concrete failure unless the feedback proves the approach cannot run.
-- Debug is not a new modeling route. If it succeeds, the runtime credits the repaired parent round's effective method identity.
-- Classify and fix schema, dependency, timeout, OOM, submission, metric, data parsing, or output-format errors first.
-- For timeout/OOM, first create or preserve a fast trained score-first path, then retry the same high-value route only as a smaller bounded tier; do not collapse to an unrelated weak probe unless the parent family cannot run at all.
-- A timeout/OOM repair should preserve medal-oriented modeling whenever possible: downscale folds/features/epochs/resolution/model count and reorder work before abandoning the high-upside parent family.
-- Do not delay the only trained fallback until after repeated heavy failures; the score-first path must run before any optional expensive retry tier.
-- Once a repaired trained path completes, keep it submission-ready and prefer a normal exit over risking the external validation wall inside optional heavy retry work.
-- If a timeout/OOM produced no score, especially with no useful run log, do not perform unbounded full-data decoding, hashing, embedding, or heavy pre-scans before the score-first path has already completed.
-- If a media/data discovery failure occurs before schema inference, repair toward CSV-first and known train/test media directory lookup; avoid replacing one full DATA_DIR traversal with another `os.walk`, `os.scandir`, or recursive `rglob` scanner.
-- If repeated timeout/OOM occurs before any scored validation, switch to score-first recovery: produce a small trained, schema-safe submission under tight caps; avoid full-resolution/full-data training, large ensembles, and TTA until a valid score exists, but keep a bounded version of the high-ROI supervised family when it can plausibly finish.
-- For schema/data-parsing/output-format failures, repair the whole local failure class across sibling parsers, readers, and validators; do not only patch the single stack-frame line when the same pattern can recur immediately.
-- When the failed parent route is high-cost/high-risk but failed quickly from code, schema, fold, dependency, or format errors, keep the high-upside route but first finish exactly one repaired bounded trained primary candidate. Do not run a broad candidate table, wide ensemble, stack, TTA, or several full-cost sibling variants before the repaired seed has at least one validation score.
-- Do not use debug rounds to introduce a new model family or broad ensemble."""
-
 
 @dataclass(frozen=True)
 class BranchSpec:
@@ -250,6 +206,7 @@ V3_GRAPH_DIR = "graph"
 V3_TOP_K_PORTFOLIO = 8
 V3_STATIC_GATE_RETRIES = 1
 V3_MIN_ROUND_TIMEOUT_SECONDS = 900
+V4_DRAFT_WORKLOAD_SOFT_CEILING_SECONDS = 3600
 V4_HIGH_COST_DEEP_MEDIA_SCORE_FIRST_TIMEOUT_SECONDS = 10800
 V4_HIGH_COST_SPARSE_TEXT_TIMEOUT_SECONDS = 7200
 V4_EXTERNAL_TIMEOUT_POLICY = "profile_cap_with_remaining_sandbox"

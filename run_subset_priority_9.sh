@@ -8,6 +8,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TASKS=(
+    aptos2019-blindness-detection
+    ranzcr-clip-catheter-line-classification
     siim-isic-melanoma-classification
 )
 
@@ -27,7 +29,7 @@ EOF
     exit 0
 fi
 
-export OUTPUT_DIR="${OUTPUT_DIR:-./cur/test2-siim-hack}"
+export OUTPUT_DIR="${OUTPUT_DIR:-./cur/test3-tries5}"
 export NUM_ROUNDS="${NUM_ROUNDS:-5}"
 
 cd "$SCRIPT_DIR"

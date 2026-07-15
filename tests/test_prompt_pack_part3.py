@@ -2,17 +2,38 @@ from __future__ import annotations
 
 import json
 
+from prompts import SYSTEM_PROMPT
 from runtime.bootstrap import (
     build_pinned_runtime_context,
     build_v35_context_source_map,
     filter_user_task_for_context_first_coding,
     pack_prompt_with_pinned_runtime,
+    prompt_token_count,
 )
 
 
 def _write_json(path, payload) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def _workload_plan(*, ceiling: int | None, reference: dict | None = None) -> dict:
+    reference = reference or {}
+    return {
+        "schema_version": "workload_plan_v1",
+        "policy": "earliest_strong_complete_route",
+        "draft_workload_ceiling_seconds": ceiling,
+        "ceiling_is_consumption_target": False,
+        "expansion_requires_evidence": True,
+        "solution_deadline_allowed": False,
+        "reference_round": reference.get("round"),
+        "reference_branch": reference.get("branch"),
+        "reference_status": reference.get("status"),
+        "previous_validation_runtime_seconds": reference.get("runtime"),
+        "previous_validation_timeout_seconds": reference.get("timeout"),
+        "previous_timeout_saturation": reference.get("saturation"),
+        "previous_timed_out": reference.get("timed_out"),
+    }
 
 
 def test_coding_user_task_removes_redundant_metadata_but_keeps_task_description() -> None:
@@ -110,7 +131,25 @@ def test_v3_improve_prompt_uses_one_parent_binding_and_source_map_paths(tmp_path
             "runtime_profile": "final_audit",
             "allocation_basis": "framework_operator_cap",
         },
+        "workload_plan": _workload_plan(
+            ceiling=None,
+            reference={
+                "round": 1,
+                "branch": "draft",
+                "status": "success",
+                "runtime": 601.5,
+                "timeout": 1800,
+                "saturation": 601.5 / 1800,
+                "timed_out": False,
+            },
+        ),
     })
+    model_cache_path = tmp_path / "context_sources" / "sandbox_model_cache.txt"
+    model_cache_path.parent.mkdir(parents=True, exist_ok=True)
+    model_cache_path.write_text(
+        "HF\tmicrosoft/deberta-v3-base\trevision=abc\tbytes=100\n",
+        encoding="utf-8",
+    )
 
     metadata = {
         "task_name": "unit-task",
@@ -157,7 +196,157 @@ def test_v3_improve_prompt_uses_one_parent_binding_and_source_map_paths(tmp_path
     assert "validation_timeout_seconds: 1800" in part3
     assert "solution_internal_budget" not in part3
     assert "runtime_budget_plan" not in part3
-    assert pack["round_context_schema"] == "part3_compact_v2"
+    assert "[OBSERVED RUNTIME EVIDENCE]" in part3
+    assert "reference_round: 1" in part3
+    assert "previous_validation_runtime_seconds: 601.5" in part3
+    assert "[DRAFT WORKLOAD CEILING]" not in part3
+    assert "[SANDBOX CAPABILITIES]" not in part3
+    assert "sandbox_model_cache: context_sources/sandbox_model_cache.txt" in part4
+    improve_must = part4.split("Must inspect before coding:", 1)[1].split("Optional expansion paths:", 1)[0]
+    improve_optional = part4.split("Optional expansion paths:", 1)[1]
+    assert "sandbox_model_cache" not in improve_must
+    assert "sandbox_model_cache: context_sources/sandbox_model_cache.txt" in improve_optional
+    assert pack["round_context_schema"] == "part3_compact_v3"
+    assert not pack["critical_marker_failures"]
+
+
+def test_sandbox_environment_routes_ready_model_cache_through_grep(tmp_path) -> None:
+    raw = """[USER TASK]
+
+[SYSTEM]
+You are operating in a Python environment where the following machine learning-related packages are preinstalled: torch, torchvision, timm, transformers, sentence-transformers.
+
+[USER]
+**CONSTRAINTS**:
+- Use torch.optim.AdamW.
+
+[TASK DESCRIPTION]
+Build a model.
+"""
+    _write_json(tmp_path / "index" / "current_branch_decision.json", {
+        "round": 0,
+        "branch": "draft",
+        "branch_state": "initial_seed",
+        "parent_binding": {"role": "none"},
+        "budget": {"remaining_budget": 3600},
+        "validation_timeout_seconds": 3600,
+    })
+    context, info = build_pinned_runtime_context(
+        tmp_path,
+        {"task_name": "unit-task", "branch": "draft", "higher_is_better": True},
+        None,
+        "coding",
+    )
+    full_prompt, _ = pack_prompt_with_pinned_runtime(
+        "system",
+        context,
+        info,
+        "",
+        [raw],
+        "coding",
+        20_000,
+    )
+
+    assert "Model cache lookup:" in full_prompt
+    assert "grep -iE 'deberta|roberta|resnet|efficientnet' context_sources/sandbox_model_cache.txt" in full_prompt
+    assert "do not read the entire file" in full_prompt
+    assert "unavailable or incomplete entries are omitted" in full_prompt
+    assert "sandbox_model_cache: context_sources/sandbox_model_cache.txt" in full_prompt
+    draft_part4 = full_prompt.split("# PART 4 - REQUIRED AND OPTIONAL SOURCE PATHS", 1)[1]
+    draft_must = draft_part4.split("Must inspect before coding:", 1)[1].split("Optional expansion paths:", 1)[0]
+    assert "sandbox_model_cache: context_sources/sandbox_model_cache.txt" in draft_must
+
+
+def test_part1_is_compact_complete_and_contains_no_branch_skill_body(tmp_path) -> None:
+    raw = """[USER TASK]
+
+[SYSTEM]
+You are operating in a Python environment where the following machine learning-related packages are preinstalled: torch, torchvision, timm, transformers, sentence-transformers, lightgbm, albumentations.
+- CPU: 16 cores
+- System Memory: 64 GB
+- GPU Memory: 24 GB
+
+[USER]
+Use torch.optim.AdamW, lightgbm.early_stopping, TrainingArguments with eval_strategy, and albumentations RandomResizedCrop where relevant.
+
+[TASK DESCRIPTION]
+Build a trained model and produce the required submission.
+"""
+    _write_json(tmp_path / "index" / "current_branch_decision.json", {
+        "round": 0,
+        "branch": "draft",
+        "branch_state": "initial_seed",
+        "parent_binding": {"role": "none"},
+        "budget": {"remaining_budget": 3600},
+        "validation_timeout_seconds": 3600,
+    })
+    context, info = build_pinned_runtime_context(
+        tmp_path,
+        {"task_name": "unit-task", "branch": "draft", "higher_is_better": True},
+        None,
+        "coding",
+    )
+    full_prompt, pack = pack_prompt_with_pinned_runtime(
+        SYSTEM_PROMPT,
+        context,
+        info,
+        "",
+        [raw],
+        "coding",
+        20_000,
+    )
+    part1 = full_prompt.split("# PART 1 - HARD EXECUTION RULES AND SANDBOX", 1)[1].split(
+        "# PART 2 - TASK DESCRIPTION AND CONTRACT", 1
+    )[0]
+
+    assert prompt_token_count(part1) <= 2200
+    for required in (
+        "[SYSTEM INSTRUCTIONS]",
+        "[PINNED SANDBOX ENVIRONMENT]",
+        "[CONTEXT-FIRST PROTOCOL]",
+        "[OUTPUT CONTRACT]",
+        "candidate x fold x epoch",
+        "complete end-to-end workload estimate",
+        "draft_workload_ceiling_seconds",
+        "expected_complete_path_seconds",
+        "runtime_estimate_basis",
+        "dominant_cost_units",
+        "complete_workload_product",
+        "within_ceiling: yes",
+        "why_no_further_expansion",
+        "context_readiness.md",
+        "post_code_memory_summary.md",
+        "sandbox_model_cache.txt",
+        "review the required failure-prevention skill",
+        "failure-prevention check",
+        "stable, proven library components",
+        "semantically equivalent deterministic alternative",
+        "Cache availability alone is not evidence",
+        "sandbox kill ceiling",
+        "Historical runtime allowances",
+        "unused runtime headroom",
+        "torch.optim.AdamW",
+        "lightgbm.early_stopping",
+        "eval_strategy",
+        "size=(H, W)",
+    ):
+        assert required in part1
+    for obsolete in (
+        "[BRANCH INLINE GUARDS]",
+        "[RUNTIME HARDENING CONTRACT]",
+        "top-ranked Kaggle grandmaster",
+        "implementation coverage table",
+        "two base models plus blends",
+        "one-knob superstition",
+        "prefer PyTorch over TensorFlow",
+        "run_preflight",
+        "BSPM_PREFLIGHT",
+    ):
+        assert obsolete not in part1
+    assert pack["packing"] == "v54_draft_workload_ceiling"
+    assert pack["branch_context_routing"]["inlined"] is False
+    assert "branch_inline_guards" not in pack["section_tokens"]
+    assert "selected_skill_filter" not in pack
     assert not pack["critical_marker_failures"]
 
 
@@ -204,8 +393,20 @@ def test_v3_draft_prompt_renders_frozen_prior_cards_without_parent(tmp_path) -> 
             ],
             "omitted_count": 0,
         },
-        "budget": {"remaining_budget": 5000},
-        "validation_timeout_seconds": 3000,
+        "budget": {"remaining_budget": 12000},
+        "validation_timeout_seconds": 10800,
+        "workload_plan": _workload_plan(
+            ceiling=3600,
+            reference={
+                "round": 2,
+                "branch": "draft",
+                "status": "timeout",
+                "runtime": 3590.0,
+                "timeout": 3600,
+                "saturation": 3590.0 / 3600,
+                "timed_out": True,
+            },
+        ),
     })
     context, info = build_pinned_runtime_context(
         tmp_path,
@@ -222,6 +423,54 @@ def test_v3_draft_prompt_renders_frozen_prior_cards_without_parent(tmp_path) -> 
     assert "[PARENT MEMORY CARD]" not in context
     assert info["parent_binding"] == {}
     assert not info["parent_commit"]
+    assert "[DRAFT WORKLOAD CEILING]" in context
+    assert "draft_workload_ceiling_seconds: 3600" in context
+    assert "soft ceiling, not a target" in context
+    assert "merely because headroom remains" in context
+    assert "reference_round: 2" in context
+    assert "previous_validation_runtime_seconds: 3590.0" in context
+
+    full_prompt, pack = pack_prompt_with_pinned_runtime(
+        SYSTEM_PROMPT,
+        context,
+        info,
+        "",
+        ["[USER]\nBuild the solution."],
+        "coding",
+        20_000,
+    )
+    part1 = full_prompt.split("# PART 1 - HARD EXECUTION RULES AND SANDBOX", 1)[1].split(
+        "# PART 2 - TASK DESCRIPTION AND CONTRACT", 1
+    )[0]
+    part3 = full_prompt.split("# PART 3 - CURRENT ROUND ITERATION STATE", 1)[1].split(
+        "# PART 4 - REQUIRED AND OPTIONAL SOURCE PATHS", 1
+    )[0]
+    for readiness_field in (
+        "draft_workload_ceiling_seconds",
+        "expected_complete_path_seconds",
+        "runtime_estimate_basis",
+        "dominant_cost_units",
+        "complete_workload_product",
+        "within_ceiling: yes",
+        "why_no_further_expansion",
+    ):
+        assert readiness_field in part1
+    assert "[DRAFT WORKLOAD CEILING]" in part3
+    assert "[OBSERVED RUNTIME EVIDENCE]" not in part3
+    assert "[PARENT MEMORY CARD]" not in part3
+    assert "[PRIOR DRAFT MEMORY]" in part3
+    for obsolete_runtime_mechanism in (
+        "run_preflight",
+        "BSPM_PREFLIGHT",
+        "solution_internal_budget",
+        "internal_deadline_seconds",
+        "SOLUTION_INTERNAL",
+        "time.monotonic",
+    ):
+        assert obsolete_runtime_mechanism not in full_prompt
+    assert pack["packing"] == "v54_draft_workload_ceiling"
+    assert pack["round_context_schema"] == "part3_compact_v3"
+    assert not pack["critical_marker_failures"]
 
 
 def test_skill_sources_follow_source_policy_with_required_path_emphasis(tmp_path) -> None:

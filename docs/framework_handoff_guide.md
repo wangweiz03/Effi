@@ -31,6 +31,7 @@ evidence: runtime/runner.py, runtime/validation.py, runtime/memory_cards.py, run
 - `runtime/memory_cards.py`: cards, method diffs, card index, and high-level memory.
 - `runtime/memory_store.py`, `runtime/portfolio.py`: repository state and candidate frontier.
 - `runtime/search_graph.py`: human-only visualization from persistent evidence.
+- `runtime/sandbox_model_cache.txt`: fixed ready-only model-cache inventory copied into each task context.
 - `real_run_examples/`: reference outputs, not runtime source.
 
 Full runs require external skill directories, datasets, inference services, and sandbox infrastructure.
@@ -103,6 +104,8 @@ All draft states share these invariants:
 - optional heavy tiers follow only after a strong complete candidate exists;
 - experience may be inherited through summaries, but code may not be inherited.
 
+Draft also receives a `3600s` soft workload-planning ceiling through the frozen `workload_plan_v1` decision field. This is not the external timeout and is not an hour-long quota: an expected five-minute route should remain a five-minute route. Before coding, draft records the required complete-route estimate and multiplicative work units in readiness. The old `test-lite` audit calibrates this envelope at `92.6%` of completed draft validations within one hour.
+
 `draft / initial_seed` is round zero. It triggers early EDA and establishes schema, submission contract, resource risk, and a strong first route. It is not permission to emit a weak probe.
 
 `draft / required_seed` builds the minimum independent seed pool. A repaired draft retains its original seed identity, so debug success can provide a scored representative without creating a second seed. Seed counting deduplicates structural method family; blends and control-state labels are not independent structural families.
@@ -133,19 +136,26 @@ Parent memory in PART 3 contains only round, score, and complete `Method Portrai
 
 The coding prompt has four parts:
 
-1. static execution and sandbox rules;
+1. compact static execution, sandbox, readiness, and output rules;
 2. task description and fixed constraints;
 3. current round, parent or draft prior, score/history, and read-only external timeout;
 4. must-read and optional local paths.
 
-PART 3 `part3_compact_v2` contains:
+The active packer is `v54_draft_workload_ceiling`. PART 1 contains `[SYSTEM INSTRUCTIONS]`, `[PINNED SANDBOX ENVIRONMENT]`, `[CONTEXT-FIRST PROTOCOL]`, and `[OUTPUT CONTRACT]`; it does not inline branch guards or routed skill bodies. Its representative complete form is regression-tested below 2,200 tokens. The detailed static contract, removed accumulation, compatibility facts, and audit boundary are documented in `docs/coding_prompt_part1_contract.md`.
+
+PART 3 `part3_compact_v3` contains:
 
 - one `[ROUND DIRECTIVE]`;
 - one branch-exclusive parent or prior-memory block;
 - bounded score context and round history;
+- draft-only `[DRAFT WORKLOAD CEILING]` or parent-relative `[OBSERVED RUNTIME EVIDENCE]` when available;
 - one `[EXTERNAL VALIDATION TIMEOUT]` block with remaining sandbox runtime and the read-only validation cap.
 
 Its content boundary is limited to the directive, routed memory, bounded score history, and the framework-selected external timeout.
+
+The directive also owns the branch-specific execution guard. Draft requires an independent phase-scoped seed and one complete trained route before optional work. Debug binds the failed parent and failure class and shrinks cumulative work for timeout or OOM repair. Improve makes one material evidence-backed change while preserving a submission-ready validation-best incumbent.
+
+For draft, a separate workload block supplies `draft_workload_ceiling_seconds: 3600` and the context-first protocol requires ordinary readiness planning fields. The value is a soft planning ceiling; `[EXTERNAL VALIDATION TIMEOUT]` remains the only hard execution wall.
 
 Branch source policy is:
 
@@ -155,13 +165,27 @@ Branch source policy is:
 
 The required EDA source is the freshest `eda_findings.md` across `early_eda/round_*` and `deep_eda/round_*`. This file is the complete human-readable coding handoff and also receives accepted context deep-EDA updates. `eda_findings.json` remains an optional structured complement. `eda_summary.md` is retained for EDA generation/archive compatibility but is not routed when findings exist; it becomes a required fallback only for a legacy archive that has no findings markdown.
 
-Existing required task-skill and failure-prevention paths are bold in PART 4. Missing required sources remain explicit. `memory_bank/high_level_memory.md` is omitted until it exists. `memory_bank/prompt_context.md` is no longer generated or routed.
+Existing required task-skill and failure-prevention paths are bold in PART 4. Missing required sources remain explicit. The task-local `context_sources/sandbox_model_cache.txt` is required for draft and optional for debug/improve. Codex must query it with a targeted case-insensitive command such as `grep -iE 'deberta|roberta' context_sources/sandbox_model_cache.txt`; it must not read the complete inventory into prompt context. `memory_bank/high_level_memory.md` is omitted until it exists. `memory_bank/prompt_context.md` is no longer generated or routed.
+
+For a branch where the failure-prevention skill is required, Codex selects its concrete route first, reviews the complete routed skill against that plan, and records only applicable risks and concrete code actions in `context_readiness.md`. The framework neither selects numbered skill sections nor inlines a fixed excerpt. No separate sandbox preflight stage is implemented: the existing static gate is followed directly by full validation.
+
+Five high-cost task skills currently use the standardized six-section schema: SIIM, APTOS, Jigsaw, TPS May 2022, and RANZCR. The runtime persists a branch-scoped view instead of the full skill:
+
+- draft: `Task Contract And Traps`, `Seed Route`, `Validation Contract`, and `Avoid Or Delay`;
+- debug: `Task Contract And Traps`, `Debug And Fallback`, `Validation Contract`, and `Avoid Or Delay`;
+- improve: `Task Contract And Traps`, `Improve Library`, `Validation Contract`, and `Avoid Or Delay`.
+
+The persisted source records the original path and SHA-256. A skill that does not contain all six exact headings remains full-text for compatibility and is marked `Phase scoped: false`; the runtime never guesses a partial mapping. The five installed reorganizations are verified against `tests/task_skill_reorganization_manifest.json` by `tests/task_skill_reorganization_audit.py`.
+
+Draft prompt policy asks for one coherent primary score-first route. It does not impose a global sparse/tabular candidate count and does not require training extra models solely to create a stack. Selection, calibration, blending, or stacking belongs in the current phase only when the routed skill and available predictions justify it.
 
 Static-gate repair suppresses high-level history. Draft static repair additionally suppresses draft prior and round history so a safety correction cannot become route reselection.
 
 ## Readiness and Post-Code Summary
 
-Before coding, Codex writes `context_readiness.md` as evidence and implementation planning. It records inspected PART 4 paths, branch/state, implementation base and prefill status, score response, data contract, route, validation, fallback, and failure traps.
+Before coding, Codex writes `context_readiness.md` as evidence and implementation planning. It records inspected PART 4 paths, branch/state, implementation base and prefill status, score response, data contract, route, validation, fallback, and failure traps. When failure-prevention guidance is required, readiness also records the plan-specific risks and code actions selected by Codex without reproducing the complete skill.
+
+Draft readiness adds ordinary fields for `draft_workload_ceiling_seconds`, `expected_complete_path_seconds`, `runtime_estimate_basis`, `dominant_cost_units`, `complete_workload_product`, `within_ceiling: yes`, and `why_no_further_expansion`. The expected time can be only a few minutes; it is not stretched to the ceiling. Historical basis uses completed same-task actual sandbox runtime, prefers comparable successful routes, treats timeouts only as lower bounds, and rejects pre-dominant-stage failures as end-to-end estimates.
 
 Readiness records evidence and implementation intent only. The framework fixes the external timeout before coding and shows it read-only in PART 3.
 
@@ -169,13 +193,27 @@ After generating `solution.py`, Codex writes `post_code_memory_summary.md` to de
 
 ## External Validation Timeout
 
-Runtime control has one layer. Before coding, the framework takes the smaller of remaining task-level sandbox runtime and a workload-profile ceiling: low-cost `3600s`, sparse text `7200s`, and general or deep media `10800s`. Method-neutral branch scheduling uses the general cap because the concrete method is selected only after context inspection. Historical runtimes, branch state, recovery state, and final-window state do not shrink this wall.
+Runtime enforcement has one layer. Before coding, the framework takes the smaller of remaining task-level sandbox runtime and a workload-profile hard ceiling: low-cost `3600s`, sparse text `7200s`, and general or deep media `10800s`. Method-neutral branch scheduling uses the general cap because the concrete method is selected only after context inspection. Historical runtimes, branch state, recovery state, and final-window state do not shrink this wall.
 
 The value is the external sandbox wall and the sole framework execution limit. It is prompt-visible but read-only. Readiness and generated solution constants do not alter it.
 
 Only actual sandbox runtime is charged. A process that exits after 300 seconds consumes 300 seconds even if its external cap is much larger.
 
+Draft separately uses `3600s` as a soft complete-workload ceiling. It changes plan shape, not execution authority. Debug does not inherit that ceiling: timeout/OOM recovery must reduce cumulative work relative to the failed parent. Improve estimates its bounded change from validation-best parent runtime evidence and keeps a complete incumbent path ahead of optional work.
+
 `solution.py` must still be statically bounded. It should cap expensive dimensions, complete a competitive trained score-first route, retain the best complete predictions, skip doubtful optional work, write `submission.csv` atomically, and exit normally. A partially written file is not assumed to survive an external kill.
+
+No branch restores solution-local deadlines, remaining-time polling, budget exceptions, or a separate sandbox preflight. Static workload sizing and the existing static gate remain the only pre-validation controls.
+
+## Fixed Ready-Only Model Cache Inventory
+
+The evaluator performs no run-start sandbox capability probe. Model-cache availability is a repository-maintained static contract, so cache discovery consumes no task sandbox runtime and creates no probe status, timing, package, or accelerator artifact.
+
+`runtime/sandbox_model_cache.txt` is the canonical ready-only source. The runtime copies it unchanged to `context_sources/sandbox_model_cache.txt` for every task, routing it as required PART 4 context for draft and optional context for debug/improve. The published inventory contains 539 Hugging Face repositories verified to have a configuration and complete weights, plus 109 complete Torch checkpoints. Entries with missing configuration, missing or incomplete weights, no snapshot, or a `.partial` suffix are not published. Every listed entry is therefore ready by inventory contract and needs no per-line status label.
+
+The inventory is intentionally lookup-oriented rather than prompt-expanded. Codex must search only relevant names or model families with `grep -i` or a targeted `grep -iE` expression and must not read the full file. It must use an entry only when task evidence supports that model family and must retain a no-download execution path. Updating the inventory requires a new explicit cache audit and a repository change; normal evaluator runs never mutate it. The 2026-07-14 survey evidence and publication boundary are recorded in `docs/static_sandbox_model_cache_audit.md`.
+
+Prompt integration is limited to the lookup instruction in the sandbox card and the branch-routed PART 4 path. The inventory contents are not injected into PART 1 or PART 3.
 
 ## EDA
 
@@ -187,7 +225,9 @@ Deep EDA does not train models, run validation, decode an unbounded media tree, 
 
 ## Static Gate and In-Place Repair
 
-The static gate protects hard format and safety contracts before sandbox validation. Hard blockers include missing `DATA_DIR` or `submission.csv`, known hardcoded paths, unsafe downloads, side outputs, untrained constant submissions, and structurally proven hardcoded data cardinality.
+The static gate protects hard format and safety contracts before sandbox validation. Hard blockers include missing `DATA_DIR` or `submission.csv`, known hardcoded paths, unsafe downloads, side outputs, untrained constant submissions, structurally proven hardcoded data cardinality, invalid statically known regular expressions/replacement templates, and definite same-block reads after `del name` without rebinding.
+
+The two semantic checks are intentionally narrow. Regex validation covers only literal or unambiguous module-level constant patterns used by Python `re`, pandas string regex methods, and vectorizer `token_pattern`. Use-after-delete detection requires ordered AST evidence in the same statement block and clears the finding on rebinding or uncertain conditional binding. Dynamic values and ambiguous control flow do not become hard blockers.
 
 Runtime boundedness, score-first structure, dependency fallback, and atomic finalization may produce warnings. The gate does not enforce a second execution limit inside the solution.
 
@@ -247,6 +287,7 @@ memory_bank/high_level_memory.md     derived positive/negative/debug experience
 commits/<hash>/                      code, feedback, result, and summaries
 failed_rounds/<name>/                non-commit failure evidence
 traces/round_<n>_trace.json          Codex prompt, response, stderr, use, and timing
+context_sources/sandbox_model_cache.txt branch-routed ready-only cache lookup inventory
 ```
 
 `graphic.png` is a human-only derived view and never participates in scheduling or prompt construction.
@@ -266,7 +307,8 @@ Before changing scheduling, prompts, or validation:
 9. ensure readiness remains an evidence and implementation-planning artifact;
 10. distinguish timeout cap, actual sandbox runtime, wall time, and token estimates;
 11. test both explicit runtime exhaustion and ordinary exception routing;
-12. keep memory claims within observed evidence.
+12. keep memory claims within observed evidence;
+13. verify the task-local model-cache inventory matches the repository source and is queried rather than prompt-expanded.
 
 ## Known Cleanup Items
 

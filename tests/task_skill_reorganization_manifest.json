@@ -1,0 +1,1721 @@
+{
+  "files": {
+    "SKILL_aptos2019-blindness-detection.md": {
+      "candidate_blocks": 72,
+      "candidate_sha256": "230cc883522d855d1efb371b64124505b853b7c1a502347d624d21576875e071",
+      "deleted": [
+        {
+          "reason": "obsolete fixed 12-hour runtime assumption",
+          "sha256": "374b8abfbbb736552d3a6f39089148a34e490cb197f0ced0b2fd05d1d6c0a43f",
+          "text": "- Compute is enough for serious image training but not a large research stack: 6 CPU cores, 200 GB RAM, 16 GB shared memory, 24 GB VRAM, and a 12-hour net runtime. The public train set is small, but the hidden rerun can have many more test images, so inference/TTA must scale."
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "22b238bb21eecf1efc400646b73eaacf3b25157f3a2b31b7d83b9c24ae1411e8",
+          "text": "- Save artifacts for later rounds: fold assignments, per-fold OOF logits/probabilities, OOF expected severity, OOF regression severity if present, per-fold test probabilities/scalars, threshold set, model name, resolution, preprocessing variant, and per-fold QWK/confusion matrices."
+        },
+        {
+          "reason": "fallback paragraph requires preserving cross-round artifacts",
+          "sha256": "046208a4b99ac7490932682c460e8cae798098070056dcc235f03c0e371ef8b0",
+          "text": "- Fallback if training is too slow: use 384/448 px EfficientNet-B0/B2 or ResNet50, 3 folds, fewer epochs, no TTA, and CE-only expected severity with OOF thresholds. Preserve the same artifacts so the run can still seed blends."
+        }
+      ],
+      "deleted_blocks": 3,
+      "expected_routing": [
+        {
+          "content_sha256": "ad5d22cb111d7a936c8e5bd92b5ce5e2ab7a95b4e9c98ba0115f13ffd010981e",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "e3c7d5f470da2b29b42963c45054928a75235c2d8540fd07b24258d843af7789",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "ad799736161a0f190f608de6f6504d4bdb93d7d1d8e58502ac976a91d5d7ada0",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "7f832d8c2609e9edf920504dde5ca71b3d07384013c1b8604cdd6b36c73539bc",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "5d2f9ebbfcf27ee03326f602645045b686ac299982f2d2346724bb548dcac9b0",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "a070c2ceb2cb95a86e802b355269abf1e6670e08cbad750b5858b3e5bbb14ee0",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "89ad820e20508343602548f1f615510d80af57e3e73452bcb6008a552a15fd86",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "9218ebe9be1cf4dcef537eacd3450be899ea47c6fb61ab77ee4c7cde3eb6c320",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "e6c9563e4bbeb943649ea3046fee570d792076cfc514cb5b2691b14b1a56bad1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "c29978b85c21619c27f9c8dfe7b10fb564d689df78c6023d8ef3ec315366c6a3",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "116b7251641c02d426df90cadf38341799ff06f147768d54bcd58ff96788b813",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "108ce3dafc9c8dc4a2bd53e7e95fc981ce36ffc76406617b24c8fe85d07b3fa7",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "696f345a58ab8721798fafd28e5b3e89363a6ecb7797c7df91978e90ee9d948d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "faf2b4f3de1564270488d5293e5fe401f5edbce502ce46e18c9a793ee30c2990",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "c988b3542c6f5b7deb023bb9b485af89467a2e4e88d02c39c1e0a66b6e374eda",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "97963d5bcf9122fbc1073e9c378281cd1f894bde70e70af2bd87dc612fce76ab",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "7b711c73689c2857f3ad412f11966db1af93c2954ef6f076734ffdea20272cf1",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "63b417c5b2edbf421f6f570b7d9166722cbd91383c599a05edaba79c6d12e1bf",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "c10cb6c06bf6ca7feedafe501e343b0cb9de9ec7fc89b483f384895e715abdf8",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "607a2576b2c6c0a06930384e4b6557c19cdffbc30a533771a4cdefc929b31a0a",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "5926a66a8d7bff4761f70d2f8b4578b29b9f16884665b77aef5c58cad3bcff50",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "e4e155ac0d8f1f10d0c97334d69958bbf1fb516004f21e7bdaf85de39c0d0b77",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "412af9600879c4089c0c9d11ee83eccfe4c89f87b21ce9f0dbd6d0185dbdd8da",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "c65e4187d7980ff5e4b974345398b6a95d32f6648952109884f5b4a66b0b4cc1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0d31496c89c28a507763a8ac76e6ba012dc7765cbf38cee7123d77a1cc10bd25",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "29660105f9dc3ace728df14871ee7856144c6bfe0a7124aac80ad257ccf9f5c0",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "165b34d272ada5ca6f649627dbac03760b88cc31119fea6dbc5ebabc8ed50b60",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "d47637ce085e4427c816b3a5bb71c86d8d792c104f9b7e1decb9accda8e4b2f3",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "7af2c16d456309fc9577aeb8da4e4d6b89379432d38ed923c7e762de445f0d0e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "39d0e262dbf2024ceaf73acf9209c7c8bcd2254c26f181a9a3d5a60ecb2685e1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f6392eaca4b4e00e20cb7e9708ebc19814a1e3d85447a6796e59059ab744b632",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "203131ce37abb9ac35c9ac9f4ce26c601dd09514be773d572d090a76053c783a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0b3f7ee3bb7f23369e4ae325070aee40c3619629178c6fa9dce6dc8417332630",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f77fd87f6ef5f21cac4d110fa5305597afb8fc5d2a652eada732d1a511e9dc2f",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "123bbf6a2086113970c85f1e9d30f803ccef87333a00df4596018da24b23718b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "24c2b1d7a0275a31901557dd757d05a16a50a67f5fc81130235d9caf5ca9fdca",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6b40faa01d9ba5fa84d8d156617d5a0a65bf36cd6d94f14c02b3d6c939068c5b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9ce55112e209c79aa9e0ff76402c32f53c572a0f4bf111372131addc9ac95694",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4617f3a141d91c1ac53c90bbf2e8931165f25dbfe617598f98a15d503bdc5e52",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0de5f9cfcf793f81cb261a3605d504617bc6c0c577f37d6250fef3b6cc164da5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f1b621072a80802cfcdc2b6d3782f3806995ac8c916ec4cfe38467b1e43b2030",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "05c98d3b590b790745ba0c9f0014ce03ccae93c337dd1b1235543fc59c281abc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8c682250b5a38cf93f0847a687f51d25ee2247197d6606c7d84bb2c0bb22e486",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "071cdefc931596f4ce8488f1b2fed148677f183888727abfd5eabbb6428af1e3",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "ebc5a575a7c415e52a9e2f5894fd1d97d8a7168fadff35299605bb6b903806cd",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "48fe2981be0a6df1cbe4493dad3d1fdd87f32cb6c5550eb87218501ed6d9f27a",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "a541884fbc4389dca0e253551b6bd7e60daceb036ce76f54d4b02270ddd7c641",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "47f9c8969264e11580514b64e04f1a9c9b74f27a63af79586293a7ea38a4df56",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "64b8ade150cbbf344dd40720575510f815ad978a19138030d864db181ac2e24a",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "f7752e21940d309951c66a40c1342590986abba9ee86d9186ee869ca8056643f",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "40509b7a5f4650d57fbd64b7298d4ce2499cbba4a86c5f875193098079478aed",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "ef8caf2df39b444fdeed9c6af85a696f6b927fc8aaffa00a1c120b9ae9fc28f0",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "9d1f5e06a70d581f39b6ad5dc8fec05792f563632bbb0d84ed77e64d068b269b",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "14b506b7b64c96ee35278b2c7e62da8a90cec6e5e04c7fe5576c1a648663ea32",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6789699e34da4b16aa553e957c51627e5b3291d99ffedf77a52e4da2caf8d7d9",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "c2c17caecf04b7c0a0fe0c9cde974fed27e48bfa37d751ceee20d081c5f0272c",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9baced93d81b6a8b28a5e9fa0e42a359bdf6b5a9396fd0703b3bbcd865da571e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "790e39dd8fe2692871532514581ff4f1d09e83a7204c5334adb5075e2c183a9b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "eef6c48e9a353828af12e955d2d459fc26f2385c85bba73495d88c9efb7ec3fc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1be598fb655975075e28c514d2b98f8c77074c31516adedecb80b3fef0daa0ed",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "430d404b90d6a66324afea5dc417879c2302901a92f389bb4b8c32814ad913cc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "449f8823ac5019a7ebbb956edad81ea90b5b05dabae6b8021e3920fdeb620c83",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "cdc8ad77f9d713144618a6b95105af114efa53daef8ddc9e4718b223c4922fb7",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "cd2accd786f6ca92e5a76c2a748448af2f00e929ef83c11d9d5f617d3b94fcf4",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "313cef448f9b3d705fedf293e57a5188ab7c94062e26e5e7b068e6d6f0774f54",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "80c04a7e0aa3947564f307f59162a01106d35b16d01cc3eb9b4f53654153d0e0",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "af738f6cc3f6a1eefd6f27e1fcf5b796237be0e168fa8299adf020099b050f46",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "6d62937eb99801272ee561e28e21b4ef17343104b0683af5e0f06f121769791b",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "f6411fba33acdcf193a0189b856e186c29978f59e1be805c7eb16034a44cb9e0",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "7dfedf5dfde6c7be832db381a9eff7fce6aaf448281e65d26ff51818269f618f",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "9b5ec8d6b5eda64840fcf4ca0817df11b1f8cd06fde6cd14f09b025d0d13d30a",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "427061bfd50878d165f31f91e74c81d0ad72dc68805696b2313ccd5c5cc28e79",
+          "section": "Avoid Or Delay"
+        }
+      ],
+      "section_counts": {
+        "Avoid Or Delay": 10,
+        "Debug And Fallback": 0,
+        "Improve Library": 35,
+        "Seed Route": 8,
+        "Task Contract And Traps": 8,
+        "Validation Contract": 11
+      },
+      "source_blocks": 75,
+      "source_sha256": "79451acf148d31e52c5b4c59a83b6beab5c0de1c7360238c17b349189f48a3b9",
+      "title": "Skill: aptos2019-blindness-detection"
+    },
+    "SKILL_jigsaw-toxic-comment-classification-challenge.md": {
+      "candidate_blocks": 82,
+      "candidate_sha256": "a5a04e0466c5580dde56a344a1c5b270bf0350a381745034723be86f7e9a4391",
+      "deleted": [
+        {
+          "reason": "obsolete fixed 12-hour runtime assumption",
+          "sha256": "d0a9674ff80283a0a57a45492fdf2962e53cf34b66b6b4fb313a3e2da581bb5f",
+          "text": "- Resource shape: 6 CPU cores, 200 GB RAM, 24 GB VRAM, and 12 hours of net runtime. Sparse word/character models over the full data are safe. A base-size transformer is feasible if weights are already available locally; a large multi-fold transformer ensemble is risky unless earlier runs prove stable and fast."
+        },
+        {
+          "reason": "obsolete runtime-feasibility claim",
+          "sha256": "a191617f859c7a8ad749306614b4df9fdbe3570c975ea9b9dff89cfeb3a243c1",
+          "text": "The first endpoint should not depend on fragile external assets. A full sparse ensemble can be trained on CPU well inside the runtime budget and gives strong coverage of short toxic text, misspellings, and class-specific phrases. A cached transformer should be added as the main score upgrade because it captures context, negation, and identity-hate phrasing that sparse n-grams miss, but it should not block a valid submission when weights are unavailable."
+        },
+        {
+          "reason": "same-script first-valid-to-strong connection",
+          "sha256": "4e02f03ae0691d25b51a60b48d2a3a0504fefdb4ac883fe2cdb6afe2f606cb94",
+          "text": "Then make the strong first run in the same script:"
+        },
+        {
+          "reason": "same-script first-valid-to-strong connection",
+          "sha256": "1c746a00992543d00b087750a43906b7ee30cf56162881f6248addd7ef5f191c",
+          "text": "Transformer branch for the same first-round script, only when weights are locally loadable:"
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "b58f6f2c698812e8c30054e6fd0634b6cf32d12dab1af682f7b53798feb1ce1d",
+          "text": "- Save OOF/test logits and probabilities so later rounds can blend without retraining."
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "617e57c8dbe46bc14d63bdd559550bc1d846eeef2ffcb7e888aca9df144a9efe",
+          "text": "For OOF artifacts, save at minimum: row ids, fold ids, true six-label matrix, per-model OOF probabilities, per-model OOF logits/margins when available, fold-test predictions, model family, preprocessing variant, sequence length or n-gram settings, and per-target AUCs. These artifacts enable blend search, rare-label diagnosis, and stacking without rerunning expensive models."
+        }
+      ],
+      "deleted_blocks": 6,
+      "expected_routing": [
+        {
+          "content_sha256": "0b2c6abf544d5cb56e2996210b573a1b35f86c6a9e900a95326f440a13e0c7af",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "a47511444746d3e27ee31540b082b6b26c5e8fa1905160d62f801c18c4c359e0",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "e593367d547636bf25a3cc7f6d30c45a7b82ad4c6698c8bbd20df4ac7a5b1b19",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "8a8b231ba29783648f09fb49ac64ab2bc524e6ffe01b03954594d70b857a7c26",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "56eefbfe1aea36b1c9a3dc0edbd8b050adad47ff7e259c6331948c0f33306c2a",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "9cd0da1b6f2819a9319a17d4c62bb09de425a50b1043adc0fb62e1544f03bf11",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "ae3532f377a41ca197ad44d34721ec8196ba129e5ff4d832b83fe8fcb88d0ab2",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "ae57c3d621c69bf7c803d53a8e9e3acb589d73f6baf0974ba6a37f2f70579a7f",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "ebccba08e4c978793525dd8d1528a8df9183b98805d658e8802147f81706ce61",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "6c155f2d1e1c16be925487fc1c87d9e011b6d9f2b4cb7de017f35bb7bb7690d6",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "93d75f23443ef79916491b7896036aff6c060e82bc8d09979b2daf8c1babc778",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "bed71da11a56b5e6371dd8bbacddd66d18f46017862edc7ce77ef65989964174",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "61280f2c415c873eabd33bc172d07b84b97e8eca23d6505762ea9e2288c867fc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "45b80afe434072af2e257a1f8b4eff9dd90c1631602d38ee0f227d599c4e554a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0022cbfb35782fec1f3826e6c63969281cfe5fc5d27bb5afcc50ee9e373a8410",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "05ab39b3b59ff28ecadaf591d0b91e28209b2ae696d1a978146efa3af943c550",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "5edfbd0038d1fc28ffff229753f6d94708cb61162a97707b13bdfc8e430ed3d3",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "f293a9a58f9d99825bf7e5b5ba66ec8c672806cf9116ee3e32fa456378278e18",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "dd3f2490ab0baf69b302115c6626e796eb7708c7969a251623b3985156a0dbd1",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "e47c60c83a6d81e9bcb8f2778e1b44c266240de39ba9e44cab0d80d8e6dc5d5a",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "543792f2b0933108a95083de0df486c93703fb3da7aa24638f1e29fcd053f5f2",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "9a11b1ba98aa8a986d2fb28c138cff345cf7685014520ec8470ef54c510977f7",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "436e53258a6b7c2de39e34a976554d48b11d16db34521eaad27a0c44a9313abf",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "86670d69955c03facfd579ad97bbe6b6edbfa9084c7d91c0c3ac646613c2c9ae",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9f9ad90360432f7cb5d4f99e9170693afff3e07c942efeba4655d7f9a257358e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "ba28807363e71a0233dc7210f9b9d5cb6553fa3efff67ceb9549c7166329c602",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "c1cbf44fb30b2c43a8f193cb8d61335b236340a403be9b28a82949420f016197",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "d01530a16c3f3b70f85b530fc983fee580cd1ffd8e01aa5f41d897a6eb6363ba",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "7ba18cfc15e70c26cecb8a230a61e694aa768dbc3a5fddb4d923e336424dad29",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "aca1f16c410b00fcc0534a57522c95a22474c46972b2d919b1fac37f944a43dd",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "25a8e8075f502113970bcc5341b5d2c9f3aea8e53d01dc62615b97d48ccedfab",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f9f300c0f4204fb1385300b4dfc75d6e6c5d1e33e8f774204ca2b0c4e818ade9",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6f50c15a8b850692b74288c8c96af0497b0472af5af3d83c9bdf910fdd887a92",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "53f902ebbca42dd2a45f86a6fe233a00e5144fb0b258073e827d672ec73797cf",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "44d5944f2a8f64e7161472204fd582ecf4be978f255b3f95580fa09afb87a5f6",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6cfb1ba81d4bd2a489fc47cbf14cadd38a4ff4553d32cd7589e0fcb9d74686a6",
+          "section": "Debug And Fallback"
+        },
+        {
+          "content_sha256": "fc72d5fc1ee12c101e5b791d4edeec8880e0c490baf8424c93a8fdd21023dceb",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "65ef05d92d63909eaf0f97c6be8c9a51811fb51c6017218b63f11a561dd9eeb8",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "29cc0d51eac94e4d66d56cbe12678ff0b43bcbb425748939b62b15454b15f25a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "72ff573fdcfaec9fba1c1d74698f6084a28d44ef106c26376fd644cb3f89f7af",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "fcbb8ab0f51ebe97af4f2be066dec916e7a45e10200d4bc0e92fad075039bce3",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "ca2f5a64d941c5ede31dbf11948d4a504c97b662d9852bd452bbc725eb756a73",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "274e6e13cda40f7860ce3f89e1f3a3f49e27c73bad264f9e3a0d1225711995f2",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0add13b62083c858661516e59efa2ba9e261ec30d868b54342ab0783b169c3a3",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "21fdc61059d39b271ab199038677f5b5a18ef2ee2b484de2b82197c0bf804dce",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "33fe57db21ebe8eb514b7b6d459f45f8387ab08c1155ce349bfde4d33a068e0d",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "460d8d50cbcb67095779005ce689a033907817ffd65fa921e05a60fec7ee6124",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "d7d8daec5caca67f3c135de08dd9bc3beb56a38564e36f86112097b64ebad1e1",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "0a260cad975c2606fb5ee9a4b36c08892e26b2d7ba84ac30884712c2a4f8bad9",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "4a583c808e5ffeaa99caa40f9526d71b0124d7480ceb8974519f190a0e995181",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "16662c9b2eb08795810d3cd6370df3c2a4d91709f13fd4244474803969a0f37e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "d6362438ae2c869544abb84d9c44ae379ac59994264313d1d37206bd9dca14a0",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "05ee35e05ce3b349240e234d4bddb079dd8c9b0238c1499d5668431a21d57f62",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f32edc5f3e57c0e905725898f0cdc2ea46c30340fb2d733ad54f3ba831d1ac3a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "3e8a48f9fd877217f41756cd777df7a55f10602e026bdeee8c67dad9640846b9",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "7e36b88ec0dfa894f8ed50f76d7dc6e464c0b93717f6857647d38b5819f452f5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0ba90c30df83f316d99805f40bea85c3f6ca0e81646207fab8baf3dc01a2cd27",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4f2fc83c997998ccb27effb3c58b930690e6ba4967e5b6cb121a405f552f462c",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9fd4940f87fedecc563aa3fc9bf2e5dd9bc05af94fc997d0c7f5712a99a7da64",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "a2e262e4b248412c3fedf1902ef2178c8c078156c46a2fa76cf0b21e6ee05f92",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "90eb6156ab5013339e393fa5b4d83b7c1123aaeba871220fa05d3d783fca357d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9e8079945668db35d6fe222eda6d8fabc1dcbbe6d81cd37103c10ff3af065c76",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8c657ebdc2a1e8df3ed31d91a665c438554990c62656902123bf3c17f1f92d8e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9ea4b75c9d815fb26d5970ea655413678a924e537474ef399a45060656a1f7e5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "e49a6af59cac998a4c7109674eaa869c3d2d4b5d985de232574e18c0b2892b14",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "aac386b016fafecc294c94216c81bf8c044a1542024f45bedbea8260e847a11d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9b7dc8607d20c4ad354e071435b39b02caa2cfb46244504969956cb1d4755bee",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "71cdc275f4faa431eabb6312eabb547e63b1b7af531bd788320e24bd3069afbd",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "da3e1d494392e3f5b9f5edc7175d41d5564a10ba7f9bd705c02c1738b6f15ac0",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "7ba950c8777ec75622baa4b8b330dc5f4b5d5d414936b32add9b550befda2c52",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0c29d86aa2f9598bd2f26e5dd2788fc481fbd981cbc36ff6078bf828a38fcd71",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "7f52324fa532ad493fc98afdcc4a43a97e58cd289ad75f94707ec261172cab24",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "55a4617cf52a5d73e4d704c3edd36ab8b9109ef138ee5207eeaf231c0b9c4783",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "a55dd0bb270c8ca0bbdf7ad1003e165287168812107e1391ffb0d294200eb143",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "8fbc454a2b6d8580361164160798a1965c19800647a1b785bb08d46dac2f85aa",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "d25ba5e149ec4c022a8afb6d5571c6ab6281b126bacf6a8e9ad0c2573ddd2f90",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "204cd987c35313b26c67fc10c4bbd7dc4b30e6e947c8baf8c00e58f36a9530be",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "011e4ea407fc650bc63e8d6cd93753acfb36c1b81ca2e8a97ecd099bc08e0850",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "9643ef0608ff2096a36ee311904fd4173efb4c422b7954a7a68f16e6259cdd2b",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "90b27ea32ff91896c19df873381ba8d13d2883a846fff5638b96744df90de677",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "4e877ecaef858509b8ffb99bc902eac0d0e3cb2dca54fc04f7d67af6085af271",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "b6aa738dcab1a5ad3056b87993033c3f94a3fd5a3e67ee1f3856f83fced062fc",
+          "section": "Avoid Or Delay"
+        }
+      ],
+      "section_counts": {
+        "Avoid Or Delay": 13,
+        "Debug And Fallback": 1,
+        "Improve Library": 44,
+        "Seed Route": 5,
+        "Task Contract And Traps": 11,
+        "Validation Contract": 8
+      },
+      "source_blocks": 88,
+      "source_sha256": "c7bbd37ac4aed4cd58d12193529ec5b53f3bacbfe8d9aefce2dbc23f4ee7da4e",
+      "title": "Skill: jigsaw-toxic-comment-classification-challenge"
+    },
+    "SKILL_ranzcr-clip-catheter-line-classification.md": {
+      "candidate_blocks": 64,
+      "candidate_sha256": "5170f2b7c8970759b98f2ed51032983d26d15492baf8721e2e2ad8e9ae2551f2",
+      "deleted": [
+        {
+          "reason": "obsolete fixed 12-hour runtime assumption",
+          "sha256": "2da055013c7bd9013af77c1ae91ca565125a38788a8920de5240ac18babfe0c8",
+          "text": "- Compute: 6 CPU cores, 200 GB RAM, 16 GB shared memory, 24 GB VRAM, and 12 hours net runtime. A serious 3-5 fold high-resolution CNN is feasible if data loading is efficient, mixed precision is used, and hidden-test inference is budgeted. Very large transformer ensembles are late-round only."
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "bf21bd15df29ca4fad088548dd832d9a21dea42e3011d5917b74ce4456cd26e3",
+          "text": "- Artifact saving: keep fold assignments, model configs, OOF probabilities for submitted and auxiliary labels, fold test probabilities, validation metrics by label, and final blended test probabilities. Later rounds need these artifacts for rank blending, calibration, stacking, and per-label diagnostics without retraining."
+        },
+        {
+          "reason": "obsolete fixed 12-hour runtime assumption",
+          "sha256": "eb314e0c753a876539db87125442f2c53272da56ed84aef2aa48807605fb1346",
+          "text": "- Priority 7: ensemble diversity. Combine different backbones, resolutions, losses, or annotation use. Prefer rank averaging or simple OOF-weighted probability averaging. A small diverse ensemble is more feasible than many near-identical checkpoints under the 12-hour budget."
+        }
+      ],
+      "deleted_blocks": 3,
+      "expected_routing": [
+        {
+          "content_sha256": "a9a439e1d8ce8c28922d29595a2879f41304c7423cc093285f95a32a94583b6b",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "0d34cd60b39f50ceb5de36ccb514f9dc933c5813f2eb1101de3c84fd6b74af8f",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "2d5aee77506bfb503a6cdac8649e382e63dd9f7ea67577c6e298009b31fa0b58",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "a554d30575976ccc86d9105f7e3525e07f215d67c02274bb0e102222618eb18d",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "5e3a2055ce94e25788589609441f364e604600fb706c8c9459f05370a4c7c84c",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "d1fe1e7bc55c0fc4ba26d7fb73400568366d4203cee6ca85fc1aea8634bd4e07",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "5985a43926829f639565db3160e7ff84c5e591aa07c8b704376cc8b068edd9f8",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "15e1afcbd4f8650a3444625b004f0be9ed2188cf919e21c75686665885492766",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "29fc4dace3ffa891c6ab28debdccd43490acb8d7d6707b945273c636d1c95578",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "73e7f57c7a160b96a46cb994fde19269917a6e88045091296aab68bd821552f2",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "57dfc1da46a3b144c9f7dca511341214e04af463d5ecc40e58ad427e12cdb3bc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "24b348e52bd671d61fb457bf1cfe3c0ca35d3e14927602d4260d51d75f5ea669",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "5c46ea5500646cc6be5f3e4808bb6f12703af3125e8ac71f298c37915e74547c",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "25e9778afa74a2c52119c6ca2e53d466cc24bc934a842fb130a95c9e9f64ff86",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b47b3d8f3069e6e25fd476a3017ad4da2402dd3d1ddd572066216b18dc71b694",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "5c59d1baf1e1452ea9b3e3282d69aedd52b261158de19102f09181138fbdd6d2",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "6e1063fcbed494f539b88329f107486968a70699f564da85e2d132976671d0f9",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "8572267e8064d13992278945ce20a1906f37a5f0f6cb76458ee01c961dfe9cdb",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6d5451fea06f5cd8ed1ecf3855232be74f1450309319524877714ccd3d09cf4c",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "7e71aa8795d67549515986a889f0a8e616f1c6bab887be600c8060e73aac6cf9",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "385569c95da5ff834a2deda4f153478c2a818eb33db6f84a9ecc62d427f4382b",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "cfb4ce8976d420cf6cbdc0fcd6a05823cdd2a3bcba04d5762c16e2d00cf5fe41",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "16e94336164852cde3ca08117651f3af071dba7a234f6c9c97212aeac43c787c",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "fc826dccfe9a2bfff0ec6bf0d8aa3f7ec522ae8045fd498dea26e6f56d3a845f",
+          "section": "Debug And Fallback"
+        },
+        {
+          "content_sha256": "39d0e262dbf2024ceaf73acf9209c7c8bcd2254c26f181a9a3d5a60ecb2685e1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "aadf84f1c8a2db179332083c62092a13cfa34192b09e7ab52e7956de0e89556a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6306be24956a470d92e70fdc4937cc770f8d7e79d4ab97eccf9e5974a43c1320",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "bd0aedb5812225f8079e8b1b0d3e8204fd23139e806c7d8e70b7105098eff9e7",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b80827e546a70d07b5826e9cecc85fe68bc2814047de3267d9062985b74d7e4a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "123bbf6a2086113970c85f1e9d30f803ccef87333a00df4596018da24b23718b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "64391232a2b10d1938144a95a31886e4ba7398c6352e45862dd84c3582c981cf",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b0d7b1a4b5029267c57910d240c8b3c8dba66aa8e8b1f71cea903f5cd1a222f5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4fda2ea323c2d201d52e7d811cdba1422ecbdc0a049814623d3c02fc6a950339",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "dc741f5c9d1b1dc061b427b8623d8ebb54d6076b67b4b4dfacee528ad57d8eaf",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0de5f9cfcf793f81cb261a3605d504617bc6c0c577f37d6250fef3b6cc164da5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "a589699e8ccba69c3c349d2cfa59caca4e87ee488a9cc93441c97672f82ab921",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "dd63f8573987ec837bc7af39ebbfb7046b855d486b7be2d7297d71811d114097",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "23113dee1b2dd894c0ba7ea0eebc76769de0a544c0a37ce689cbe6047cdba05d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "aa9b531dcb1b3b463e88c33d3fdce57754cc55230017487fbba85a47dbac644a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4f53b4728547a19fb072c0b08e0f459c27ff01a69c10d901d329e043186d9b9a",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "523fc1ef3378c83df93cda9eb26ee97f0734c48227362317505f523dd66c7e37",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "9edeaa86f0d5f0a15745cb763e6413aaf4fe3ac4e0dd653a4c5b89d64c8f63b6",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "97fd7ffcebaeae1f482cd17bf5621cc5b378333236b32551c60cf64abcb05b69",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "0344bbacc11fa1393134d10fa90b8bd09fd886d71757808d10bc2f33e3aedc85",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "f1cd73ca87534da4c15c4b89e1e0998b628962c5bbf5103ed2ff25352c0d7ba4",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "8cdd099850137265f99d09a234756364e06ba5f98f2e836fa75feb3fec813407",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "0a9310b758bbbf6c121836b7a9081178f8c29085e13d11e948d95bffd3e6f8ce",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "04c39e8368aec760083d960194628f9a7ce41d5dbe4fb9ffdfac3fd898df86d0",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "818e8a28d9ac890fe8945ed68add138be720841aee29439f9a183d9d5c72e82f",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "70aad43fb4057c7584b63339fadc2e2edd9a0b56e0dfbe96cd0289aecc70cebf",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "c2026c023b96654f5dec50e97b1c8c1886e656d4a1eaf35d06b16f6adf0413f5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8fc02572850d2b92449450f8b059fa99f70a5eb64ddadeab549b71d11afd2c5b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "baffbd93e185e42ff2c3cc37289ab9174c3d1982773cb4c7d44f70befbf4f7e3",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b523f8a9a8c98bf6944b66a3a121656bd1accb60f57b6553da43cb2583f02d1a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1c7ebaf108b287c747cdd6b763002f4423198f86733ee01d3981ebaf0823107f",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "17f598d2a0510614df6205f49e3ae9b5b32c6282aca57ee549529f23fe62f442",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "4ecf049142ae0c5eda605f4e856f261e09cae6787b6a6cb12453b5d151e2bd57",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "6cbe3addd399f955de6b0770db560059202fafccc3ced682324944648c881239",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "5ee7c4961e50399bf6d82c70c84f938bc631f323168dd3fe8c10d376a2bd4b19",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "5e84868a83848b1c029e6a068d2a4c1f0c3d5c3e3a8b4e22fd5e7d8ac6234731",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "a0b50f9fd66d317db39101a53c663228706b69caba6a9a522b93e3783c95f6d2",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "2202c3100abf1d8200b4b8c5b6ddb7d802cbe2bd1808298034975c4eed1a951c",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "289e0e4259bf74a97dda106007c4339574b09957ffb7f18513476367537ed6b7",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "c65c741d12d6b89a3e07284cdf8ee17eeaf12bd15a8113c7f632676259727591",
+          "section": "Avoid Or Delay"
+        }
+      ],
+      "section_counts": {
+        "Avoid Or Delay": 10,
+        "Debug And Fallback": 1,
+        "Improve Library": 27,
+        "Seed Route": 8,
+        "Task Contract And Traps": 8,
+        "Validation Contract": 10
+      },
+      "source_blocks": 67,
+      "source_sha256": "ce861c5ffeda5fccd998c547bde9f62efbdd3adf882fb5f59ae0958279b564c5",
+      "title": "Skill: ranzcr-clip-catheter-line-classification"
+    },
+    "SKILL_siim-isic-melanoma-classification.md": {
+      "candidate_blocks": 69,
+      "candidate_sha256": "342b6f959f2ebacd21accc0af6ae301bd0337bf0e5188c30dae5b666ec231c54",
+      "deleted": [],
+      "deleted_blocks": 0,
+      "expected_routing": [
+        {
+          "content_sha256": "b2ec0de6644208b2a97d3e23498a4d600fc56a1ecb8b85eabba9e68e3a385408",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "57490de929c9891315fdbf8f2e9f7a6fee9c43d8434409108d00985fa93bc800",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "bcc2c3aba39adde430620181ea7e450a2b1401205a1bf085886e93822b526103",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "44a016bb14598c7efe5dd5bb1ef3e1404014c485c6c9c675ad85253229b2acda",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "4e63b021e9f2d61e4350183dbb17484958639c813be938ccdcfe2258110052df",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "3347efc9caa6a0da00e130b0ad43c13392f68c762082a8526aecfa6db6caae12",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "be7714a1b51f199de22fa47efd5a2fe1effee10baee2dac7f8355af28ce4bcd6",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "f9c06cbcd411f986bf28568a04efd75079de22a6812f9171ab0caf3a14f0d28f",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "d78a135c223eae6f09fa40b2139c272cb1f553521ce168f1cf337278ea065fd6",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "b5c364b3e3ef0de0e252aeaf2db49967ddae4b5333549d20d52add0af24d5674",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "e3a4509f40b103ff50c89c821574db8bd22e6b7e9f7b10928a2c468396d07843",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "90d0408ba1e7f23a7e79683415ffdacecd3c66bca6a7db2dc5e1e5c9267d1950",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "763d14ce8a77f1af6eccac574a20bc8257a7cff160cdf110255721bfb9b30548",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "d9b60dbf9f0b1802ff17e40aa13c878d0b043eb48342861bffb2a81ddd341b95",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "2f980e02cca0dc8383473f6ea4ca3b2b9eb0fdf41393b93a1f8f8a18d69b5cf2",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "1b5ffd868d5bf4926f629ce533460e063b5e4c7baec7331bf59044d6c7a568c2",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "3fa966fcb74b8947cc91ff568d2d7b9860f83454987a53088b957f85e95ce7b6",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "e10d0688d5f0f03995fd7d838f1cc72ba527219dd4fbe933e14be7459687e079",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "1a155b84c9ab94c19aa9a7d44133a02b7531f2f3a3ca25eea9ca60d6703bbcd2",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "af2c5b484db8b5b1a571d65fb017dacfca09ae434d63578a8bb89648d95e203e",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "3592547a8a9b4e36f1791aa28316567e06e8d0a28829212d05c88cfcae98725e",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "e6386e2f3ab1ea8fd4843fff5801b876cfb700f86672d126bdb82fc94b92b0b3",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "bf7d1796b957b1803f9906b3a194c4611f8b05f96ad481c40ef75df7e4deec84",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "c52d80271f21290aab0ca931fff5031a469887ade3d87bddba886826d7e3329c",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "b6024a1f27305c4f3e22dae6726737619c49e27765b661e8332f3de6cfa46d6f",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "b59ebefd9f1d9e36174405a9593d98b00e9796596ab172d113de68d1ee273af6",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "68caf3cc7b712e97a7eb6a82cbfadc43fd089dca0bc30330ab759b8324a6d54c",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "46e5d6d1440072e265d6d6d79938c83c081727ade69084a452415e9aea0233a5",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "4fe7af21f74cee057b478b71e2073f4d6280279113bae409c308e27c1a056a1e",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "e8bee2dd8fed0c59c5fbf6c994d54d54b456b289ede5641bdd974062b6c21163",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "7552905759607b8ae9d15d21702ea3112315d37378082857e89ac0224321cc76",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "e3c611574268ad0bcbebddcd4982a017968987ac314635b4beb2ee580c7b9f2b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "a00ca196f4ceaaf934a6bc7a490778c525ec61d63fcfd8666b3f28b5bc174ccc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "89220e64349688345deecc9613fbca28b19b71b61f0e6a7b2d19c61e59a24ada",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f27f5a573ab640405025abef6d6db38b0f3f72ef946c0690d357c3704194c86f",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8d6a8544e385beed27ced5320ba033aa74436ad205caad5e5fb8fb849527c22b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8c81af9e7c9ca37253305223ecc6ed27b39f8c3e4ed76d2b9cd093b5a0078552",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "3b4cd4c6ba495691c33ad57b7c04fc24f95ad256f33791f78077212501f45ee2",
+          "section": "Debug And Fallback"
+        },
+        {
+          "content_sha256": "02b7d7bff1b9d6adf32a3d77e8813cfab3c988fb9b2d90e84107c3825c9470be",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "17122bf00fdd84cb38fae5f4c27b247ad09561c9588db544566f8c0f0edb2d56",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "ba0f11618e48941cf947481b706593b0bb7e1ad9e238d158fcd939c90412188c",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "3e805b11b22b53f735925bbfdc60bbe638db5eb4a52cd5bc1f991ee8cfbe4d47",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "523b6fabf66749bfa8bc42ac715884584ffd871e4799b1774567fe798a845c10",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "6480641cf5a83e3ab9538edfd0ceaa1621e0036d754ce6e6a55d59ef1d751d0d",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "25d85be1069c3611670ea4b4d87543622eedbd282c57cfa27d2cf23ba4c06e86",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "2b16496353dbe52b22b5194b390ca74660845c7c3b762fdc8ad66830662d1749",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "bf1554ff049a355bc8bc8f4c416aa749bb3b685d9092f39163f9ce0fe265d871",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b0efa9e43ebcf19cdc20545b6fe993314891f68f5c4c2d4eb71eab34066ddb0f",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8c9e27948a35bbd0e7c5b86869e29e1b1b71eaf7dfea3f116ffacdf3fc7f9278",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "a6b3e3b60bff952e984a7a56aa248546e92413f2d36a5750cbfdb40893783d02",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b43c7b397e0df6fe93f1c109f8ad4357a4b4d1040d819c0ee5de1a8211ef412b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1cf873dc0370fc54bcfbc0e273bf268e4186e996d0e598972fcf09c70aab4692",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "daa8993eecaf63e0046fd7d13e2127c8782017e6f3f4e1268d4e1639bae072d8",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "97c187cde40a665a73c548c96a2b3d90aed7c33d2bf9791be028702beff6411d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "d136f105fbf86b0a5e9ad122647ab1e3a6d9603d01b9155ed6bc6e3dfe0498ff",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "a7c749bf75643bb51142992d184c6667d4060430c3e87d374d9bc3bfd81a21a5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "8791fb6df7266cbcdc8d5e2db72465456751af5e644dd385cf3a2119cbcbc47c",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "dd3dad472768863a9be99aefb851609238268710e66895c8dbc563329710869d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "27cd4fcab419507c424cc37a20d0806c0fc5cdedc20a5f34873706158f6e9fb1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "77ab6b668201e99b21bde57781d766b23c2210d165f488594593618aa64ba267",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "fce77b461bfd6191814fc8edb786173af6e528490af40e18fcb5cb6720ba5187",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "58a298dde9fa4afea641ac5df327b39ed976fbed1acedcf78626d794208e0727",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "97910d31f909e27596a52003c434e6d0fabe0391352aaea0cf6b4ef2f7b5d99f",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "efdebd649a5e8763876f9c6f914605122563354b3d014ae54dd46d2084a32dfd",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "61745c8557afc3471b61ee632cc08426fa11f387df416e01529e32013bbd5d29",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "06b0dfaed8733a7be53077e3ad5d2cc4756adb55c7814e5166fe381b25585e1d",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "fc57d1ccfa3ae2ae9a202e13053055342763e27a47d5a3c8ebd334430fe04638",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "f6ee05704ae047b134b71db9ffa00d5e3b6fafe2268d7d5a3746a53a14287a04",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "5868bb754a27a49084fd5ff7954d50cfaeaccfbe10d41511d50856bba1916d57",
+          "section": "Debug And Fallback"
+        }
+      ],
+      "section_counts": {
+        "Avoid Or Delay": 9,
+        "Debug And Fallback": 2,
+        "Improve Library": 24,
+        "Seed Route": 18,
+        "Task Contract And Traps": 8,
+        "Validation Contract": 8
+      },
+      "source_blocks": 69,
+      "source_sha256": "5d383e537f0606e8acb7eb489030563a35f3fde321c2db78e6f1b049e5297f20",
+      "title": "Skill: siim-isic-melanoma-classification"
+    },
+    "SKILL_tabular-playground-series-may-2022.md": {
+      "candidate_blocks": 96,
+      "candidate_sha256": "a60f0ca61f03caff409e6bdf5f16cab9c0dc866231445aac54acb5d806e403a0",
+      "deleted": [
+        {
+          "reason": "obsolete fixed 12-hour runtime assumption",
+          "sha256": "7a3c73acc0f86bb7f68996595b73e490432ca989a065915d360398fd5efa7b7c",
+          "text": "- Compute: 6 CPU cores, 200 GB RAM, 24 GB VRAM, and 12 hours net runtime. Full 5-fold GBDT training is feasible, but dozens of near-duplicate seed bags or heavy neural architecture searches are not the first priority. GPU can help XGBoost/CatBoost/NN routes if available, but the skill should not depend on GPU-specific training working."
+        },
+        {
+          "reason": "same-script first-valid-to-strong connection",
+          "sha256": "937aa71b719baa3ea8becd7ebe9c13f89c9bad82aa115f36c8a66452f22f9c14",
+          "text": "Strong first run after the smoke path works:"
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "54700d770cdc108e67f6a8207cf9b41c740be199a48f2e2a450b96d507dc876b",
+          "text": "- Save artifacts: fold assignments, feature names and categorical maps, OOF/test predictions per model and fold, OOF AUC table, feature importance, adversarial train-vs-test AUC by feature set, and final blend weights."
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "8fc360fd95274d042d135f378b747f133924a6b02ed5c36fe355b8ac19953558",
+          "text": "Required artifacts for later rounds are OOF predictions, fold-level predictions, test predictions per fold, feature manifests, and blend inputs. Without OOF artifacts, later rank blends, stackers, target-encoding checks, pseudo-label filters, and drift diagnostics cannot be evaluated honestly."
+        },
+        {
+          "reason": "cross-round artifact persistence",
+          "sha256": "43e4da87fe50f6142be91abc1194212552d7c355a62d98745fd464352fe545c4",
+          "text": "- Save every base model's OOF/test predictions."
+        }
+      ],
+      "deleted_blocks": 5,
+      "expected_routing": [
+        {
+          "content_sha256": "6c900a1e05de31d231e374276e3a34f938fa7fbe47b559ccb77c6f8fffc1803e",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "a4fde2f7d0a6a6cc1e8ea1b5555c57287891423ece8ffb83994bfa30649413c0",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "08433c5788b49887117d13efef0c3766ef05e9b6cd66570d5f841c22153b313f",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "2d4b0a57d702b0b665a390e704283349e1a0d070c75787b473a0ac2ee0a1d08e",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "14519f96b8c0da9801128556c67ab70794e30332913cf90e96f311d73a8fdbd7",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "5c77549fd191efb7a38a783d4652e081c6e84995bdbdf93aec29aa288d1a2ff5",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "c4ce1b9ff0333d2505c53a1d7bf19c919c0252065feb5ebe2ea459d88c6dd388",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "2465145984e4fa30448f82eb0d0714c296026d0e1232eb0778cbc784c24425e8",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "c6c2d3d1cea9557fa572a72af9e25cf9ec2bdb31afaa9b3760f8b1433e8a19ac",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "9dffb7a10305f2e7da6e41e43dd17cb833eaa96a20700aca3ede0ff587a01e7f",
+          "section": "Task Contract And Traps"
+        },
+        {
+          "content_sha256": "ab3848e2702a896c17f9b8b9a208537d429fe3a40444d0a8738efbc2c38da5fd",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "d885a4fe62e94f9250c7d79244432d9852a0e4cd8541ec1231e296b76710963f",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "ec7fd3ef159be7e28f790c1599667f5dae70797b6358fa326c93e8ac83db71f7",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "dfd6ad1f44fb8b2e24dda94d59f38ba53489f04d3bb384787df9e39ba57f9ea8",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "70578b57d546ce89993fb95f99812c3bb53e6e70040a5b8d6199f9bb9cb5c7e4",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "70afb1f56aca1915d9b3fc8eb2be62a9cfe12aa537f95cc12f103815721d28d5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4e5c1ab80f54f7b25339ec7fd2b832629c235a7807083a52efe7987133a35206",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "6bf1fd18b5e6db65499585e469b765c25a2bb3ade233d444658491114df4a218",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "808caf6aa7066af79cdf9ffe9597000618f2f7e599e3f03b1d8e7aae093f1065",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "104885b93c8f634ac507dcaae25bcc479d54ce250d52d7a2f1a924ede4b9bb5b",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "b22e507a0878d2543e87c42c48040f0e14f79f327d1919551bf1d88930c4c46b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f5a4127e9e1db1eefc9569ef6326bfe642a1411fd82418ad4cef3608f1ac41f5",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "8611f8f1ba26a9330b34e1ecdea09c33b165c68cd02167c404fdac76f4d2d9f1",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "0fcd5fc1eb8cb2e0389269babb6b25ecdb8e9eefa7b919d225a9822ddd2fced1",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "57536c29b50aa8664c131395b6ee2a7ac30d2ad4e872c6f67e82f526e3fa3a24",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "9ada299791254c3f70cd1cc6d6871a5218238497c00465fec6f144c769951416",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "f0bf99483f0bab7aa7cf44bf1d21ba31860ba663044d207e61dfe270b854ca01",
+          "section": "Seed Route"
+        },
+        {
+          "content_sha256": "055ca362d008f9f3b18d4cb4f647acdc53b5d2c557d489e7ad5424e679b58507",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "25c5216c4bcf8ef0c4c88b13edc3bea0d2d808d39d94e6ec401e4a1730e441f1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b652d244a9ae781dcfd01e97d442372be26c4d93610fa157cfa9b4e2aa5ee0c9",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "5ff7c16d8170aecf27984eab409dbdf35e26a8905afffb26444020825d79ecb7",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "79dacfa2545b43264f1a104a065bf1d324a3581322e6b64927da1dad501a48fc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1983e2ba6908f1c8b4d4b3f0c009d3e7d5bfc2747db5a9717294f26bfde1d410",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9919a19146538295739cf83657c64ae261d36255d76edff0a0e14f1b98005d1c",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b0ca0d2636b2c124fe5e5803c642d7f43dc3ebe9d21556df42387880a3c21c03",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1acccc454808b9a38e65e7552d61d44eb3787d0b8ca24566878b41b2acd047dc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "a271d3755a1192f9d9b51c4909fc89abadca659426e06ed791a49c0face7e384",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "f93f4d71c3e4474f96d51c22dcacec40dd02e0d82182d364f7b8ff9d94b59f0b",
+          "section": "Debug And Fallback"
+        },
+        {
+          "content_sha256": "39d0e262dbf2024ceaf73acf9209c7c8bcd2254c26f181a9a3d5a60ecb2685e1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "93243649bf1540d7d9a9899ae46a5c6f8229179bfd9680a4c99739d3e52fb657",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "5826a997b8eb7dd5dca2e2bae6d155b12eef50d58c46f075b550cf3b7d14f3dc",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "c3807f7ea7cecafd46f91e491262bebed4817aa3bb6f2398d2ef4c5758fbea9a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "74cd96fbaddb081889364c08f5767ae861728438919fff654bf18a7ed0c84308",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "123bbf6a2086113970c85f1e9d30f803ccef87333a00df4596018da24b23718b",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1f7e181c68fe44527b86dcb810fdc690150f1c11ef17c39b5cabff706b57562a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b150ab69cf97da0775c482ab1937686761af3dfc82e28d2415dad880e8cdb648",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "5ee932cf045d2e3f94501c5c2eb52aa1c8ee70a5c793ee3578caa6e9762da4ea",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "e6d4ee38b8556538e926e5d066f3145490ea19cb379cc8cb285953a0b047e8c3",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0de5f9cfcf793f81cb261a3605d504617bc6c0c577f37d6250fef3b6cc164da5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "39983423a89514075067531a8348ee62c1dcd49da11735df9b7cf0d315af4b57",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "87ab574890e9f3d754500b86013514c41bfccb33d156ebb837e6a2cfeea172d1",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b1144574418076fef691b463695fbf3cfe7518cb9f7a9c0500d04129f22d4fba",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "1402139e63fc6bf3ebbd725260a464f4e540b8f34e7bd84fcb85021a992db5b6",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "739c7480ab3476422cb2e721d5f8152714f7e494a21f4dd6b60994cc8f3b4c56",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "939e58099c04063bfddb8603ef2ccbeca75b2b390ed9d66da9f193e8c87a1f29",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "5d1d80d9d53ab5851ba41d205600da5436e027f04303d5c656f73190c1aef7d4",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "8db2268000bd6803ea34b7cc699a442288c81fb8c8ac8d3f7b191461598190e9",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "efb5384e1f2c3e126f5921f2ba1027f97b8ee3a945e0d4400cea1a5a025d8df5",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "54ac05da558316a3e84c7bdb0d7ca0edcd8004bcce7b341ee7f0131ba4f78561",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "2e51f3de426c349f163a1dd6377501a88e421e37193c42e1b744eed3887e8dda",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "d67eaa71c1f0f4ef49379539a24a261e9117f9fd870164d3b7f3933505d5021e",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "ae837db96920b418d3c8f6aa88ae89ad6962e26afd696f46ab24e757758dcb08",
+          "section": "Validation Contract"
+        },
+        {
+          "content_sha256": "2da5529a914649dc570f0578f97b7187a75db02f3c7eb580581d7b2195363bad",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "2429d3f755d9e7f090d4aada88da886d2dc283b3d72d1b096c3a9a41be26d74e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "564ee82311734af39373570f78516301bbbc6c48bc0583913add4545e7915fd5",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0c5831c06f3b8a2b98ccbf6be1842a94f243c758ce8868773a008d4256ab9240",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "230671bda9e6a73f66b0b4d7bd45e9653af4ef684eaf738f90ce63079e515890",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "62d11d7d5ad2646caa7ebc52e6efb298bbe011a661c257edfe2277056bc51179",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0c7ae5d69eb72282b8c1eecf944ea35159dfc620d923a97fbccfbbd540a1f50a",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "33e2f569bbc75db2452bfb3a8681d34de7ffa7838faa8165d198cd4765206b6e",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4185b9d684d6253389106dd2dc5924e8584d46191c9aedeeaaf76b1220a978cb",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "3899e41230d1abb07d9e61ec406d0584afc02b8536309559bfcb62d22cef6664",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "16b19f77eb4c4c7e2abe73c348eaadb595bdff75260a1f3750da0903a6fbab48",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "318844a44d90a0486452a5cbb89ed77b04447df9831e7c27ce66c2a887b5b584",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "7d6a3e4d938c123c0940cd2e0d297fbbca412d46fb740b0dfd51dfc414fc8401",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "3ff82e5be9adcd254b3e15916df54d106faefd4f26d83e11fa3e4286de9f64cf",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "557fcb9fa38c9b44a07ba8b248aa6f5cce73f868a014090f0948b3773a79d4e9",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4561daf7cda3b729c336c42bd7ad0d11a72807d366ac262c44e9bb1fd36045ef",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0f9df3a4400fc6731e83b40bf150ecffeb3db282026e5dff3ea2ffeab5c9a96c",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "0736256a780152e8d98045de20bf6a1f20f77ad732ad620c167a3a8f9fee7e27",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "4fc6d6d93c11372211ac57c2d74de603d432c4d1fb48995f77926f1de8e06261",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "63b0a1e54b44ce9ef8e308eb0c2c25afdd6bdc2ab2d1db9c204849bb297d47a2",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "322b68a1a95a3b14379acbdd2c8ef8d9ebfcb1f511155fdad8d16922c74c569d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "9b4d5aac255bbbf248e3691ebe0434d3d88c35db3617dd3336aa3e5495e37294",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "b3a217374122d71ad879f89ce5233933a8c6c87e7441c1ec4d1b60e13ab3e45d",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "741e813da4ef4a30423f5bb1972b22ed44dfadf746e974b40ecfb5c2ae96e862",
+          "section": "Improve Library"
+        },
+        {
+          "content_sha256": "ca444500fdb75dbc5a79aeab3fb2e66cb29cc33196eb9e0f7ba389ff753128d4",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "8a03ca6da42b15eb5ff90ec68d9b0727274cc574d4f3c9b3088cc9e3e30c25dd",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "34e4eff07546e5c8d77893c26f3e1bad82094f54396bc25cbc3c1b211c04201c",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "668c9ff1a472a56babfaa01a092a77a6134924752fcaff7a05227b7e44d13f40",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "8b5b1c540d607bdd16e91dba4434135131f920be7acf4a79d5c39de0deb4d5ce",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "299554874499771efb98f55c03bb5e0037bdb9a7576aa1dd365f86a5bd0f25b5",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "0e4e386a4b6cef86048d67d531c40914717932f3584a75dcbaccb93e1c381728",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "95004783c7f91f66454886b687c05d3a8dd96cd99823703c4fcc8d2cb29be9a3",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "11d309935f208f3f42a0514398ce80f6f60b2d903c05ef40c96c00e543c82a42",
+          "section": "Avoid Or Delay"
+        },
+        {
+          "content_sha256": "02ffa2c7f98c4287cf0f0ac263a41b968668203dc0c69e32d60fe76b71324e77",
+          "section": "Avoid Or Delay"
+        }
+      ],
+      "section_counts": {
+        "Avoid Or Delay": 10,
+        "Debug And Fallback": 1,
+        "Improve Library": 56,
+        "Seed Route": 8,
+        "Task Contract And Traps": 10,
+        "Validation Contract": 11
+      },
+      "source_blocks": 101,
+      "source_sha256": "233a2e3ebf2907f899dd8c7c49dbf8ac7cc9d7a057b6feb51cb12eee36cb5f69",
+      "title": "Skill: tabular-playground-series-may-2022"
+    }
+  },
+  "schema_version": "task_skill_reorganization_manifest_v1"
+}

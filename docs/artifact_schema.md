@@ -22,9 +22,11 @@ It contains:
 - one non-recursive `parent_binding`;
 - frozen `draft_prior_memory` for draft rounds;
 - source policy and score feedback;
-- remaining sandbox budget, one external validation timeout, its audit plan, and scheduler diagnostics.
+- remaining sandbox budget, one external validation timeout, `workload_plan_v1`, and scheduler diagnostics.
 
-The framework computes `validation_timeout_seconds` before coding. It is the sole execution timeout authority and the external sandbox wall. The prompt exposes it read-only. Codex does not request a runtime plan, and readiness does not create requested or effective budget values.
+The framework computes `validation_timeout_seconds` before coding. It is the sole execution timeout authority and the external sandbox wall. The prompt exposes it read-only. Draft also receives a `3600s` soft workload-planning ceiling; that value is not an enforced timeout, runtime quota, requested budget, or effective budget.
+
+`workload_plan_v1` records policy flags, the draft-only ceiling, and branch-routed historical evidence: reference identity and status, previous validation runtime and timeout, timeout saturation, and structured timeout status. Draft references the latest prior draft with actual runtime; debug and improve reference their bound parent. Non-draft decisions retain the schema with a null draft ceiling.
 
 Later scheduling overwrites this file. It is not append-only history and must not be used to reconstruct earlier rounds.
 
@@ -72,6 +74,22 @@ Authority: structured companion to the findings markdown. It is optional during 
 
 Authority: generated/archive compatibility view. It is not the normal coding source because it can duplicate the findings markdown and structured JSON. PART 4 does not route it when findings exist. It becomes a required legacy fallback only when an old archive has no `eda_findings.md`.
 
+## Routed Context and Skill Artifacts
+
+### `context_sources/sandbox_model_cache.txt`
+
+Authority: immutable task-local copy of the repository-maintained ready-only model-cache inventory. Its canonical source is `runtime/sandbox_model_cache.txt`; normal evaluator runs copy the source unchanged and never discover or mutate cache state dynamically.
+
+The file contains 539 Hugging Face repositories with configuration and complete weights and 109 complete Torch checkpoints. Missing, incomplete, snapshotless, weights-only, configuration-only, and `.partial` entries are omitted, so every published line is ready by inventory contract. PART 4 requires this path for draft and exposes it as optional for debug/improve. Codex must query relevant names or families with targeted `grep -i` or `grep -iE` commands and must not read the complete file into context. The file contains neither package inventory nor live GPU capability data and consumes no sandbox runtime.
+
+### `context_sources/task_skill_source_*.md`
+
+Authority: prompt-safe branch view of the configured external task skill. Standardized skills contain exactly six phase headings and are persisted with only the four sections routed to the current branch. The header records original path, SHA-256, branch, and whether phase scoping succeeded. Legacy schemas remain full-text and are explicitly marked unscoped.
+
+### `context_sources/failure_prevention_skill_source_*.md`
+
+Authority: prompt-safe copy of the general failure-prevention skill when the branch source policy requires it. It is not phase-trimmed by the task-skill router.
+
 ## Static Gate Artifacts
 
 The static gate runs before sandbox validation. A hard block receives at most two in-place `static_gate_repair` attempts in the same round.
@@ -92,7 +110,7 @@ If either recheck becomes `pass` or `warn`, the same round enters sandbox valida
 
 The failed directory preserves the final code, contract feedback, readiness, post-code summary, round summary, and result. It enters round history, failure ledger, and memory, but never the graph portfolio or validation-best vault. The next round may bind it as `debug_parent` and enter `debug / repair_failure`.
 
-`hard_format_safety_only` restricts blockers to concrete safety and submission violations such as missing `DATA_DIR` or `submission.csv`, known hardcoded paths, unsafe downloads, side-output files, untrained constant submissions, and structurally detected hardcoded data cardinality. Runtime style and boundedness remain warnings unless they prove a hard safety violation.
+`hard_format_safety_only` restricts blockers to concrete safety and submission violations such as missing `DATA_DIR` or `submission.csv`, known hardcoded paths, unsafe downloads, side-output files, untrained constant submissions, structurally detected hardcoded data cardinality, invalid constant regex contracts, and definite same-block use after deletion. Runtime style and boundedness remain warnings unless they prove a hard safety violation.
 
 The static contract may warn about unbounded work, missing score-first structure, or unsafe submission finalization. Timeout allocation remains owned by the framework.
 
@@ -186,7 +204,23 @@ Authority: commit-local method and outcome summary. Cross-round selection uses r
 
 Authority: pre-code evidence-reading record and implementation plan.
 
-It records inspected PART 4 paths, branch/state, actual implementation base and prefill status, score response, data contract, route, validation design, fallback, and failure traps. It does not participate in timeout selection. The generic readiness schema belongs only to PART 1, while source paths belong only to PART 4.
+It records inspected PART 4 paths, branch/state, actual implementation base and prefill status, score response, data contract, route, validation design, fallback, and failure traps. It does not participate in external timeout selection. The generic readiness schema belongs only to PART 1, while source paths belong only to PART 4.
+
+Draft readiness additionally contains these ordinary planning fields derived from the decision and the agent's route estimate:
+
+```text
+draft_workload_ceiling_seconds: 3600
+expected_complete_path_seconds: <positive estimate>
+runtime_estimate_basis: <work-unit estimate and any valid history>
+dominant_cost_units: <bounded expensive units>
+complete_workload_product: <full multiplicative workload>
+within_ceiling: yes
+why_no_further_expansion: <why more work is not justified>
+```
+
+`expected_complete_path_seconds` is an expected runtime, not a target; a route expected to finish in a few minutes must not expand to consume the hour. `complete_workload_product` covers the entire route, including preprocessing, candidates, folds, epochs or iterations, validation, test inference, TTA, and optional stages as applicable.
+
+Historical runtime evidence inside `runtime_estimate_basis` must identify completed same-task rounds and use actual sandbox runtime. Comparable successful routes are preferred. A timeout is a lower bound only. A failure before the dominant stage is not an end-to-end runtime estimate. When history is not comparable or absent, the basis must say so and reason from explicit work units. Debug and improve do not emit the draft readiness fields; their PART 3 evidence remains parent-relative.
 
 ### `commits/<hash>/post_code_memory_summary.md`
 
@@ -210,19 +244,30 @@ Authority: packed prompt composition and critical marker coverage. `critical_mar
 
 Derived human-readable packed prompt. Machine checks should prefer the JSON artifact.
 
+### PART 1 Contract
+
+The `v54_draft_workload_ceiling` pack contains one compact PART 1 with system instructions, deterministic sandbox facts, the context-first readiness and post-code-memory schema, and the output contract. It contains no branch guard body, routed task-skill body, or duplicate runtime-hardening block. Branch actions are projected only in PART 3 and routed skill paths only in PART 4.
+
+When PART 4 marks the failure-prevention skill as required, the context-first protocol tells Codex to select a concrete route, review the complete skill against that route, and record only applicable risks and code actions in `context_readiness.md`. The framework does not project selected failure-skill chapters. There is no separate sandbox preflight artifact, runtime state, or solution-local timer; the static gate continues directly to full validation.
+
+`coding_prompt_after_pack.json` records `branch_context_routing.inlined=false`. It no longer emits `selected_skill_filter` or `section_chars/section_tokens.branch_inline_guards`. Representative prompt regression tests cap the complete PART 1 at 2,200 tokens while checking the four benchmark API compatibility facts and the static safety contract. See `docs/coding_prompt_part1_contract.md`.
+
 ### PART 3 Contract
 
-`part3_compact_v2` contains:
+`part3_compact_v3` contains:
 
 - one `[ROUND DIRECTIVE]`;
 - branch-exclusive `[PARENT MEMORY CARD]` or `[PRIOR DRAFT MEMORY]`;
 - bounded `[SCORE CONTEXT]` and `[ROUND HISTORY]`;
+- draft-only `[DRAFT WORKLOAD CEILING]` or parent-relative `[OBSERVED RUNTIME EVIDENCE]` when available;
 - one `[EXTERNAL VALIDATION TIMEOUT]` block with remaining sandbox runtime and the read-only external validation timeout;
 - no raw current-decision path, recursive parent, full best candidate, complete portfolio, or neutral operator placeholder.
 
-PART 4 is the sole path list. Existing required skill paths are bold; missing required skills remain explicit. High-level memory is required for normal draft/improve only after its derived file exists, optional for debug, and suppressed for static repair.
+PART 4 is the sole path list. `context_sources/sandbox_model_cache.txt` is mandatory for draft and optional for debug/improve; its prompt instruction requires targeted case-insensitive `grep` lookup without full-file reading. Existing required skill paths are bold; missing required skills remain explicit. High-level memory is required for normal draft/improve only after its derived file exists, optional for debug, and suppressed for static repair.
 
 Parent and prior summaries preserve the complete card `method_summary`. Draft prior volume is bounded by selecting at most four representative cards, not by truncating their text.
+
+For draft only, `[DRAFT WORKLOAD CEILING]` supplies `draft_workload_ceiling_seconds: 3600` and the context-first protocol requires the readiness planning fields. The external block remains the hard execution wall. `3600s` is a planning ceiling rather than a quota; the `test-lite` calibration reports `92.6%` of audited completed draft validations within that envelope. Non-draft directives retain parent-relative runtime evidence without inheriting the draft ceiling.
 
 ## Failure Taxonomy
 
@@ -261,10 +306,12 @@ Artifact checks should verify:
 8. wall time, sandbox runtime, timeout cap, and token estimate remain distinct;
 9. debug/improve parent, implementation base, prefill source, and PART 4 baseline share one identity;
 10. draft has no implementation parent and only bounded frozen prior memory;
-11. readiness remains evidence-only for timeout purposes;
+11. readiness remains evidence-only for external-timeout purposes, while the frozen decision records `workload_plan_v1` and draft readiness records its planning fields;
 12. the frozen external timeout remains authoritative after code generation;
-13. solution output is a schema-valid atomically written `submission.csv`;
-14. timeout taxonomy preserves evidence without inferring unsupported method causality.
+13. every task-local model-cache inventory matches the repository source and follows draft-required, debug/improve-optional PART 4 routing;
+14. solution output is a schema-valid atomically written `submission.csv`;
+15. timeout taxonomy preserves evidence without inferring unsupported method causality;
+16. the draft `3600s` planning ceiling remains distinct from the external hard cap and creates no internal timer or preflight.
 
 ### `graphic.png`
 

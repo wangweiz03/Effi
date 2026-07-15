@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from .common import *
 from .constants import *
 
@@ -662,13 +664,12 @@ def build_v35_sandbox_environment_card(user_task_raw: str, metadata: dict[str, A
             lines.append(f"- {group}")
     if other_packages:
         lines.append(f"Other listed packages: {', '.join(other_packages)}")
-    if "PyTorch rather than TensorFlow" in system_block:
-        lines.append("Neural-network preference: prefer PyTorch over TensorFlow unless task evidence strongly suggests otherwise.")
     if {"torch", "torchvision", "timm"} & package_set or {"transformers", "sentence-transformers"} & package_set:
-        lines.append("Model-weight handling:")
-        lines.append("- Do not download weights from the internet during validation.")
-        lines.append("- Package/framework caches may exist inside the sandbox; generated code may probe `TORCH_HOME`, `~/.cache/torch`, `~/.cache/huggingface`, and known mounted cache roots only in offline/cache mode.")
-        lines.append("- For any pretrained attempt, print whether weights were actually loaded and keep a trained no-download fallback.")
+        lines.append("Model cache lookup:")
+        lines.append("- The complete ready-to-use model cache inventory is available at `context_sources/sandbox_model_cache.txt`.")
+        lines.append("- Query relevant model names or families with `grep -i`; do not read the entire file.")
+        lines.append("- Example: `grep -iE 'deberta|roberta|resnet|efficientnet' context_sources/sandbox_model_cache.txt`.")
+        lines.append("- Every listed entry has been verified as ready for offline use; unavailable or incomplete entries are omitted.")
     if api_constraints:
         lines.append("API compatibility constraints:")
         for item in api_constraints:
@@ -779,17 +780,6 @@ def build_v35_hard_task_contract(
 
     payload = _parse_routed_skill_payload(raw)
     record["parsed_json_packet"] = bool(payload)
-    guard_only_context = (
-        not payload
-        and any(marker in raw for marker in (
-            "## Draft Guard",
-            "## Debug Error Taxonomy Guard",
-            "## Improve Best Guard",
-            "## Runtime Hardening Guard",
-        ))
-        and "[BRANCH INLINE GUARDS]" not in raw
-    )
-
     lines = [
         "[PINNED HARD TASK CONTRACT]",
         "Deterministic extraction from routed task-skill packet. This section is authoritative for task units, target shape, metric/submission constraints, and avoid rules.",
@@ -812,12 +802,6 @@ def build_v35_hard_task_contract(
                     "coding_call_operator": _operator_name(operator_override),
                 }
             lines.extend(["", operator_label, json.dumps(effective_operator, ensure_ascii=False, indent=2)])
-    elif guard_only_context:
-        # Guard-only routed context has no task contract. The source-map section
-        # explains required/optional task-skill reads; do not emit a placeholder
-        # section that looks like task information.
-        record["mode"] = "branch_inline_guards_skipped"
-        return "", record
     else:
         selected, fallback_record = select_complete_lines_under_token_limit(raw, 2400)
         lines.extend(["", selected.strip()])
@@ -1128,6 +1112,14 @@ def build_v35_context_source_map(pinned_info: dict[str, Any]) -> tuple[str, dict
         add(must, "current_context_readiness", task_dir / "context_readiness.md")
         add(must, "current_post_code_memory_summary", task_dir / POST_CODE_MEMORY_SUMMARY_FILENAME)
 
+    model_cache_bucket = must if branch == "draft" else optional
+    add(
+        model_cache_bucket,
+        "sandbox_model_cache",
+        "context_sources/sandbox_model_cache.txt",
+        include_missing=branch == "draft",
+    )
+
     if branch == "improve":
         add(must, "anchor_parent_card", pinned_info.get("anchor_parent_card_path"), include_missing=True)
         add(must, "anchor_parent_solution", pinned_info.get("anchor_parent_code_path") or pinned_info.get("parent_abs_path") or pinned_info.get("best_abs_path"), include_missing=True)
@@ -1217,6 +1209,7 @@ def build_v35_context_source_map(pinned_info: dict[str, Any]) -> tuple[str, dict
         "current_round_solution": "authoritative implementation to repair without changing its modeling route",
         "current_context_readiness": "current-round evidence audit and pre-code implementation plan",
         "current_post_code_memory_summary": "current-round method summary to preserve during repair",
+        "sandbox_model_cache": "fixed ready-only offline model inventory; query relevant names with grep rather than reading the full file",
         "task_skill_source": "task-specific high-quality modeling prior and core modeling basis, especially for draft/improve; extract recipe, feature views, validation hints, and traps",
         "failure_prevention_skill_source": "general MLE contract checklist for schema, alignment, runtime, dependency, and output safety",
         "routed_skill_source": "routed skill source; inspect header/original source to determine task-skill or failure-prevention role",
@@ -1284,46 +1277,32 @@ def build_v35_context_first_protocol(pinned_info: dict[str, Any]) -> str:
     ).strip()
     lines = [
         "[CONTEXT-FIRST PROTOCOL]",
-        "Before writing or editing `solution.py`, perform a short context acquisition pass.",
-        "First inspect every path under `Must inspect before coding` in `[CONTEXT SOURCE MAP]`.",
+        "Before writing or editing `solution.py`, inspect every path under `Must inspect before coding` in `[CONTEXT SOURCE MAP]`.",
         f"Data-contract probe directory: {context_eda_data_dir or '`CONTEXT_EDA_DATA_DIR` if set by the harness'}. Treat it as read-only and never hardcode it in `solution.py`.",
-        "You may run bounded read-only probes only to confirm file names, headers, schemas, shapes, tiny samples, submission alignment, label/source mapping, and failure-causing parser contracts. Acceptable probes are small `ls/find -maxdepth`, `head`, metadata reads, or tiny Python snippets that read limited rows/files and write no outputs.",
+        "Allowed probes are bounded read-only checks of names, headers, schemas, shapes, tiny samples, submission alignment, label/source mapping, or a concrete parser failure, using shallow listings, heads, metadata reads, or tiny no-output snippets.",
         f"Do not run `solution.py`, validation, sandbox jobs, training, EDA scripts, notebooks, model fitting, hyperparameter searches, full-directory scans, recursive media decoding, prediction-cache generation, internet access, or writes outside `context_readiness.md`, `solution.py`, and `{POST_CODE_MEMORY_SUMMARY_FILENAME}`.",
-        "Do not edit `memory_bank/eda_insights.jsonl` or EDA findings files directly. If you use deep EDA, write a valid JSON object inside a fenced `json` block in `context_readiness.md`; after sandbox feedback the framework will append it to the EDA insight store and task-local initial EDA findings markdown.",
+        "Use optional source-map paths only to resolve a concrete ambiguity. Do not edit EDA findings or memory stores directly. Deep EDA is an incremental detail patch, not a repeated dataset inventory.",
+        "After selecting the concrete route, and before writing `solution.py`, review the required failure-prevention skill against that exact plan when it is listed in the source map. Identify only applicable risks and concrete code actions; do not reproduce the full checklist.",
         "",
-        "Treat `[ROUND DIRECTIVE]` as the single authority for this coding round.",
-        "Use `top_diverse_*` optional paths when the directive involves improve, replacement, blend, plateau diagnosis, or when prior implementation details would change the plan.",
-        "Use other optional expansion paths when the pinned contract, parent code, feedback, EDA findings/source-map facts, or memory leave an ambiguity.",
-        "When scanning DATA_DIR, name discovered input-file mappings `input_paths`, `data_files`, or `source_files`; do not use names that imply reusable side outputs, cached products, or cross-round files.",
-        "",
-        "Then write `context_readiness.md` as the final pre-code plan and audit with these bullets. Keep this file pre-code only; do not append post-code memory fields here:",
-        "- files inspected",
-        "- submission unit and format",
-        "- label source and split meaning",
+        "Write `context_readiness.md` as the final pre-code audit with these items:",
+        "- inspected files; observed task, label, split, and submission contracts; factual conflicts",
         "- method_family: <stable concrete modeling family, e.g. sparse_text_logreg, descriptor_svc, cnn_image, audio_segment_mil, tabular_gbdt; never use draft/improve/debug/portfolio/control labels>",
-        "- branch state, anchor/debug parent behavior, and any imported node ideas",
-        "- score_feedback response and material-gain rationale when score feedback is present",
-        "- deep EDA trigger, files checked, data-contract confirmations, confidence, and coding implication; write `not used` if no deep EDA was needed",
-        "- fenced JSON deep EDA insight when used, with keys: source=`deep_eda`, trigger, files_checked, commands_or_reads, finding, confidence, coding_implication",
-        "- modeling route and feature/data strategy",
-        "- validation or sanity-check strategy",
-        "- score-first path and heavy-tier order",
-        "- runtime fallback and dependency downgrade plan",
-        "- stdout diagnostic and candidate-comparison plan",
-        "- known failure traps to avoid",
-        "- exact implementation plan for this round",
+        "- branch/parent behavior, score-feedback response, and any imported idea",
+        "- failure-prevention check when that skill is required: applicable risks and concrete code actions, without copying the full checklist",
+        "- deep EDA status and implication; when used, include one fenced JSON object with source=`deep_eda`, trigger, files_checked, commands_or_reads, finding, confidence, coding_implication",
+        "- modeling/data route, validation/selection strategy, and complete end-to-end workload estimate",
+        "- for draft: draft_workload_ceiling_seconds; an honest expected_complete_path_seconds; runtime_estimate_basis; dominant_cost_units; complete_workload_product across preprocessing, training, validation, test inference, optional work, and submission; within_ceiling: yes; why_no_further_expansion",
+        "- trained primary path, optional-work order, fallback, diagnostics, failure traps, and exact implementation plan",
         "",
-        f"After writing `solution.py`, write `{POST_CODE_MEMORY_SUMMARY_FILENAME}` as the code-after memory payload for memory card/diff artifacts:",
-        "- Start with heading `# Post-Code Memory Summary`.",
-        "- card_method_summary: 1-2 dense English sentences describing the implemented solution.py method itself",
-        "- card_method_profile: 3-5 concise English sentences covering feature/representation views, model family, validation/selection logic, runtime fallback, and main reuse/risk signal",
-        "- card_core_components: comma-separated concrete components actually implemented",
-        "- card_reuse_risk: what future rounds should reuse or avoid from this implementation",
-        "- diff_action: if this round patches a parent/anchor, state the concrete code/logic changes; otherwise write `none`",
-        "- diff_reason: if this round patches a parent/anchor, state why those changes were made; otherwise write `none`",
+        f"After `solution.py`, write `{POST_CODE_MEMORY_SUMMARY_FILENAME}` headed `# Post-Code Memory Summary` with:",
+        "- card_method_summary: 1-2 dense English sentences about the implemented method",
+        "- card_method_profile: 3-5 concise English sentences covering representation, model, validation/selection, fallback, and reuse/risk",
+        "- card_core_components: comma-separated implemented components",
+        "- card_reuse_risk: what to reuse or avoid",
+        "- diff_action: concrete parent/anchor changes, otherwise `none`",
+        "- diff_reason: reason for those changes, otherwise `none`",
         "",
-        "Deep EDA is an incremental detail patch to initial EDA, not a replacement. Do not repeat full dataset inventory; inspect only the smallest files/rows needed to resolve the current ambiguity or failure.",
-        "If a mandatory file is missing, record that fact and continue using the pinned hard contract. If a retrieved file conflicts with pinned hard contract or source-map EDA facts, obey the pinned hard contract and mention the conflict.",
+        "If a mandatory source is missing, record it and continue from available authority. For factual conflicts, record the conflict and follow the precedence in `[SYSTEM INSTRUCTIONS]`.",
     ]
     return "\n".join(lines)
 
@@ -1470,6 +1449,31 @@ def _round_score(row: dict[str, Any]) -> float | None:
     return float(score) if isinstance(score, (int, float)) else None
 
 
+def _round_validation_seconds(row: dict[str, Any], key: str) -> float | None:
+    validation = row.get("validation") if isinstance(row.get("validation"), dict) else {}
+    value = validation.get(key)
+    if value is None and key == "run_time":
+        value = row.get("sandbox_run_time") if row.get("sandbox_run_time") is not None else row.get("run_time")
+    if value is None and key == "timeout":
+        decision = row.get("branch_decision") if isinstance(row.get("branch_decision"), dict) else {}
+        value = decision.get("validation_timeout_seconds")
+    if isinstance(value, bool):
+        return None
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return None
+    return seconds if math.isfinite(seconds) and seconds >= 0 else None
+
+
+def _round_timeout_saturation(row: dict[str, Any]) -> float | None:
+    runtime = _round_validation_seconds(row, "run_time")
+    timeout = _round_validation_seconds(row, "timeout")
+    if runtime is None or timeout in {None, 0.0}:
+        return None
+    return min(1.0, max(0.0, runtime / timeout))
+
+
 def _build_round_history(rows: list[dict[str, Any]], parent_round: int | None, higher_is_better: bool) -> str:
     rows = sorted(rows, key=lambda row: int(row.get("round") if row.get("round") is not None else -1))
     if len(rows) > 24:
@@ -1501,7 +1505,7 @@ def _build_round_history(rows: list[dict[str, Any]], parent_round: int | None, h
         shown = sorted(selected.values(), key=lambda row: int(row.get("round") if row.get("round") is not None else -1))
     else:
         shown = rows
-    lines = ["[ROUND HISTORY]", "round | branch/state | status | score | method_family | commit | marker"]
+    lines = ["[ROUND HISTORY]", "round | branch/state | status | score | sandbox_runtime_seconds | timeout_saturation | method_family | commit | marker"]
     best_score = None
     for row in rows:
         score = _round_score(row)
@@ -1514,9 +1518,12 @@ def _build_round_history(rows: list[dict[str, Any]], parent_round: int | None, h
         family = _prompt_scalar(row.get("method_family") or row.get("effective_method_family") or "-", 48)
         if family == "agent_selected_after_context":
             family = "-"
+        runtime = _round_validation_seconds(row, "run_time")
+        saturation = _round_timeout_saturation(row)
         lines.append(
             f"{round_value} | {_prompt_scalar(row.get('branch') or '-', 16)}/{_prompt_scalar(row.get('branch_state') or '-', 24)} | "
             f"{_prompt_scalar(row.get('status') or '-', 32)} | {format(score, '.6g') if score is not None else '-'} | "
+            f"{format(runtime, '.6g') if runtime is not None else '-'} | {format(saturation, '.3f') if saturation is not None else '-'} | "
             f"{family} | {str(row.get('commit') or row.get('commit_hash') or '-')[:8]} | {marker}"
         )
     omitted = max(0, len(rows) - len(shown))
@@ -1641,13 +1648,13 @@ def _build_round_context_packet(
     if draft_static_repair:
         lines.append("action: repair the current-round solution only; preserve its modeling route and fix the reported blocker without consulting historical implementations.")
     elif branch == "draft":
-        lines.append("action: create an independent strong seed with no parent or code prefill; use prior draft memory only to avoid repeating an existing implementation.")
+        lines.append("action: create an independent phase-scoped strong seed with no parent or code prefill; use prior draft memory only to avoid duplication, bound the complete route, and finish one submission-ready trained candidate before optional work.")
     elif branch == "debug":
-        lines.append("action: repair exactly the linked failed parent and preserve its method family unless the failure evidence proves it cannot run.")
+        lines.append("action: repair exactly the linked failed parent and failure class; preserve its method family, and for timeout/OOM shrink cumulative preprocessing, candidates, folds, epochs, inference, and optional work until a trained path fits.")
     elif state == "final_audit":
         lines.append("action: audit and safely finalize the validation-best parent; do not start a new modeling route.")
     else:
-        lines.append("action: patch the validation-best parent and make one evidence-backed improvement.")
+        lines.append("action: patch the validation-best parent with one evidence-backed material improvement; preserve a submission-ready incumbent and bound the total added work.")
     sections = ["\n".join(lines)]
     if draft_static_repair:
         memory_section, draft_paths = "", []
@@ -1673,6 +1680,31 @@ def _build_round_context_packet(
     if not draft_static_repair:
         parent_round = parent.get("round") if isinstance(parent.get("round"), int) else None
         sections.append(_build_round_history(all_rounds, parent_round, higher_is_better))
+    workload_plan = branch_decision.get("workload_plan") if isinstance(branch_decision.get("workload_plan"), dict) else {}
+    reference_runtime = workload_plan.get("previous_validation_runtime_seconds")
+    if branch == "draft":
+        ceiling = workload_plan.get("draft_workload_ceiling_seconds")
+        sections.append("\n".join([
+            "[DRAFT WORKLOAD CEILING]",
+            f"draft_workload_ceiling_seconds: {ceiling if ceiling is not None else '-'}",
+            "This is a soft ceiling, not a target to consume. Design the earliest strong, score-bearing complete route and finish sooner when it needs only minutes. Do not expand candidates, folds, seeds, epochs, resolution, TTA, preprocessing, or optional work merely because headroom remains.",
+            "The full planned path, including preprocessing, training, validation, test inference, every optional stage, submission validation, and atomic writing, must fit the ceiling. Optional work requires concrete expected benefit. If the estimate exceeds the ceiling, narrow repeated search and validation before coding while preserving the competitive model family; do not substitute a weak, constant, template-only, or untrained route.",
+            f"reference_round: {workload_plan.get('reference_round') if workload_plan.get('reference_round') is not None else '-'}",
+            f"previous_validation_runtime_seconds: {reference_runtime if reference_runtime is not None else '-'}",
+            f"previous_timeout_saturation: {workload_plan.get('previous_timeout_saturation') if workload_plan.get('previous_timeout_saturation') is not None else '-'}",
+            "Treat a timeout runtime only as a lower bound and an early-failure runtime only as failure evidence, not as an end-to-end estimate. Prefer comparable successful routes when estimating cost.",
+        ]))
+    elif reference_runtime is not None:
+        sections.append("\n".join([
+            "[OBSERVED RUNTIME EVIDENCE]",
+            f"reference_round: {workload_plan.get('reference_round') if workload_plan.get('reference_round') is not None else '-'}",
+            f"reference_branch: {workload_plan.get('reference_branch') or '-'}",
+            f"reference_status: {workload_plan.get('reference_status') or '-'}",
+            f"previous_validation_runtime_seconds: {reference_runtime}",
+            f"previous_validation_timeout_seconds: {workload_plan.get('previous_validation_timeout_seconds') if workload_plan.get('previous_validation_timeout_seconds') is not None else '-'}",
+            f"previous_timeout_saturation: {workload_plan.get('previous_timeout_saturation') if workload_plan.get('previous_timeout_saturation') is not None else '-'}",
+            "This is observed sandbox evidence, not a runtime quota or a solution deadline. A timeout is only a lower bound, and an early failure is not an end-to-end estimate. Use comparable successful evidence to bound cumulative work without adding work merely because the external wall is larger.",
+        ]))
     budget = branch_decision.get("budget") if isinstance(branch_decision.get("budget"), dict) else {}
     remaining = budget.get("remaining_budget")
     validation_timeout = branch_decision.get("validation_timeout_seconds") or remaining
@@ -1680,7 +1712,7 @@ def _build_round_context_packet(
         "[EXTERNAL VALIDATION TIMEOUT]",
         f"validation_timeout_seconds: {validation_timeout if validation_timeout is not None else '-'}",
         f"remaining_sandbox_runtime_seconds: {remaining if remaining is not None else '-'}",
-        "The framework enforces this single timeout externally, while task accounting charges only actual sandbox runtime. It is read-only and not negotiable. Do not request a runtime budget in context_readiness.md, copy this value into solution.py, or implement internal timers, deadlines, remaining-time guards, or budget exceptions. Choose a statically bounded workload that can complete and write submission.csv before the external timeout.",
+        "The framework enforces this sandbox kill ceiling externally, while task accounting charges only actual sandbox runtime. It is not an expected runtime or quota. Do not request a runtime budget in context_readiness.md, copy this value into solution.py, or implement internal timers, deadlines, remaining-time guards, or budget exceptions.",
     ]))
     return "\n\n".join(section for section in sections if section), draft_paths
 
