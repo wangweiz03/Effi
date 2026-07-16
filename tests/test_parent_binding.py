@@ -139,6 +139,14 @@ def test_debug_binds_and_prefills_the_failed_round(tmp_path) -> None:
         "commit_hash": "failed123",
         "code": "FAILED_PARENT = True\n",
         "effective_method_family": "xgboost",
+        "effective_lineage": {
+            "effective_branch": "draft",
+            "effective_method_family": "xgboost",
+            "origin_round": 1,
+            "origin_commit": "draft001",
+            "seed_id": "seed:draft001",
+            "is_draft_origin_seed": True,
+        },
         "validation": {
             "status": "timeout",
             "score": None,
@@ -153,6 +161,8 @@ def test_debug_binds_and_prefills_the_failed_round(tmp_path) -> None:
     assert decision["parent_binding"]["round"] == 3
     assert decision["parent_binding"]["commit"] == "failed123"
     assert decision["parent_binding"]["failure_primary"] == "timeout"
+    assert decision["parent_binding"]["seed_id"] == "seed:draft001"
+    assert decision["parent_binding"]["effective_lineage"]["origin_commit"] == "draft001"
 
     active = tmp_path / "solution.py"
     info = prefill_active_solution_from_incumbent(tmp_path, active, decision)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .common import *
 
-SANDBOX_BASE_URL = os.environ.get("MLEBENCH_SANDBOX_BASE_URL", "http://183.222.230.77:6580")
+SANDBOX_BASE_URL = os.environ.get("MLEBENCH_SANDBOX_BASE_URL", "http://183.147.142.125:30180")
 SUBMIT_DATA_ROOT = Path(os.environ.get("MLEBENCH_SUBMIT_DATA_ROOT", "/mnt/pubdatasets2/automized_std_bench/dojo4mlebench/data/prepared"))
 FRAMEWORK_RESOURCES_ROOT = Path("/hpc_data/weizwang@weizwang/frameworks/resources")
 DEFAULT_TASK_SKILLS_DIR = FRAMEWORK_RESOURCES_ROOT / "mle-reimagined"

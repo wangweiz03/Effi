@@ -8,9 +8,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TASKS=(
-    aptos2019-blindness-detection
-    ranzcr-clip-catheter-line-classification
-    siim-isic-melanoma-classification
+    text-normalization-challenge-english-language
+    mlsp-2013-birds
 )
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
@@ -29,8 +28,8 @@ EOF
     exit 0
 fi
 
-export OUTPUT_DIR="${OUTPUT_DIR:-./cur/test3-tries5}"
-export NUM_ROUNDS="${NUM_ROUNDS:-5}"
+export OUTPUT_DIR="${OUTPUT_DIR:-./cur/test3-tries73}"
+export NUM_ROUNDS="${NUM_ROUNDS:-8}"
 
 cd "$SCRIPT_DIR"
 exec ./run_selected_tasks.sh "$@" "${TASKS[@]}"

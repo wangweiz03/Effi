@@ -7,8 +7,10 @@ import pytest
 import runtime.branch_policy as branch_policy
 from runtime.branch_policy import (
     _non_debug_scored_rounds_since_best,
+    build_effective_lineage,
     choose_branch_state_for_round,
     choose_branch_for_round,
+    latest_failed_seed_repair_count,
     round_is_fresh_draft,
 )
 from runtime.constants import (
@@ -62,6 +64,40 @@ def _runtime_round(
     }
 
 
+def _failed_seed_round(
+    round_num: int,
+    branch: str,
+    commit: str,
+    *,
+    seed_id: str,
+    origin_round: int,
+    origin_commit: str,
+) -> dict:
+    return {
+        "round": round_num,
+        "commit": commit,
+        "branch": branch,
+        "code": "print('repairable')\n",
+        "validation": {"status": "code_execution_error", "score": None},
+        "effective_lineage": {
+            "effective_branch": "draft",
+            "effective_search_intent": "portfolio_seed",
+            "effective_operator": {
+                "name": "safe_portfolio_tune",
+                "intent": "improve_best",
+                "family": "unknown",
+                "cost": "medium",
+                "risk": "medium",
+            },
+            "effective_method_family": "audio_segment_mil",
+            "origin_round": origin_round,
+            "origin_commit": origin_commit,
+            "seed_id": seed_id,
+            "is_draft_origin_seed": True,
+        },
+    }
+
+
 def _force_branch_state(monkeypatch, *, branch: str, state: str, parent_binding: dict | None = None) -> None:
     monkeypatch.setattr(
         branch_policy,
@@ -92,6 +128,210 @@ def test_plateau_draft_resets_stagnation_window() -> None:
 
     rounds.append(_scored_round(6, "improve", 0.12))
     assert _non_debug_scored_rounds_since_best(rounds, 0.10, higher_is_better=False) == 1
+
+
+def test_debug_lineage_inherits_original_seed_across_failed_repairs() -> None:
+    original_lineage = {
+        "effective_branch": "draft",
+        "effective_search_intent": "portfolio_seed",
+        "effective_operator": {
+            "name": "safe_portfolio_tune",
+            "intent": "improve_best",
+            "family": "unknown",
+            "cost": "medium",
+            "risk": "medium",
+        },
+        "effective_method_family": "audio_segment_mil",
+        "origin_round": 1,
+        "origin_commit": "draft001",
+        "seed_id": "seed:draft001",
+        "is_draft_origin_seed": True,
+    }
+    operator = branch_policy.neutral_branch_operator("debug", "repair_failure")
+
+    first_repair = build_effective_lineage(
+        round_num=2,
+        commit_hash="debug002",
+        branch="debug",
+        branch_decision={
+            "branch": "debug",
+            "parent_binding": {
+                "role": "debug_parent",
+                "round": 1,
+                "commit": "draft001",
+                "method_family": "audio_segment_mil",
+                "seed_id": "seed:draft001",
+                "effective_lineage": original_lineage,
+            },
+        },
+        search_operator=operator,
+        round_summary={"method_family": "audio_segment_mil"},
+    )
+    second_repair = build_effective_lineage(
+        round_num=3,
+        commit_hash="debug003",
+        branch="debug",
+        branch_decision={
+            "branch": "debug",
+            "parent_binding": {
+                "role": "debug_parent",
+                "round": 2,
+                "commit": "debug002",
+                "method_family": "audio_segment_mil",
+                "seed_id": first_repair["seed_id"],
+                "effective_lineage": first_repair,
+            },
+        },
+        search_operator=operator,
+        round_summary={"method_family": "audio_segment_mil"},
+    )
+
+    for lineage in (first_repair, second_repair):
+        assert lineage["seed_id"] == "seed:draft001"
+        assert lineage["origin_round"] == 1
+        assert lineage["origin_commit"] == "draft001"
+        assert lineage["effective_branch"] == "draft"
+        assert lineage["is_draft_origin_seed"] is True
+
+
+def test_hard_scheduler_stops_debug_after_two_repairs(tmp_path) -> None:
+    seed_id = "seed:draft001"
+    rounds = [
+        _failed_seed_round(1, "draft", "draft001", seed_id=seed_id, origin_round=1, origin_commit="draft001"),
+        _failed_seed_round(2, "debug", "debug002", seed_id=seed_id, origin_round=1, origin_commit="draft001"),
+    ]
+    portfolio = {"successful_draft_origin_seed_count": 1}
+
+    second_repair = choose_branch_state_for_round(
+        task_dir=tmp_path,
+        round_num=3,
+        all_rounds=rounds,
+        higher_is_better=True,
+        elapsed_fraction=0.2,
+        remaining_budget=20_000,
+        budget_state={},
+        portfolio_state=portfolio,
+    )
+    assert second_repair["branch"] == "debug"
+    assert second_repair["diagnostics"]["latest_failed_seed_repair_count"] == 1
+
+    rounds.append(
+        _failed_seed_round(3, "debug", "debug003", seed_id=seed_id, origin_round=1, origin_commit="draft001")
+    )
+    assert latest_failed_seed_repair_count(rounds) == 2
+
+    replacement = choose_branch_state_for_round(
+        task_dir=tmp_path,
+        round_num=4,
+        all_rounds=rounds,
+        higher_is_better=True,
+        elapsed_fraction=0.2,
+        remaining_budget=20_000,
+        budget_state={},
+        portfolio_state=portfolio,
+    )
+    assert replacement["branch"] == "draft"
+    assert replacement["branch_state"] == BRANCH_STATE_REQUIRED_SEED
+    assert replacement["branch_reason"] == "debug_repair_limit_reached_collect_new_seed"
+    assert replacement["parent_binding"] == {"role": "none"}
+    assert replacement["diagnostics"]["latest_failed_seed_repair_count"] == 2
+    assert replacement["diagnostics"]["max_debug_repairs_per_seed"] == 2
+
+
+def test_repair_count_follows_parent_chain_for_legacy_reset_seed_ids() -> None:
+    draft = _failed_seed_round(
+        1,
+        "draft",
+        "draft001",
+        seed_id="seed:draft001",
+        origin_round=1,
+        origin_commit="draft001",
+    )
+    first_repair = _failed_seed_round(
+        2,
+        "debug",
+        "debug002",
+        seed_id="seed:draft001",
+        origin_round=1,
+        origin_commit="draft001",
+    )
+    first_repair["effective_lineage"].update({"repair_of_round": 1, "repair_of_commit": "draft001"})
+    second_repair = _failed_seed_round(
+        3,
+        "debug",
+        "debug003",
+        seed_id="seed:debug002",
+        origin_round=2,
+        origin_commit="debug002",
+    )
+    second_repair["effective_lineage"].update({"repair_of_round": 2, "repair_of_commit": "debug002"})
+
+    assert latest_failed_seed_repair_count([draft, first_repair, second_repair]) == 2
+
+
+def test_hard_scheduler_replaces_failed_seed_after_repair_cap_when_pool_is_ready(tmp_path) -> None:
+    seed_id = "seed:draft001"
+    rounds = [
+        _failed_seed_round(1, "draft", "draft001", seed_id=seed_id, origin_round=1, origin_commit="draft001"),
+        _failed_seed_round(2, "debug", "debug002", seed_id=seed_id, origin_round=1, origin_commit="draft001"),
+        _failed_seed_round(3, "debug", "debug003", seed_id=seed_id, origin_round=1, origin_commit="draft001"),
+    ]
+
+    replacement = choose_branch_state_for_round(
+        task_dir=tmp_path,
+        round_num=4,
+        all_rounds=rounds,
+        higher_is_better=True,
+        elapsed_fraction=0.2,
+        remaining_budget=20_000,
+        budget_state={},
+        portfolio_state={"successful_draft_origin_seed_count": 2},
+    )
+
+    assert replacement["branch"] == "draft"
+    assert replacement["branch_state"] == BRANCH_STATE_PLATEAU_NEW_SEED
+    assert replacement["branch_reason"] == "debug_repair_limit_reached_replace_failed_seed"
+    assert replacement["parent_binding"] == {"role": "none"}
+
+
+def test_debug_repair_cap_resumes_best_after_fresh_draft_capacity_is_exhausted(tmp_path) -> None:
+    seed_id = "seed:draft003"
+    rounds = [
+        _scored_round(0, "draft", 0.8, BRANCH_STATE_INITIAL_SEED),
+        _scored_round(1, "draft", 0.7, BRANCH_STATE_PLATEAU_NEW_SEED),
+        _scored_round(2, "draft", 0.6, BRANCH_STATE_PLATEAU_NEW_SEED),
+        _failed_seed_round(3, "draft", "draft003", seed_id=seed_id, origin_round=3, origin_commit="draft003"),
+        _failed_seed_round(4, "debug", "debug004", seed_id=seed_id, origin_round=3, origin_commit="draft003"),
+        _failed_seed_round(5, "debug", "debug005", seed_id=seed_id, origin_round=3, origin_commit="draft003"),
+    ]
+    best_candidate = {
+        "round": 0,
+        "commit": "best000",
+        "score": 0.8,
+        "status": "success",
+        "method_family": "tabular_gbdt",
+        "code_path": "commits/best000/solution.py",
+    }
+
+    replacement = choose_branch_state_for_round(
+        task_dir=tmp_path,
+        round_num=6,
+        all_rounds=rounds,
+        higher_is_better=True,
+        elapsed_fraction=0.2,
+        remaining_budget=20_000,
+        budget_state={},
+        portfolio_state={
+            "successful_draft_origin_seed_count": 2,
+            "best_candidate": best_candidate,
+        },
+    )
+
+    assert replacement["branch"] == "improve"
+    assert replacement["branch_state"] == "frontier_improve"
+    assert replacement["branch_reason"] == "debug_repair_limit_reached_resume_validation_best"
+    assert replacement["parent_binding"]["role"] == "validation_best"
+    assert replacement["parent_binding"]["commit"] == "best000"
 
 
 def test_compact_candidate_parent_is_non_recursive() -> None:

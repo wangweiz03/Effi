@@ -36,9 +36,11 @@ Draft receives a `3600s` soft ceiling for planning the complete workload. This i
 
 ### Debug
 
-Debug binds the latest failed generated implementation and exposes its card, code, and feedback. A successful repair inherits the failed seed's effective lineage and does not create a new independent seed.
+Debug binds the latest failed generated implementation and exposes its card, code, and feedback. Every debug result, including another failed repair, inherits the original seed's effective lineage. A successful repair therefore remains the scored representative of that original seed and does not create a new independent seed.
 
 Debug does not inherit the draft ceiling. For timeout or OOM recovery, it uses the failed parent's observed stage and actual runtime to reduce cumulative work; for ordinary repair it changes the smallest concrete cause while preserving boundedness.
+
+One effective seed receives at most two debug rounds. If the second repair also fails, the hard scheduler stops binding the failed chain. It selects `draft / required_seed` when the independent seed pool is incomplete. With a complete pool it selects `draft / plateau_new_seed` while fresh-draft capacity remains, or resumes `improve / frontier_improve` from validation best after that capacity is exhausted.
 
 ### Improve
 
@@ -48,7 +50,7 @@ Improve does not inherit the draft ceiling. It estimates the added complete-path
 
 ### Single Binding
 
-Current v3 decisions use one `parent_binding` as score anchor, implementation base, and default diff parent. Prompt-facing parent memory is one level deep and contains only round, score, and complete `Method Portrait.method_summary`. Artifact paths are routed separately through PART 4.
+Current v3 decisions use one `parent_binding` as score anchor, implementation base, and default diff parent. A debug binding embeds one frozen, non-recursive effective-lineage snapshot so successive repairs preserve seed identity. Prompt-facing parent memory is one level deep and contains only round, score, and complete `Method Portrait.method_summary`; the lineage snapshot is not expanded into PART 3. Artifact paths are routed separately through PART 4.
 
 ## Plateau Behavior
 
@@ -171,7 +173,7 @@ Failure evidence must preserve whether a timeout was observed by solution code o
 3. The scheduler selects control actions, not concrete models.
 4. Memory describes implemented work and observed outcomes.
 5. Plateau exploration has reset, cooldown, and run-level caps.
-6. Debug always binds a concrete failed result.
+6. Debug always binds a concrete failed result, preserves its original effective seed lineage, and stops after two repairs for that seed.
 7. Final selection follows metric direction and eligibility.
 8. Parent, implementation base, prefill source, and baseline path share one commit identity.
 9. Draft prior memory transfers experience without code inheritance.

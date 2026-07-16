@@ -276,9 +276,18 @@ def build_effective_lineage(
             or parent.get("branch")
             or branch
         )
-        origin_round = parent_lineage.get("origin_round", parent.get("round"))
-        origin_commit = parent_lineage.get("origin_commit", parent.get("commit"))
-        seed_id = parent_lineage.get("seed_id") or build_seed_id(origin_round, origin_commit, parent_family, parent_operator)
+        origin_round = parent_lineage.get("origin_round")
+        if origin_round is None:
+            origin_round = parent.get("origin_round", parent.get("round"))
+        origin_commit = parent_lineage.get("origin_commit") or parent.get("origin_commit") or parent.get("commit")
+        seed_id = (
+            parent_lineage.get("seed_id")
+            or parent.get("seed_id")
+            or build_seed_id(origin_round, origin_commit, parent_family, parent_operator)
+        )
+        parent_is_draft_origin = parent_lineage.get("is_draft_origin_seed")
+        if parent_is_draft_origin is None:
+            parent_is_draft_origin = parent.get("is_draft_origin_seed")
         return {
             "execution_branch": "debug",
             "execution_search_intent": branch_decision.get("search_intent"),
@@ -295,7 +304,11 @@ def build_effective_lineage(
             "origin_commit": origin_commit,
             "seed_id": seed_id,
             "is_debug_repair": True,
-            "is_draft_origin_seed": bool(parent_lineage.get("is_draft_origin_seed") or parent.get("search_intent") in {INTENT_PORTFOLIO_SEED, INTENT_FRONTLOAD_DRAFT, INTENT_FRESH_DRAFT} or parent.get("branch") == "draft"),
+            "is_draft_origin_seed": bool(
+                parent_is_draft_origin
+                or parent.get("search_intent") in {INTENT_PORTFOLIO_SEED, INTENT_FRONTLOAD_DRAFT, INTENT_FRESH_DRAFT}
+                or parent.get("branch") == "draft"
+            ),
         }
     seed_id = build_seed_id(round_num, commit_hash, actual_family, actual_operator)
     return {
@@ -704,21 +717,64 @@ def build_validation_score_feedback(
     }
 
 
+def _debug_repair_chain(
+    all_rounds: list[dict[str, Any]],
+    latest: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Return newest-to-oldest debug rows linked through their frozen repair parent."""
+    current = latest or (all_rounds[-1] if all_rounds else None)
+    chain: list[dict[str, Any]] = []
+    seen: set[tuple[Any, str]] = set()
+    while isinstance(current, dict) and get_round_branch(current) == "debug":
+        current_commit = str(current.get("commit_hash") or current.get("commit") or "")
+        current_key = (current.get("round"), current_commit)
+        if current_key in seen:
+            break
+        seen.add(current_key)
+        chain.append(current)
+
+        lineage = round_effective_lineage(current)
+        decision = current.get("branch_decision") if isinstance(current.get("branch_decision"), dict) else {}
+        binding = decision.get("parent_binding") if isinstance(decision.get("parent_binding"), dict) else {}
+        parent_commit = str(lineage.get("repair_of_commit") or binding.get("commit") or "")
+        parent_round = lineage.get("repair_of_round")
+        if parent_round is None:
+            parent_round = binding.get("round")
+        parent = None
+        for row in reversed(all_rounds):
+            row_commit = str(row.get("commit_hash") or row.get("commit") or "")
+            if parent_commit and row_commit == parent_commit:
+                parent = row
+                break
+            if not parent_commit and parent_round is not None and row.get("round") == parent_round:
+                parent = row
+                break
+        if parent is None:
+            break
+        current = parent
+    return chain
+
+
 def latest_failed_seed_repair_count(all_rounds: list[dict[str, Any]]) -> int:
     """Count debug attempts already spent on the latest failed round's seed."""
     if not all_rounds:
         return 0
     latest = all_rounds[-1]
+    chain = _debug_repair_chain(all_rounds, latest)
+    if chain:
+        oldest = chain[-1]
+        oldest_lineage = round_effective_lineage(oldest)
+        oldest_binding = (oldest.get("branch_decision") or {}).get("parent_binding") or {}
+        if oldest_lineage.get("repair_of_commit") or oldest_lineage.get("repair_of_round") is not None or oldest_binding:
+            return len(chain)
     target_seed = round_seed_id(latest)
     if not target_seed:
         return 0
-    count = 0
-    for row in all_rounds:
-        if get_round_branch(row) != "debug":
-            continue
-        if round_seed_id(row) == target_seed:
-            count += 1
-    return count
+    return sum(
+        1
+        for row in all_rounds
+        if get_round_branch(row) == "debug" and round_seed_id(row) == target_seed
+    )
 
 
 def recent_operator_counts_from_rounds(
@@ -2725,6 +2781,24 @@ def _latest_debug_parent_for_branch_v3(
             break
     if not candidate:
         return None
+    candidate_lineage = candidate.get("effective_lineage") if isinstance(candidate.get("effective_lineage"), dict) else {}
+    candidate_commit = str(candidate.get("commit") or "")
+    candidate_round = candidate.get("round")
+    candidate_row = None
+    for row in reversed(all_rounds):
+        row_commit = str(row.get("commit_hash") or row.get("commit") or "")
+        if candidate_commit and row_commit != candidate_commit:
+            continue
+        if not candidate_commit and row.get("round") != candidate_round:
+            continue
+        candidate_row = row
+        break
+    if candidate_row is not None:
+        repair_chain = _debug_repair_chain(all_rounds, candidate_row)
+        lineage_source = repair_chain[-1] if repair_chain else candidate_row
+        source_lineage = lineage_source.get("effective_lineage")
+        if isinstance(source_lineage, dict) and source_lineage:
+            candidate_lineage = source_lineage
     return {
         "role": "debug_parent",
         "round": candidate.get("round"),
@@ -2737,6 +2811,7 @@ def _latest_debug_parent_for_branch_v3(
         "feedback_path": candidate.get("validation_feedback_path"),
         "method_family": candidate.get("method_family"),
         "seed_id": candidate.get("seed_id"),
+        "effective_lineage": candidate_lineage,
     }
 
 
@@ -2759,6 +2834,9 @@ def _parent_binding(role: str, candidate: dict[str, Any] | None = None) -> dict[
     if role == "debug_parent":
         binding["failure_primary"] = candidate.get("failure_primary")
         binding["seed_id"] = candidate.get("seed_id")
+        lineage = candidate.get("effective_lineage")
+        if isinstance(lineage, dict) and lineage:
+            binding["effective_lineage"] = lineage
     return {key: value for key, value in binding.items() if value is not None}
 
 
@@ -2942,6 +3020,7 @@ def choose_branch_state_for_round(
     except Exception:
         best_score_float = None
     debug_needed, debug_reason = _latest_round_needs_debug(all_rounds)
+    latest_seed_repair_count = latest_failed_seed_repair_count(all_rounds)
     consecutive_timeouts = consecutive_timeout_count(all_rounds)
     scored_count = len([row for row in all_rounds if validation_score(row) is not None])
     seed_count = int(portfolio_state.get("successful_draft_origin_seed_count") or 0)
@@ -2964,7 +3043,7 @@ def choose_branch_state_for_round(
         branch_reason = "round_0_initial_seed"
         runtime_profile = RUNTIME_PROFILE_NEW_SEED_SCORE_FIRST
         eda_mode = "early"
-    elif debug_needed:
+    elif debug_needed and latest_seed_repair_count < V38_MAX_DEBUG_REPAIRS_PER_SEED:
         branch = "debug"
         branch_state = BRANCH_STATE_TIMEOUT_RECOVERY if consecutive_timeouts >= 1 else BRANCH_STATE_REPAIR_FAILURE
         branch_reason = debug_reason or "latest_failed_generated_code"
@@ -2974,6 +3053,22 @@ def choose_branch_state_for_round(
             "If the parent feedback mentions parsing, schema, shape, missing files, labels, "
             "or submission alignment, do a bounded read-only deep EDA during context acquisition."
         )
+    elif debug_needed and seed_count < V38_REQUIRED_DRAFT_ORIGIN_SEEDS:
+        branch = "draft"
+        branch_state = BRANCH_STATE_REQUIRED_SEED
+        branch_reason = "debug_repair_limit_reached_collect_new_seed"
+        runtime_profile = RUNTIME_PROFILE_NEW_SEED_SCORE_FIRST
+    elif debug_needed and plateau_draft_count < V38_MAX_FRESH_DRAFT_RUNS:
+        branch = "draft"
+        branch_state = BRANCH_STATE_PLATEAU_NEW_SEED
+        branch_reason = "debug_repair_limit_reached_replace_failed_seed"
+        runtime_profile = RUNTIME_PROFILE_NEW_SEED_SCORE_FIRST
+    elif debug_needed:
+        branch = "improve"
+        branch_state = BRANCH_STATE_FRONTIER_IMPROVE
+        branch_reason = "debug_repair_limit_reached_resume_validation_best"
+        runtime_profile = RUNTIME_PROFILE_STANDARD
+        parent_binding = _parent_binding("validation_best", best_candidate)
     elif consecutive_timeouts >= V31_TIMEOUT_TRAP_RECENT_THRESHOLD and scored_count == 0:
         branch = "debug"
         branch_state = BRANCH_STATE_TIMEOUT_RECOVERY
@@ -3029,6 +3124,8 @@ def choose_branch_state_for_round(
         "diagnostics": {
             "successful_draft_origin_seed_count": seed_count,
             "required_draft_origin_seeds": V38_REQUIRED_DRAFT_ORIGIN_SEEDS,
+            "latest_failed_seed_repair_count": latest_seed_repair_count,
+            "max_debug_repairs_per_seed": V38_MAX_DEBUG_REPAIRS_PER_SEED,
             "scored_round_count": scored_count,
             "non_debug_scored_since_best": after_best_non_debug,
             "plateau_draft_count": plateau_draft_count,

@@ -19,7 +19,7 @@ It contains:
 
 - round, branch, state, and reason;
 - runtime profile and strict score-first control;
-- one non-recursive `parent_binding`;
+- one non-recursive `parent_binding`; debug bindings include the failed parent's frozen effective-lineage snapshot;
 - frozen `draft_prior_memory` for draft rounds;
 - source policy and score feedback;
 - remaining sandbox budget, one external validation timeout, `workload_plan_v1`, and scheduler diagnostics.
@@ -290,6 +290,8 @@ Effective lineage explains how a result is categorized after debug inheritance:
 - effective method family;
 - effective lineage seed identity.
 
+Successive failed debug rounds preserve the same origin round, origin commit, seed ID, effective branch, and draft-origin flag. Scheduler diagnostics record `latest_failed_seed_repair_count` and `max_debug_repairs_per_seed`; the active limit is two repairs for one effective seed.
+
 Reports must state which perspective they use.
 
 ## Minimum Consistency Checks
@@ -311,7 +313,8 @@ Artifact checks should verify:
 13. every task-local model-cache inventory matches the repository source and follows draft-required, debug/improve-optional PART 4 routing;
 14. solution output is a schema-valid atomically written `submission.csv`;
 15. timeout taxonomy preserves evidence without inferring unsupported method causality;
-16. the draft `3600s` planning ceiling remains distinct from the external hard cap and creates no internal timer or preflight.
+16. the draft `3600s` planning ceiling remains distinct from the external hard cap and creates no internal timer or preflight;
+17. debug lineage remains stable across successive failed repairs, and the hard scheduler leaves the repair chain after two debug rounds for one seed.
 
 ### `graphic.png`
 

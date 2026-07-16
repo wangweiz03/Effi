@@ -112,11 +112,11 @@ Draft also receives a `3600s` soft workload-planning ceiling through the frozen 
 
 `draft / plateau_new_seed` breaks an incumbent-centered local loop after four scored non-debug rounds without a material new best. A scored plateau draft resets the window. Plateau drafts have a five-round cooldown and a run-level maximum of two attempts.
 
-Draft failure with concrete generated code is repaired in the next debug round. LLM infrastructure failures, duplicate solutions, and missing solutions do not create a normal model-debug parent.
+Draft failure with concrete generated code is repaired in the next debug round. Every failed debug attempt retains the original seed ID, origin round and commit, effective branch, and draft-origin flag; a repair chain never becomes a new seed merely because its immediate parent is another debug round. LLM infrastructure failures, duplicate solutions, and missing solutions do not create a normal model-debug parent.
 
 ### Debug and Improve
 
-Debug binds one concrete failed implementation. It should repair the observed failure while preserving the promising method family when feasible.
+Debug binds one concrete failed implementation. It should repair the observed failure while preserving the promising method family when feasible. The active hard scheduler permits at most two debug rounds for one effective seed. After two failed repairs it abandons that repair chain: an incomplete independent seed pool routes to `draft / required_seed`; a complete pool uses `draft / plateau_new_seed` while fresh-draft capacity remains, then falls back to `improve / frontier_improve` from validation best after that capacity is exhausted.
 
 Improve binds the highest-scoring submission-eligible validation candidate at round start. Final audit uses the same binding and emphasizes low-risk reliability or bounded evidence-backed improvement.
 
@@ -127,6 +127,8 @@ Improve binds the highest-scoring submission-eligible validation candidate at ro
 - draft: none;
 - debug: failed implementation;
 - improve/final audit: validation-best eligible implementation.
+
+A debug binding also carries the failed parent's frozen, non-recursive `effective_lineage`. This is control metadata for lineage inheritance and repair-count enforcement; it is not additional prompt-facing parent memory.
 
 Parent memory in PART 3 contains only round, score, and complete `Method Portrait.method_summary`. Code, card, and feedback paths appear only in PART 4. Prefill, implementation base, parent identity, and baseline paths must resolve to the same commit or failed-round artifact.
 
